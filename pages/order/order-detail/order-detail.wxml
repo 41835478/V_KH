@@ -1,0 +1,557 @@
+<view class="wrapper has-nav">
+  <view class="ct bg-color-gray">
+    <view class="head">
+      <view class="title mg-bottom">
+        <view class="left">
+          <text class="h4 red" wx:if="{{orderDetailData.consumerType==0&&orderDetailData.status==1||orderDetailData.consumerType==2&&orderDetailData.payTime==0||orderDetailData.consumerType==1&&orderDetailData.status==1}}">待支付</text>
+          <text class="h4 red" wx:if="{{orderDetailData.status==3||orderDetailData.consumerType==2&&orderDetailData.payTime>0}}">订单完成</text>
+          <text class="h4 red" wx:if="{{orderDetailData.payTime == 0&&orderDetailData.consumerType == 2&&orderDetailData.status==7||orderDetailData.payTime == 0&&orderDetailData.consumerType == 1&&orderDetailData.status==0}}">订单取消</text>
+        </view>
+        <view class="right">
+          <text class="p-small gray-1">下单时间：{{orderDetailData.createTime}}</text>
+        </view>
+      </view>
+
+      <!--快餐直接支付-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.status >1&&orderDetailData.consumerType == 1}}">
+        <view class="bar">
+          <view class="bar-entry active meList" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <block wx:if="{{orderDetailData.status >1}}">
+            <block wx:if="{{orderDetailData.status >= 2}}">
+              <view class="bar-entry active">
+                <view class="step">
+                  <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+                  <text class="status p-small">商家确认</text>
+                </view>
+                <view class="bar-border"></view>
+              </view>
+            </block>
+            <block wx:if="{{orderDetailData.status >= 3}}">
+              <view class="bar-entry active">
+                <view class="step">
+                  <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+                  <text class="status p-small">订单完成</text>
+                </view>
+                <view class="bar-border"></view>
+              </view>
+            </block>
+          </block>
+        </view>
+      </view>
+
+      <!--外卖直接支付-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.payTime>0&&orderDetailData.consumerType == 2&&orderDetailData.status!=7}}">
+        <view class="barMe">
+          <view class="bar-entry active meList bar-entry-me" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active bar-entry-me">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">已支付</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry bar-entry-me  active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">等待商家确认</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view wx:if="{{orderDetailData.status==11}}" class="bar-entry bar-entry-me  active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small  active">商家接单</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view wx:if="{{orderDetailData.status==12}}" class="bar-entry bar-entry-me  active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small  active">商家拒单</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+        </view>
+      </view>
+
+      <!--外卖没有支付-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.payTime == 0&&orderDetailData.consumerType == 2&&orderDetailData.status!=7}}">
+        <view class="bar">
+          <view class="bar-entry active meList" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">待支付</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/circle.png"></image>
+              <text class="status p-small">订单完成</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+        </view>
+      </view>
+
+      <!--外卖与快餐订单取消-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.payTime == 0&&orderDetailData.consumerType == 2&&orderDetailData.status==7||orderDetailData.payTime == 0&&orderDetailData.consumerType == 1&&orderDetailData.status==0}}">
+        <view class="bar">
+          <view class="bar-entry active meList" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">待支付</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单取消</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+        </view>
+      </view>
+
+      <!--快餐没有支付-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.status == 1&&orderDetailData.consumerType == 1}}">
+        <view class="bar">
+          <view class="bar-entry active meList" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">待支付</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/circle.png"></image>
+              <text class="status p-small">订单完成</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+        </view>
+      </view>
+
+      <!--堂食结账，继续点餐-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.status >1&&orderDetailData.consumerType == 0}}">
+        <view class="bar">
+          <view class="bar-entry active meList" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <block wx:if="{{orderDetailData.status >1}}">
+          <block wx:if="{{orderDetailData.status >= 3}}">
+              <view class="bar-entry active">
+                <view class="step">
+                  <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+                  <text class="status p-small">已支付</text>
+                </view>
+                <view class="bar-border"></view>
+              </view>
+            </block>
+            <block wx:if="{{orderDetailData.status >= 2}}">
+              <view class="bar-entry active">
+                <view class="step">
+                  <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+                  <text class="status p-small">等待商家确认</text>
+                </view>
+                <view class="bar-border"></view>
+              </view>
+            </block>
+            <view wx:if="{{orderDetailData.status==11}}" class="bar-entry bar-entry-me  active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small  active">商家接单</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view wx:if="{{orderDetailData.status==12}}" class="bar-entry bar-entry-me  active">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small  active">商家拒单</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          </block>
+        </view>
+      </view>
+
+      <!--堂食不结账，加菜或者付款-->
+      <view class="order-progress step-4" wx:if="{{orderDetailData.status==1&&orderDetailData.consumerType == 0}}">
+        <view class="barMe">
+          <view class="bar-entry active meList bar-entry-me" style="height:0;">
+            <view class="step1">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">订单提交</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry active bar-entry-me">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/point.png"></image>
+              <text class="status p-small">商家确认</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry bar-entry-me">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/circle.png"></image>
+              <text class="status p-small">待支付</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+          <view class="bar-entry bar-entry-me">
+            <view class="step">
+              <image class="icon-normal-equal" src="/images/icon/circle.png"></image>
+              <text class="status p-small">订单完成</text>
+            </view>
+            <view class="bar-border"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="price-area block">
+      <navigator open-type="navigate" url="/pages/canteen/index/index?resId={{resId}}&consumerId={{orderDetailData.consumerId}}&isaddDish=true&tableCode={{tableCode}}&tableName={{orderDetailData.title}}" wx:if="{{orderDetailData.consumerType==0}}">
+        <view class="ct arrow-list-ctn borderTop">
+          <view class="list">
+            <view class="entry" style="width:94%;padding:0.5rem;">
+              <image class="icon-normal-equal" src="{{serverAddressImg+res.resLogo}}"></image>
+              <text class="h5">{{res.resName}}</text>
+              <view class="arrow">
+                <view class="outer">
+                  <view class="inner">
+                    <image src="/images/icon/arrow-right.png"></image>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </navigator>
+      <navigator open-type="navigate" url="/pages/canteen/index/index?resId={{resId}}&isaddDish=true" wx:if="{{orderDetailData.consumerType!=0}}">
+        <view class="ct arrow-list-ctn borderTop">
+          <view class="list">
+            <view class="entry" style="width:94%;padding:0.5rem;">
+              <image class="icon-normal-equal" src="{{serverAddressImg+res.resLogo}}"></image>
+              <text class="h5">{{res.resName}}</text>
+              <view class="arrow">
+                <view class="outer">
+                  <view class="inner">
+                    <image src="/images/icon/arrow-right.png"></image>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </navigator>
+      <view class="pro-list">
+        <view class="list">
+          <block wx:for="{{orderDetailData.orderFoodDtoList}}" wx:key="key">
+            <view class="entry">
+              <view class="left">
+                <text class="p fontSize">{{item.name}}</text>
+              </view>
+              <view class="middle">
+                <text class="p gray-1">X {{item.foodCount}}</text>
+              </view>
+              <view class="right">
+                <text class="p red">¥{{item.price}}</text>
+              </view>
+            </view>
+          </block>
+          <view class="entry border-t pd-top-smaller" wx:if="{{orderDetailData.serviceAmount}}">
+            <view class="left">
+              <text class="p fontSize">茶位费</text>
+            </view>
+            <view class="middle">
+              <text class="p"></text>
+            </view>
+            <view class="right">
+              <text class="p red">¥{{orderDetailData.serviceAmount}}</text>
+            </view>
+          </view>
+          <view class="entry border-t pd-top-smaller" wx:if="{{orderDetailData.packingCharge}}">
+            <view class="left">
+              <text class="p fontSize">餐盒费</text>
+            </view>
+            <view class="middle">
+              <text class="p"></text>
+            </view>
+            <view class="right">
+              <text class="p red">¥{{orderDetailData.packingCharge}}</text>
+            </view>
+          </view>
+          <view class="entry border-t pd-top-smaller" wx:if="{{orderDetailData.distributionFee}}">
+            <view class="left">
+              <text class="p fontSize">配送费</text>
+            </view>
+            <view class="middle">
+              <text class="p"></text>
+            </view>
+            <view class="right">
+              <text class="p red">¥{{orderDetailData.distributionFee}}</text>
+            </view>
+          </view>
+          <view class="entry border-t pd-top-smaller" wx:if="{{orderDetailData.note}}">
+            <view class="left">
+              <text class="p fontSize">备注</text>
+            </view>
+            <view class="middle">
+              <text class="p"></text>
+            </view>
+            <view class="right">
+              <text class="p red">{{orderDetailData.note}}</text>
+            </view>
+          </view>
+          <view class="entry border-t pd-top-smaller">
+            <view class="left">
+              <text class="p red fontSize">总价</text>
+            </view>
+            <view class="middle">
+              <text class="p"></text>
+            </view>
+            <view class="right">
+              <text class="p red">¥{{orderDetailData.totalPrice}}</text>
+            </view>
+          </view>
+          <block wx:if="{{true}}">
+            <view class="entry border-t pd-top-smaller">
+              <view class="left">
+                <text class="p red fontSize">优惠折扣</text>
+              </view>
+              <view class="middle">
+                <text class="p"></text>
+              </view>
+              <view class="right">
+                <text class="p red">—¥{{orderDetailData.discountPrice}}</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+    <view class="sum text-right bg-color-gray pd-tb pd-right">
+      <text class="p fontSize">实付：<text class="red">¥{{orderDetailData.actualPrice}}</text></text>
+    </view>
+
+    <!--堂食-->
+    <block wx:if="{{orderDetailData.consumerType == 0}}">
+      <view class="block info">
+        <view class="title border-b pd-tb pd-left">
+          <text class="h4 fontSize">就餐信息</text>
+        </view>
+        <view class="inner">
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p fontSize">订单号</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1">{{orderDetailData.consumerNo}}</text>
+            </view>
+          </view>
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p fontSize">就餐人数</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1">{{orderDetailData.fNumber}}人</text>
+            </view>
+          </view>
+          <view class="entry pd-tb-small border-b">
+            <view class="left">
+              <text class="p fontSize">桌台</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1">{{orderDetailData.title}}</text>
+            </view>
+          </view>
+          <view class="entry pd-tb-small">
+            <view class="left">
+              <text class="p fontSize">备注</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1 fontSize">{{orderDetailData.note}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!--快餐-->
+    <block wx:if="{{orderDetailData.consumerType == 1}}">
+      <view class="block info" bindtap="module" data-moduleActive="{{module}}">
+        <view class="title border-b pd-tb pd-left">
+          <text class="h3 fontSize">就餐信息</text>
+        </view>
+        <view class="inner">
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p fontSize">取餐号</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1">{{orderDetailData.title}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="inner">
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p fontSize">取餐方式</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1">自取</text>
+            </view>
+          </view>
+        </view>
+        <view class="logo">
+          <image src="/images/icon/arrow-right.png"></image>
+        </view>
+      </view>
+    </block>
+
+    <!--外卖-->
+    <block wx:if="{{orderDetailData.consumerType == 2}}">
+      <view class="block info">
+        <view class="title border-b pd-tb pd-left">
+          <text class="h3 fontSize">配送信息</text>
+        </view>
+        <view class="inner">
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p le fontSize">订单号</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1 topMe">{{orderDetailData.consumerNo}}</text>
+            </view>
+          </view>
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p le fontSize">联系人</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1 topMe">{{orderDetailData.consumerName}}</text>
+            </view>
+          </view>
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p le fontSize">联系电话</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1 topMe">{{orderDetailData.consumerMobile}}</text>
+            </view>
+          </view>
+          <view class="entry pd-top-small">
+            <view class="left">
+              <text class="p le fontSize">收货地址</text>
+            </view>
+            <view class="right">
+              <text class="p gray-1 topMe">{{orderDetailData.consumerAddress}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!--堂食与快餐支付完后，去点餐-->
+  <block wx:if="{{orderDetailData.status == 3}}">
+    <view class="topay text-center inblk width-all pd-tb">
+      <view class="cus-table">
+        <view class="cus-table-cell">
+          <navigator open-type="redirect" url="/pages/canteen/index/index?resId={{resId}}&tableCode={{tableCode}}">
+            <!--<button class="btn btn-red long inblk fontSize">继续点餐</button>-->
+          </navigator>
+        </view>
+      </view>
+    </view>
+  </block><!--//堂食没支付，可以付款或者加菜-->
+  <block wx:if="{{(orderDetailData.status == 1)&&(orderDetailData.consumerType == 0)}}">
+    <view class="topay text-center inblk width-all pd-tb">
+      <view class="cus-table">
+        <view class="cus-table-cell">
+          <navigator open-type="" url="" style="display:inline-block;">
+            <button class="btn btn-red longMe inblk fontSize" style="margin-right:1.5rem;" bindtap="isFirst">付款</button>
+          </navigator>
+          <navigator open-type="redirect" url="/pages/canteen/index/index?resId={{resId}}&consumerId={{orderDetailData.consumerId}}&isaddDish=true&tableCode={{tableCode}}&tableName={{orderDetailData.title}}" style="display:inline-block">
+            <button class="btn btn-red long inblk fontSize">加菜</button>
+          </navigator>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!--外卖支付-->
+  <block wx:if="{{orderDetailData.payTime == 0&&orderDetailData.consumerType == 2&&orderDetailData.status!=7}}">
+    <view class="topay text-center inblk width-all pd-tb">
+      <view class="cus-table">
+        <view class="cus-table-cell">
+          <navigator open-type="redirect" url="{{redirectUrl}}">
+            <button class="btn btn-red long inblk fontSize">去支付</button>
+          </navigator>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!--快餐支付-->
+  <block wx:if="{{orderDetailData.status == 1&&orderDetailData.consumerType == 1}}">
+    <view class="topay text-center inblk width-all pd-tb">
+      <view class="cus-table">
+        <view class="cus-table-cell">
+          <navigator open-type="redirect" url="{{redirectUrl}}">
+            <button class="btn btn-red long inblk fontSize">去支付</button>
+          </navigator>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!--<import src="/pages/template/template.wxml" />
+    <template is="navigation" />-->
+</view>
+<view class="module {{module}}" bindtap="close" data-close="close">
+  <view class="tanchuang">
+    <text class="h4 p text-center fontSize">取餐号</text>
+    <text class="h1 text-center haoma">{{orderDetailData.title}}</text>
+    <text class="h6 text-center">下单时间：{{orderDetailData.createTime}}</text>
+  </view>
+</view>

@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/init/init",
+    "pages/order/order-pay/order-pay",
+    "pages/order/index/index",
+    "pages/order/order-detail/order-detail",
+    "pages/canteen/index/index",
+    "pages/canteen/order/order",
+    "pages/waimai/order/order",
+    "pages/vkahui/address-edit/address-edit",
+    "pages/vkahui/address/address",
+    "pages/vkahui/phone-add/phone-add",
+    "pages/vkahui/me/me",
+    "pages/homepage/index/index",
+    "pages/homepage/index-my-coupon/index-my-coupon",
+    "pages/homepage/logs/logs"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#2d2c34",
+    "navigationBarTitleText": "V卡汇",
+    "navigationBarTextStyle": "wirte",
+    "enablePullDownRefresh": false
+  }
+}

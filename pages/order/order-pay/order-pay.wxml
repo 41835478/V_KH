@@ -1,0 +1,133 @@
+<view class="wrapper has-nav overflow-h" style="margin-bottom:1rem">
+  <view class="headline" wx:if="{{menu=='外卖'||menu=='快餐'}}">
+    <text>支付剩余时间：</text>
+    <text>{{clock}} {{micro_second}}</text>
+  </view>
+  <view class="area bg-color-white pd-lr">
+    <view class="list-3 inblk width-all" style="position:relative">
+      <view class="entry">
+        <view class="left fl border-box text-left">
+          <text class="h3 fontSize">订单名称</text>
+        </view>
+        <view class="right fl border-box text-right">
+          <text class="p">{{resName}} {{menu}}订单</text>
+        </view>
+      </view>
+      <view class="entry">
+        <view class="left fl border-box text-left">
+          <text class="h3 fontSize">订单详情</text>
+        </view>
+        <view class="right fl border-box text-right" catchtap="tapMainMenu" data-index="0" style="position:relative">
+          <text class="p" style="font-size:0.8rem;text-align:left;" wx:if="{{orderFood.consumerType==0}}">就餐人数：{{orderFood.fNumber}} 餐桌号：{{orderFood.title}}</text>
+          <text class="p" style="font-size:0.8rem;text-align:left;" wx:if="{{orderFood.consumerType==1}}">自助取餐</text>
+          <text class="p" style="font-size:0.8rem;text-align:left;" wx:if="{{orderFood.consumerType==2}}">{{orderFood.consumerName}} {{orderFood.consumerMobile}}</text>
+          <image src="/images/icon/triangle.png" class="triangle" animation="{{animationImg}}"></image>
+        </view>
+      </view>
+      <view class="menu {{subMenuDisplay[0]}}" animation="{{animationData[0]}}" bindtap="hide">
+        <block wx:for="{{orderFood.orderFoodDtoList}}" wx:key="*this">
+          <view class="caipin">
+            <view class="detail">
+              <text>{{item.name}}</text>
+              <text class="fr">×{{item.foodCount}}</text>
+            </view>
+          </view>
+        </block>
+        <view class="detail" wx:if="{{orderFood.serviceAmount>0}}">
+              <text>茶位费</text>
+              <text class="fr">¥{{orderFood.serviceAmount}}</text>
+        </view>
+        <view class="detail" wx:if="{{orderFood.distributionFee>0}}">
+              <text>配送费</text>
+              <text class="fr">¥{{orderFood.distributionFee}}</text>
+        </view>
+        <view class="detail" wx:if="{{orderFood.packingCharge>0}}">
+              <text>餐盒费</text>
+              <text class="fr">¥{{orderFood.packingCharge}}</text>
+        </view>
+        <view class="detail">
+              <text>备注</text>
+              <text class="fr">{{orderFood.note}}</text>
+        </view>
+      </view>
+      <block wx:if="{{orderFood.discountPrice>=0}}">
+        <view class="entry" style="border:none;">
+          <view class="left fl border-box text-left">
+            <text class="h3 fontSize">已优惠</text>
+          </view>
+          <view class="right fl border-box text-right">
+            <text class="p red">
+              <text class="span width-price"></text>-¥{{orderFood.discountPrice}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+    <view class="list-3 inblk width-all" style="margin-top:-1rem;">
+      <view class="entry" style="border:none;">
+        <view class="left fl border-box text-left">
+          <text class="h3 fontSize">支付金额</text>
+        </view>
+        <view class="right fl border-box text-right">
+          <text class="p" style="color:#f74b7b;font-weight:bold;">
+            <text class="span width-price">¥ </text>{{orderFood.actualPrice}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="info bg-color-white line">
+    <view class="ct arrow-list-ctn">
+      <radio-group class="radio-group gray-1" bindchange="paymentClick">
+        <view class="list line-bottom">
+          <label class="radio mg-left-smaller">
+            <view class="entry border-top-none wxPay" style="width:90%;padding-left:0.5rem;">
+              <image src="/images/icon/huiyuan.png"></image>
+              <text class=" fontSize" style="font-size:0.85rem;">会员卡支付</text>
+              <radio color="#f74b7b" name="payment" value="huiyuan" class="me" />
+            </view>
+          </label>
+          <view class="card">
+            <text>会员卡余额：￥{{memberBalance}}</text>
+            <text class="balance" wx:if="{{hasMOney}}">余额不足</text>
+          </view>
+        </view>
+        <view class="list">
+          <label class="radio mg-left-smaller">
+            <view class="entry border-top-none wxPay" style="width:90%;padding-left:0.5rem;">
+              <image src="/images/icon/wxPay.png"></image>
+              <text class=" fontSize" style="font-size:0.85rem;">微信支付</text>
+              <radio color="#f74b7b" name="payment" value="weixin" class="me" />
+            </view>
+          </label>
+        </view>
+      </radio-group>
+    </view>
+  </view>
+  <view class="topay text-center">
+    <button class="btn btn-red inblk  fontSize color" bindtap="startPay">确认支付</button>
+  </view>
+</view>
+<view class="module {{module}}">
+  <view class="tanchuang">
+    <text class="p content">对不起，您的会员卡还未绑定手机号，请先绑定手机！</text>
+    <view class="h4">
+      <button class="fl use" bindtap="binding">不绑定</button>
+      <button class="fr phone" bindtap="goBinding">去绑定</button>
+      <view class="clear"></view>
+    </view>
+  </view>
+  <view class="clear"></view>
+</view>
+
+<!--短信验证码-->
+<view class="message {{message}}">
+  <view class="tanchuangMe">
+   <text class="tipMe text-center">请验证已绑定会员手机号</text>
+    <view class="topMe">
+      <input type="text" class="inblk inputText" placeholder="" maxlength="6" bindinput="codeText"/>
+       <text class="content inblk text-right" bindtap="getCode" wx:if="{{clockCode==''}}">获取验证码</text>
+       <text class="content inblk text-center" style="width:4.3rem;"  wx:if="{{clockCode!=''}}">{{clockCode}}(s)</text>
+    </view>
+    <text class="tipMe text-center">长时间未接收到短信？点击获取短信验证码</text>
+    <button class="text-center btnMe" bindtap="confirmCode">确定</button>
+  </view>
+</view>
