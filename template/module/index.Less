@@ -1,0 +1,108 @@
+@import "../../less/px2rem";
+
+@color-f74b7b: #f74b7b;
+
+.module-popup {
+  view, scroll-view {
+    box-sizing: border-box;
+  }
+  .center(50%);
+  top: 45%;
+  .px2rem(width, 320);
+  .px2rem(height, 340);
+  z-index: 700;
+  background: #fff;
+  .px2rem(border-radius, 6);
+  overflow: hidden;
+  .module-title {
+    position: relative;
+    .px2rem(height, 47.5);
+    .px2rem(line-height, 47.5);
+    background: #2d2c34;
+    .px2rem(font-size, 18);
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    .module-close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      .px2rem(height, 47.5);
+      .px2rem(line-height, 47.5);
+      .px2rem(width, 47.5);
+      &::after {
+        content: 'X';
+        display: block;
+        position: absolute;
+        .px2rem(height, 47.5);
+        .px2rem(line-height, 47.5);
+        .px2rem(width, 47.5);
+        top: 0;
+        right: 0;
+        color: #FFF;
+        .px2rem(font-size, 18);
+        text-align: center;
+        font-family: Arial, SimSun, sans-serif;
+      }
+    }
+
+  }
+  .module-content {
+    .fullScreen();
+    .px2rem(top, 47.5);
+    .px2rem(bottom, 47.5);
+    .px2rem-two(margin, 12, 0, 12, 0);
+    scroll-view {
+      .px2rem-two(padding, 0, 12, 0, 12);
+      .module-radio-list {
+        text-align: center;
+        .px2rem(padding-top, 10);
+        .px2rem(font-size, 14);
+        .module-left {
+          //.px2rem(width, 60);
+          width: 20%;
+          .px2rem(height, 26);
+          .px2rem(line-height, 30);
+          font-weight: bold;
+        }
+        .module-right {
+          //.px2rem(width, 235);
+          width: 80%;
+          text-align: left;
+          button {
+            .px2rem(width, 65);
+            .px2rem(height, 28);
+            .px2rem(line-height, 25);
+            .px2rem(font-size, 12);
+            display: inline-block;
+            .px2rem(margin-left, 10);
+            .px2rem(margin-bottom, 10);
+            &.active {
+              background: @color-f74b7b;
+            }
+          }
+          &.module-right-item {
+            button {
+              .px2rem(width, 104);
+            }
+          }
+        }
+      }
+    }
+  }
+  .module-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    .px2rem(height, 47.5);
+    > button {
+      .px2rem-two(margin, 0, 40, 10, 40);
+      .px2rem(height, 35);
+      .px2rem(line-height, 35);
+      .px2rem(border-radius, 35);
+      background: @color-f74b7b;
+      color: #fff;
+    }
+  }
+}

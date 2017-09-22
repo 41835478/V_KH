@@ -7,7 +7,7 @@ Page({
         peisong: 0,
         canhe: 0,
         DefaultAddress: false,
-        note:""
+        note: ""
     },
     onLoad: function (options) {
         var that = this;
@@ -18,7 +18,7 @@ Page({
         });
 
         var url = app.globalData.serverAddress + "microcode/loadDefaultAddress";//获取默认收获地址
-        var data = { openId: app.globalData.openId };
+        var data = {openId: app.globalData.openId};
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log(rsp);
             if (rsp.returnStatus) {//有默认地址
@@ -35,18 +35,18 @@ Page({
         // console.log(that.data.consumerData);
         app.globalData.resDetailData.forEach(function (val, key) {
             if (val.resId == app.globalData.resId) {
-                that.setData({ discount: val.memberTypeDiscount })
+                that.setData({discount: val.memberTypeDiscount})
             }
         });
         if (that.data.discount == null || that.data.discount == undefined || that.data.discount == '无') {
-            that.setData({ discount: 0 });
+            that.setData({discount: 0});
         }
 
-        
+
         // console.log(that.data.discount);
         //查询餐厅服务费
         var url = app.globalData.serverAddress + "microcode/getResDetail";
-        var data = { resId: app.globalData.resId };
+        var data = {resId: app.globalData.resId};
         appUtil.httpRequest(url, data, function (rsp) {
             if (rsp.returnStatus) {
                 // console.log(rsp);
@@ -56,69 +56,79 @@ Page({
                         peisong: 0
                     });
                 } else {
-                  if (waimai.fullFreeAmount){
-                    if (that.data.amount >= waimai.fullFreeAmount) {
-                      that.setData({
-                        peisong: 0
-                      });
+                    if (waimai.fullFreeAmount) {
+                        if (that.data.amount >= waimai.fullFreeAmount) {
+                            that.setData({
+                                peisong: 0
+                            });
+                        } else {
+                            that.setData({
+                                peisong: waimai.distributionFee
+                            });
+                        }
                     } else {
-                      that.setData({
-                        peisong: waimai.distributionFee
-                      });
+                        that.setData({
+                            peisong: waimai.distributionFee
+                        });
                     }
-                  } else {
-                    that.setData({
-                      peisong: waimai.distributionFee
-                    });
-                  }
-                  
+
                 }
+
+                function money(num) {
+                    return parseFloat(num).toFixed(2);
+                }
+
                 //计算总价
                 var newAmout = 0;
                 var consumerArr = that.data.consumerData;
-                console.log(consumerArr[0]);
-                consumerArr.forEach(function (val, key) {
-                  if (val.isdiscount == 0) {
-                    newAmout += val.price * val.foodCount;
-                  } else if (val.isdiscount == 1) {
-                    if (parseFloat(that.data.discount)==0){
-                      newAmout += val.price * val.foodCount;
-                    }else{
-                      newAmout += val.price * val.foodCount * (that.data.discount / 10);
-                    }
-                    
-                  } else {
-                    app.globalData.resDetailData.forEach(function (ival, ikey) {
-                      if (ival.resId == app.globalData.resId) {
-                        if (ival.memberType && ival.memberType!="undefind"){
-                          val.foodRuleMemberPrice.forEach(function (jval, jkey) {
-                            if (ival.memberType == jval.memberType) {
-                              newAmout += jval.memberPrice * val.foodCount;
-                            }
-                          })
-                        }else{
-                          newAmout += val.price * val.foodCount;
+                for (let val of consumerArr) {
+                    val.singleProductTotal = parseFloat(val.price * val.foodCount).toFixed(2);
+                    if (val.isdiscount == 0) {
+                        newAmout += val.price * val.foodCount;
+                    } else if (val.isdiscount == 1) {
+                        if (parseFloat(that.data.discount) == 0) {
+                            newAmout += val.price * val.foodCount;
+                        } else {
+                            newAmout += val.price * val.foodCount * (that.data.discount / 10);
                         }
-                        
-                      }
-                    })
-                  }
-                  that.setData({ newAmout: newAmout })
-                })
+
+                    } else {
+                        app.globalData.resDetailData.forEach(function (ival, ikey) {
+                            if (ival.resId == app.globalData.resId) {
+                                if (ival.memberType && ival.memberType != "undefind") {
+                                    val.foodRuleMemberPrice.forEach(function (jval, jkey) {
+                                        if (ival.memberType == jval.memberType) {
+                                            newAmout += jval.memberPrice * val.foodCount;
+                                        }
+                                    })
+                                } else {
+                                    newAmout += val.price * val.foodCount;
+                                }
+                            }
+                        })
+                    }
+                    that.setData({newAmout: newAmout})
+                }
+                let packingCharge = money(waimai.packingCharge) || 0,
+                    peisong = money(that.data.peisong) || 0,
+                    _amount = money(that.data.amount) || 0;
+                newAmout = money(that.data.newAmout) || 0;
                 that.setData({
-                    canhe: waimai.packingCharge,
-                    zongjine: that.data.newAmout+that.data.peisong+waimai.packingCharge,
-                    youhui: parseFloat(that.data.amount - that.data.newAmout).toFixed(2)
+                    consumerData: consumerArr,
+                    canhe: packingCharge,
+                    zongjine: money(newAmout + peisong + packingCharge),
+                    youhui: parseFloat(_amount - newAmout).toFixed(2),
+
                 });
             } else {
                 console.log('店铺详情模块失败');
             }
         })
     },
-    bindChange:function(e){
-      var that = this;
-      that.setData({ note: e.detail.value})
-      //inputContent[e.currentTarget.id] = e.detail.value;
+    bindChange: function (e) {
+        var that = this;
+        that.setData({note: e.detail.value})
+        //inputContent[e.currentTarget.id] = e.detail.value;
     },
     submitOrder: function (res) {
         var that = this;

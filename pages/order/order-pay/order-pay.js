@@ -2,10 +2,12 @@ var utilMd5 = require('../../../utils/md5.js');
 var appUtil = require('../../../utils/appUtil.js');
 var util = require('../../../utils/util.js');
 var app = getApp();
+
 // 使用function初始化array，相比var initSubMenuDisplay = [] 既避免的引用复制的，同时方式更灵活，将来可以是多种方式实现，个数也不定的
 function initSubMenuDisplay() {
     return ['hidden', 'hidden', 'hidden'];
 }
+
 //定义初始化数据，用于运行时保存
 var initSubMenuHighLight = [
     ['', '', '', '', ''],
@@ -23,25 +25,33 @@ Page({
         hasMOney: false,
         module: '',
         message: '',
+        isCheckSmsCodeByOpenId: true
     },
     onLoad: function (options) {
         var that = this;
         // console.log('支付页面');
         // console.log(options);
         that.setData(options);
+
+    },
+    onShow(options) {
+        this.setLoad();
+    },
+    setLoad(options) {
+        var that = this;
         var url = app.globalData.serverAddress + 'microcode/getOrderDetail';
-        var data = { consumerId: that.data.consumerId, resId: that.data.resId };
+        var data = {consumerId: that.data.consumerId, resId: that.data.resId};
         // console.log(data);
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log('订单详情')
             // console.log(rsp);
-            that.setData({ dingdan: rsp.value });
+            that.setData({dingdan: rsp.value});
             if (rsp.returnStatus) {
-                that.setData({ orderFood: rsp.value });
+                that.setData({orderFood: rsp.value});
                 if (rsp.value.consumerType == 0) {
-                    that.setData({ menu: "堂食" });
+                    that.setData({menu: "堂食"});
                 } else if (rsp.value.consumerType == 1) {
-                    that.setData({ menu: "快餐" });
+                    that.setData({menu: "快餐"});
                     var systemTime = that.getNowFormatDate();
                     // console.log(systemTime);
                     var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
@@ -58,7 +68,7 @@ Page({
                         })
                     }
                 } else {
-                    that.setData({ menu: "外卖" });
+                    that.setData({menu: "外卖"});
                     var systemTime = that.getNowFormatDate();
                     // console.log(systemTime);
                     var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
@@ -75,8 +85,9 @@ Page({
                         })
                     }
                 }
+                // that.paymentClick();
                 var url = app.globalData.serverAddress + 'microcode/getMemberCardList';//获取会员卡余额
-                var data = { openId: app.globalData.openId, resId: that.data.resId };
+                var data = {openId: app.globalData.openId, resId: that.data.resId};
                 appUtil.httpRequest(url, data, function (rsp) {
                     if (rsp.returnStatus) {
                         // console.log('会员卡余额');
@@ -84,8 +95,8 @@ Page({
                         rsp.value.forEach(function (val, key) {
                             if (val.resId == that.data.resId) {
                                 // console.log(that.data.orderFood);
-                              
-                              var memberBalance = parseFloat(val.memberBalance).toFixed(2);
+
+                                var memberBalance = parseFloat(val.memberBalance).toFixed(2);
                                 that.setData({
                                     memberBalance: memberBalance,
                                     resName: val.resName
@@ -109,24 +120,31 @@ Page({
     },
     paymentClick: function (e) {
         var that = this;
-        var payment = e.detail.value;
-        that.setData({ payment: payment });
-        if (payment == 'huiyuan'){
-          var url = app.globalData.serverAddress + "microcode/checkIsFirstUse";
-          var data = {
-            openId: app.globalData.openId,
-            resId: that.data.resId
-          };
-          appUtil.httpRequest(url, data, function (rsp) {
-            if (rsp.code==4003) {//未绑定手机号
-              app.globalData.bindPhonenumber = false;
-              that.setData({
-                module: 'moduleActive',
-              });
-            }else{
-              app.globalData.bindPhonenumber = true;
-            }
-          });
+        let payment = 'huiyuan';
+        if (e) {
+            payment = e.detail.value;
+        }
+        that.setData({payment: payment});
+        if (payment == 'huiyuan') {
+            var url = app.globalData.serverAddress + "microcode/checkIsFirstUse";
+            var data = {
+                openId: app.globalData.openId,
+                resId: that.data.resId
+            };
+            appUtil.httpRequest(url, data, function (rsp) {
+                if (rsp.code == 4003) {//未绑定手机号
+                    app.globalData.bindPhonenumber = false;
+                    that.setData({
+                        module: 'moduleActive',
+                        bindPhonenumber: false
+                    });
+                } else {
+                    app.globalData.bindPhonenumber = true;
+                    that.setData({
+                        bindPhonenumber: true
+                    })
+                }
+            });
         }
     },
     startPay: function () {
@@ -149,7 +167,7 @@ Page({
                 var body = '微信点餐';//
                 var openid = app.globalData.openId;
                 var resId = that.data.resId;
-                var params = { orderNo, orderMoney, subject, body, openid, resId };
+                var params = {orderNo, orderMoney, subject, body, openid, resId};
                 //var init = util.initPay(params);
                 // console.log(init);
                 // var url = 'https://vip.zhenler.com/api/wxpay/wxPayForH5?' + init;
@@ -199,10 +217,15 @@ Page({
             } else if (payment == 'huiyuan') {
                 // 会员卡支付
                 // console.log('会员卡支付');
-                if (that.data.orderFood.actualPrice <= that.data.memberBalance) {
+                if (!that.data.bindPhonenumber) {
+                    wx.showToast({
+                        title: "请先绑定会员",
+                        duration: 2000
+                    });
+                } else if (that.data.orderFood.actualPrice <= that.data.memberBalance) {
                     // console.log('有余额');
                     // console.log(app.globalData.code);
-                  if (app.globalData.bindPhonenumber == false) {
+                    if (app.globalData.bindPhonenumber == false) {
                         that.setData({
                             module: 'moduleActive'
                         });
@@ -221,7 +244,7 @@ Page({
         }
     },
     finishPay: function () {//完成支付
-      app.globalData.clrCar = true;
+        app.globalData.clrCar = true;
         var that = this;
         var url = app.globalData.serverAddress + 'microcode/finishPay';
         var data = {
@@ -335,7 +358,7 @@ Page({
         // 分钟位
         var min = that.zero(Math.floor((second - hr * 3600) / 60));
         // 秒位
-        var sec = that.zero((second - hr * 3600 - min * 60));// 
+        var sec = that.zero((second - hr * 3600 - min * 60));//
 
         return min + ":" + sec;
     },
@@ -395,19 +418,20 @@ Page({
         // 分钟位
         var min = that.zero(Math.floor((second - hr * 3600) / 60));
         // 秒位
-        var sec = that.zero((second - hr * 3600 - min * 60));// 
+        var sec = that.zero((second - hr * 3600 - min * 60));//
 
         return sec;
     },
     goBinding: function () {
         var that = this;
-        wx.redirectTo({
+        wx.navigateTo({
             url: "/pages/vkahui/phone-add/phone-add?verification=true&resId=" + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName
-        })
+        });
+        this.binding();
     },
     getCode: function () {
         var that = this;
-        
+
         var data = {
             resId: that.data.resId,
             consumerId: that.data.dingdan.consumerId,
@@ -419,7 +443,7 @@ Page({
         // console.log(data);
         appUtil.httpGet(url, data, function (rsp) {
             // console.log(rsp);
-            that.setData({ cookies: rsp.value });
+            that.setData({cookies: rsp.value});
             if (rsp.returnStatus) {
                 wx.showToast({
                     title: '验证码已发送',
@@ -431,7 +455,7 @@ Page({
             } else {
                 wx.showToast({
                     title: "网络异常,请稍后重试",
-                    image:'/images/icon/fail.png',
+                    image: '/images/icon/fail.png',
                     duration: 2000
                 });
             }
@@ -444,64 +468,71 @@ Page({
     confirmCode: function () {
         var that = this;
         // console.log(that.data.codeText);
-        
+
         var data = {
             code: that.data.codeText,
             openId: app.globalData.openId,
             msgTemp: "SMS_XIAOFEICODE_CONTENT"
         };
-        
-      var url = app.globalData.serverAddress + "sms/checkSmsCodeByOpenId";
-      appUtil.httpGet(url, data, function (res) {
-        if (res.returnStatus) {
-          var url = app.globalData.serverAddress + "microcode/memberCardPay";
-          var data = {
-            openId: app.globalData.openId,
-            amount: that.data.orderFood.actualPrice,
-            consumerId: that.data.consumerId,
-            resId: that.data.resId,
-            code: that.data.codeText
-          };
-          appUtil.httpRequest(url, data, function (res) {
-            if (res.returnStatus) {
-              app.globalData.clrCar = true;
-              wx.showToast({
-                title: "会员卡支付成功",
-                duration: 6500,
-                success: function (res) {
-                  wx.redirectTo({
-                    url: '../order-detail/order-detail?resId=' + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
-                    success: function (res) {
-                      // console.log('会员卡支付成功');
-                      // console.log(res);
-                      that.setData({
-                        message: ''
-                      });
-                    }
-                  })
-                }
-              });
-            }else{
-              wx.showToast({
-                title: "会员卡支付失败",
-                duration: 3000
-              });
-            }
-          });
-        } else {
-          wx.showToast({
-            title: res.message,
-            duration: 3000
-          });
+        if (!that.data.isCheckSmsCodeByOpenId) return;
+        that.setData({
+            isCheckSmsCodeByOpenId: false
+        });
+        var url = app.globalData.serverAddress + "sms/checkSmsCodeByOpenId";
+
+        function resFlag() {
+            that.setData({
+                isCheckSmsCodeByOpenId: true
+            })
         }
-      });
 
-
-       
+        appUtil.httpGet(url, data, function (res) {
+            if (res.returnStatus) {
+                var url = app.globalData.serverAddress + "microcode/memberCardPay";
+                var data = {
+                    openId: app.globalData.openId,
+                    amount: that.data.orderFood.actualPrice,
+                    consumerId: that.data.consumerId,
+                    resId: that.data.resId,
+                    code: that.data.codeText
+                };
+                appUtil.httpRequest(url, data, function (res) {
+                    if (res.returnStatus) {
+                        app.globalData.clrCar = true;
+                        wx.showToast({
+                            title: "会员卡支付成功",
+                            duration: 6500,
+                            success: function (res) {
+                                wx.redirectTo({
+                                    url: '../order-detail/order-detail?resId=' + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
+                                    success: function (res) {
+                                        // console.log('会员卡支付成功');
+                                        // console.log(res);
+                                        that.setData({
+                                            message: ''
+                                        });
+                                    }
+                                })
+                            }
+                        });
+                    } else {
+                        wx.showToast({
+                            title: "会员卡支付失败",
+                            duration: 3000
+                        });
+                    }
+                    resFlag();
+                });
+            } else {
+                wx.showToast({
+                    title: res.message,
+                    duration: 3000
+                });
+                resFlag();
+            }
+        });
     }
-})
-
-
+});
 
 
 

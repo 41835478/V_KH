@@ -30,8 +30,6 @@ function formatTime1(date) {
     var hour = date.getHours()
     var minute = date.getMinutes()
     var second = date.getSeconds()
-
-
     return [year, month, day].map(formatNumber).join('') + [hour, minute, second].map(formatNumber).join('')
 }
 
@@ -83,9 +81,9 @@ function requestParametersMerge(params) {
         var position = 0;
         for (var key in params) {
             var value = params[key];
-            var flag = false;
-            if (value != "") {
-                flag = true;
+            var flag = true;
+            if (!value && value !== 0) {
+                value = '';
             }
             if (parseInt(value) == 0) {
                 flag = true;
@@ -116,6 +114,9 @@ function sign(secretKey, params) {
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         if (key != "token" && key != "signature") {
+            if (!params[key] && params[key] !== 0) {
+                params[key] = '';
+            }
             sb += key;
             sb += params[key];
         }
@@ -130,15 +131,15 @@ function sign(secretKey, params) {
 // console.log('111111111111111111');
 // console.log(a);
 function initPay(params) {
-    var a = "261ad12f08f13811298e2b50f803deab";
+    var a = "261ad12f08f13811298e2b50f803deab",
+        app = getApp();
     if (!params) return null;
     params["signtime"] = Date.parse(new Date()) / 1000;
     params["appId"] = "eb86f42f6504bfefe069e85a204c9734";
     var signNum = sign(a, params);
-    params["signature"] = signNum;
-    var app = getApp();
+    params["signature"] = signNum || '';
     // console.log('initPay', app);
-    params["token"] = app.getToken();
+    params["token"] = app.getToken() || '';
     return requestParametersMerge(params);
 }
 

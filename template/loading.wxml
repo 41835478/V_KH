@@ -1,0 +1,13 @@
+<template name="loading">
+    <view class="loading" hidden="{{isLoading}}">
+        <image class="loading-img" src="../../../images/logo.png"></image>
+        <view class="spinner">
+            <view class="bounce1"></view>
+            <view class="bounce2"></view>
+            <view class="bounce3"></view>
+        </view>
+    </view>
+</template>
+<template name="mask">
+    <view class="mask" hidden="{{!isMask}}" data-active="close"></view>
+</template>

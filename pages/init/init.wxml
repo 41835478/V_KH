@@ -1,78 +1,88 @@
-<view class="wrapper has-nav title">
-  <block wx:for="{{vkahuiData}}" wx:key="*this">
-    <navigator open-type="navigate" url="/pages/canteen/index/index?resId={{item.resId}}&tableCode={{item.tableCode}}&tableName={{item.tableName}}">
-      <view class="ct" style="position: relative;">
-        <view class="entry inblk relative {{item.classLevel}}">
-          <view class="img-area fl">
-            <view class="cus-table">
-              <image class="icon-user-bigger" src="{{item.resLogo}}"></image>
-            </view>
-          </view>
-          <canvas style="width: 100%; height:11px;position:absolute;bottom:-0.37rem;z-index:0" canvas-id="{{item.resId}}" wx:if="{{module!='moduleActive'}}"></canvas>
-          <view class="word-area fl">
-            <view class="cus-table">
-              <view>
-                <view class="top">
-                  <text class="h2" style="color:#fff;">
-                    <text class="bold"> {{item.resName}}</text>
-                    <text class="level dazhe" wx:if="{{item.memberTypeDiscount!=0}}">{{item.memberTypeDiscount}}折</text>
-                     <text class="level dazhe" wx:if="{{item.memberTypeDiscount==0}}">VIP</text>
-                  </text>
+<view class="pr">
+    <view class="wrapper title height-all">
+        <block class="pr" wx:for="{{vkahuiData}}" wx:key="*this">
+            <navigator class="ct pr" open-type="navigate"
+                       url="/pages/canteen/index/index?resId={{item.resId}}&tableCode={{item.tableCode}}&tableName={{item.tableName}}">
+                <view class="pr">
+                    <view class="entry inblk relative {{item.classLevel}}">
+                        <view class="img-area fl">
+                            <view class="cus-table">
+                                <image class="icon-user-bigger" src="{{item.resLogo}}"></image>
+                            </view>
+                        </view>
+                        <view class="word-area fl">
+                            <view class="cus-table">
+                                <view>
+                                    <view class="top">
+                                        <text class="h2" style="color:#fff;">
+                                            <text class="bold"> {{item.resName}}</text>
+                                            <text class="level dazhe" wx:if="{{item.memberTypeDiscount!=0}}">
+                                                {{item.memberTypeDiscount}}折
+                                            </text>
+                                            <text class="level dazhe" wx:if="{{item.memberTypeDiscount==0}}">VIP
+                                            </text>
+                                        </text>
+                                    </view>
+                                    <view class="bottom inblk width-all border-box me">
+                                        <view class="inline-div fl mg-right">
+                                            <image class="inline-icon icon-normal-equal"
+                                                   src="/images/icon/jifeng.png"></image>
+                                            <text class="inline-text">{{item.memberIntegral}}</text>
+                                        </view>
+                                        <view class="inline-div fl">
+                                            <image class="inline-icon icon-normal-equal"
+                                                   src="/images/icon/money.png"></image>
+                                            <text class="inline-text">{{item.memberBalance}}</text>
+                                        </view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="pr">
+                        <canvas class="pr dot" canvas-id="{{item.resId}}" wx:if="{{module!='moduleActive'}}"></canvas>
+                    </view>
+                    <view class="classname">
+                        <view class="address">地址：{{item.resAddress}}</view>
+                        <view class="number" wx:if="{{item.memberCardNo}}">NO:{{item.memberCardNo}}</view>
+                        <view>
+                            <text class="line"></text>
+                        </view>
+                    </view>
                 </view>
-                <view class="bottom inblk width-all border-box me">
-                  <view class="inline-div fl mg-right">
-                    <image class="inline-icon icon-normal-equal" src="/images/icon/jifeng.png"></image>
-                    <text class="inline-text">{{item.memberIntegral}}</text>
-                  </view>
-                  <view class="inline-div fl">
-                    <image class="inline-icon icon-normal-equal" src="/images/icon/money.png"></image>
-                    <text class="inline-text">{{item.memberBalance}}</text>
-                  </view>
-                </view>
-              </view>
-            </view>
-          </view>
-        </view>
-        <view class="classname">
-          <view class="address">地址：{{item.resAddress}}</view>
-          <view class="number" wx:if="{{item.memberCardNo}}">NO:{{item.memberCardNo}}</view>
-          <view>
-            <text class="line"> </text>
-          </view>
-        </view>
-      </view>
-    </navigator>
-  </block>
-  <view class="module {{module}}">
-    <view class="tanchuang">
-      <text class="h3 bold text-center">温馨提示</text>
-      <text class="p content">您是首次登陆，如果您已经注册过商家会员，请绑定手机号，系统将自动匹配您的信息。</text>
-      <view class="h4">
-        <button class="fl use"  bindtap="close">直接使用</button>
-        <button class="fr phone"  bindtap="phone">绑定手机</button>
-        <view class="clear"></view>
-      </view>
+            </navigator>
+        </block>
     </view>
-  </view>
+    <view class="module {{module}}">
+        <view class="tanchuang">
+            <text class="h3 bold text-center">温馨提示</text>
+            <text class="p content">您是首次登陆，如果您已经注册过商家会员，请绑定手机号，系统将自动匹配您的信息。</text>
+            <view class="h4">
+                <button class="fl use" bindtap="close">直接使用</button>
+                <button class="fr phone" bindtap="phone">绑定手机</button>
+                <view class="clear"></view>
+            </view>
+        </view>
+    </view>
 
-  <!--<import src="/pages/template/template.wxml" />
-  <template is="navigation" data="{{activeObj}}" />-->
-  <view class="navigation">
-    <view class="entry" bindtap="tab" data-id="{{'shouye'}}">
-      <image class="icon-nav-me unactive" src="/images/icon/nav-homepage.png" wx:if="{{shouye}}"></image>
-      <image class="icon-nav-me unactive" src="/images/icon/nav-homepage-active.png" wx:if="{{!shouye}}"></image>
-      <text class="h3" wx:if="{{shouye}}">首页</text>
-      <text class="h3" style="color: #f74b7b;" wx:if="{{!shouye}}">首页</text>
-    </view>
-    <view class="entry" bindtap="tab" data-id="{{'dingdan'}}">
-      <image class="icon-nav-me unactive" src="/images/icon/nav-order.png" wx:if="{{!dingdan}}"></image>
-      <image class="icon-nav-me unactive" src="/images/icon/nav-order-active.png" wx:if="{{dingdan}}"></image>
-      <text class="h3">订单</text>
-    </view>
-    <view class="entry" bindtap="tab" data-id="{{'wo'}}">
-      <image class="icon-nav-me unactive" src="/images/icon/nav-me.png" wx:if="{{!wo}}"></image>
-      <image class="icon-nav-me unactive" src="/images/icon/nav-me-active.png" wx:if="{{wo}}"></image>
-      <text class="h3">我</text>
-    </view>
-  </view>
+    <!--<import src="/pages/template/template.wxml" />
+    <template is="navigation" data="{{activeObj}}" />-->
+    <!--<view class="navigation">-->
+    <!--<view class="entry" bindtap="tab" data-id="{{'shouye'}}">-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-homepage.png" wx:if="{{shouye}}"></image>-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-homepage-active.png" wx:if="{{!shouye}}"></image>-->
+    <!--<text class="h3" wx:if="{{shouye}}">首页</text>-->
+    <!--<text class="h3" style="color: #f74b7b;" wx:if="{{!shouye}}">首页</text>-->
+    <!--</view>-->
+    <!--<view class="entry" bindtap="tab" data-id="{{'dingdan'}}">-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-order.png" wx:if="{{!dingdan}}"></image>-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-order-active.png" wx:if="{{dingdan}}"></image>-->
+    <!--<text class="h3">订单</text>-->
+    <!--</view>-->
+    <!--<view class="entry" bindtap="tab" data-id="{{'wo'}}">-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-me.png" wx:if="{{!wo}}"></image>-->
+    <!--<image class="icon-nav-me unactive" src="/images/icon/nav-me-active.png" wx:if="{{wo}}"></image>-->
+    <!--<text class="h3">我</text>-->
+    <!--</view>-->
+    <!--</view>-->
 </view>

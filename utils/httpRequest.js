@@ -23,6 +23,14 @@ class HttpRequest {
             url += '?' + util.requestParametersMerge(params.data);
             params.data = null;
         }
+        for (let k in params.data) {
+            if (k == 'consumerId') {
+                debugger
+            }
+            if (!params.data[k] && params.data[k] !== 0) {
+                params.data[k] = '';
+            }
+        }
         const requestTask = wx.request({
             url: url || '',
             data: params.data || {},
@@ -43,6 +51,7 @@ class HttpRequest {
             },
             fail(res) {
                 // util.showToast(res.errMsg);
+                util.showToast('网络连接失败，或服务器错误');
                 console.log("网络连接失败，或服务器错误", res);
             },
             complete(res) {

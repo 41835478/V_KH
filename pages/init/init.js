@@ -24,7 +24,13 @@ Page({
          */
         this.login(options);
     },
-    onShow: function () {
+    onShow: function (options) {
+        console.log('进入界面');
+        if (!app.globalData.rid) {
+            app.globalData.resId = '';
+            app.globalData.tableCode = '';
+            app.globalData.tableName = '';
+        }
         if (!this.data.hasHide) return;
         this.setData({hasHide: false});
         if (app.globalData.isBindPhone) {
@@ -35,9 +41,13 @@ Page({
         this.loadCardList();
     },
     onHide: function () {
+        console.log('离开界面');
         this.setData({hasHide: true});
     },
-    onShareAppMessage: function () {//分享页面
+    /**
+     * 分享页面
+     */
+    onShareAppMessage: function () {
         return {
             title: 'V卡汇',
             path: '/pages/init/init?resId=' + "000000005673d86e015677bbc51d0102",//简约派id
@@ -57,7 +67,6 @@ Page({
             }
         }
     },
-
     uploadWechatUser: function (options) {
         var that = this;
         var url = app.globalData.serverAddress + "microcode/bindMemberCard";
@@ -86,7 +95,7 @@ Page({
             // let src = decodeURIComponent(options.q);
             // rid = src.match(/id=(\S*)/)[1];
             flag = true;
-        } else {
+        } else if (options && !util.isEmptyObject(options)) {
             app.globalData.tableCode = options.tableCode;
             app.globalData.tableName = options.tableName;
             _this.setData(options);
@@ -102,13 +111,13 @@ Page({
             const globalData = app.globalData,
                 openId = globalData.openId,
                 token = globalData.token;
-            _this.loadCardList();//加载会员卡列表
             // 获取用户信息
             if (app.globalData.userInfo && util.isEmptyObject(app.globalData.userInfo)) {
                 app.getUserInfo(setUserInfo);
             } else {
                 setUserInfo();
             }
+            _this.loadCardList();//加载会员卡列表
         }
 
         function setUserInfo() {
@@ -122,6 +131,8 @@ Page({
         }
 
         function setResId() {
+            let resId = app.globalData.resId;
+            if (!resId || resId.length === 0) return;
             let userVerification = app.globalData.userVerification;
             console.log('进入setResId', userVerification);
             if (userVerification && !util.isEmptyObject(userVerification)) {
@@ -143,7 +154,7 @@ Page({
             };
         console.log('是否首次登录', resId);
         if (!resId || resId.length === 0) return;
-        apiService.checkIsFirstUse(data, function (rsp) {
+        app.checkIsFirstUse(data, function (rsp) {
             let options = _this.data;
             app.globalData.rid = null;
             app.globalData.resId = null;
@@ -155,7 +166,6 @@ Page({
                 });
             } else {
                 if (options.resId && options.type == 0) {
-                    console.log("6------------成功" + options.tableCode);
                     wx.navigateTo({
                         url: "/pages/canteen/index/index?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName,
                     })
@@ -172,42 +182,48 @@ Page({
      */
     loadCardList: function () {
         var that = this;
+        app.globalData.resDetailData = JSON.parse(wx.getStorageSync('getMemberCardList') || '[]');
+        if (app.globalData.resDetailData && app.globalData.resDetailData.length > 0)
+            setMemberCardList(app.globalData.resDetailData);
+
+        function setMemberCardList(value) {
+            var vkahuiData = value;
+            //折扣百分比转化
+            vkahuiData.forEach(function (val, key) {
+                //百分比
+                if (val.memberTypeDiscount == undefined || val.memberTypeDiscount == 0 || val.memberTypeDiscount == null) {
+                    vkahuiData[key].memberTypeDiscount = 0;
+                } else {
+                    vkahuiData[key].memberTypeDiscount = val.memberTypeDiscount / 10;
+                }
+                vkahuiData[key].memberBalance = parseFloat(vkahuiData[key].memberBalance).toFixed(2);
+                //店铺Logo
+                val.resLogo = app.globalData.serverAddressImg + val.resLogo;
+                const ctx = wx.createCanvasContext(vkahuiData[key].resId);
+                var i = 0;
+                while (i < 375) {
+                    ctx.arc(6 + i, 5, 3, 0, 2 * Math.PI);
+                    ctx.setFillStyle('#ffffff');
+                    ctx.fill();
+                    i += 14;
+                }
+                ctx.draw();
+                console.log("7--------------");
+                if (val.resId == that.data.resId) {
+                    val.tableCode = app.globalData.tableCode;
+                    val.tableName = app.globalData.tableName;
+                }
+            });
+            that.setData({
+                vkahuiData
+            });
+        };
+
         apiService.getMemberCardList({openId: app.globalData.openId}, (rsp) => {
-            console.log("5---------", rsp);
             if (rsp.returnStatus) {
                 app.globalData.resDetailData = rsp.value;
-                // var memberBlance = parseFloat(rsp.value.memberBalance).toFixed(2);
-                var vkahuiData = rsp.value;
-                //折扣百分比转化
-                vkahuiData.forEach(function (val, key) {
-                    //百分比
-                    if (val.memberTypeDiscount == undefined || val.memberTypeDiscount == 0 || val.memberTypeDiscount == null) {
-                        vkahuiData[key].memberTypeDiscount = 0;
-                    } else {
-                        vkahuiData[key].memberTypeDiscount = val.memberTypeDiscount / 10;
-                    }
-                    vkahuiData[key].memberBalance = parseFloat(vkahuiData[key].memberBalance).toFixed(2);
-                    //店铺Logo
-                    val.resLogo = app.globalData.serverAddressImg + val.resLogo;
-                    const ctx = wx.createCanvasContext(vkahuiData[key].resId);
-                    var i = 0;
-                    while (i < 375) {
-                        ctx.arc(6 + i, 5, 3, 0, 2 * Math.PI);
-                        ctx.setFillStyle('#ffffff');
-                        ctx.fill();
-                        i += 14;
-                    }
-                    ctx.draw();
-                    console.log("7--------------");
-                    if (val.resId == that.data.resId) {
-                        console.log('带餐厅的ID进来');
-                        val.tableCode = app.globalData.tableCode;
-                        val.tableName = app.globalData.tableName;
-                    }
-                });
-                that.setData({
-                    vkahuiData: vkahuiData
-                });
+                wx.setStorageSync('getMemberCardList', JSON.stringify(rsp.value));
+                setMemberCardList(rsp.value)
             } else {
                 that.setData({
                     vkahuiData: []
@@ -266,12 +282,16 @@ Page({
     },
     phone: function () {
         var that = this;
-        var options = that.data;
+        var options = that.data,
+            url = encodeURIComponent("/pages/canteen/index/index?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName);
         wx.navigateTo({
-            url: "/pages/vkahui/phone-add/phone-add?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName,
+            url: "/pages/vkahui/phone-add/phone-add?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName + '&jumpUrl=' + url,
             success: function (res) {
                 // console.log('跳转到绑定手机页面')
+                that.setData({
+                    module: ''
+                });
             },
-        })
+        });
     },
-})
+});

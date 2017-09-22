@@ -6,16 +6,17 @@ Page({
         module: ''
     },
     onLoad: function (options) {
+        
         var that = this;
         // console.log(options);
         that.setData(options);
         // 获取店铺信息
         var url = app.globalData.serverAddress + 'microcode/getResDetail';
-        var data = { resId: that.data.resId };
+        var data = {resId: that.data.resId};
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log(rsp);
             if (rsp.returnStatus) {
-                that.setData({ res: rsp.value });
+                that.setData({res: rsp.value});
             } else {
                 wx.showToast({
                     title: "网络异常,请稍后重试",
@@ -32,12 +33,13 @@ Page({
     loadData: function () {
         var that = this;
         var url = app.globalData.serverAddress + "microcode/getOrderDetail";
-        var data = { resId: that.data.resId, consumerId: that.data.consumerId };
+        var data = {resId: that.data.resId, consumerId: that.data.consumerId};
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log(rsp);
+            
             if (rsp.returnStatus) {
-                that.setData({ orderDetailData: rsp.value });
-                
+                that.setData({orderDetailData: rsp.value});
+
             } else {
                 wx.showToast({
                     title: "网络异常,请稍后重试",
@@ -49,7 +51,7 @@ Page({
     isFirst: function () {
         var that = this;
         var url = app.globalData.serverAddress + 'microcode/checkOrderHasWaiConfirm';
-        var data = { consumerId: that.data.consumerId };
+        var data = {consumerId: that.data.consumerId};
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log(rsp);
             if (rsp.returnStatus) {

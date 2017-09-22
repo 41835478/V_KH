@@ -1,5 +1,6 @@
 const queryString = require('./utils/queryString');
 const util = require('./utils/util');
+const httpConfig = require('./utils/httpConfig');
 App({
     globalData: {
         rid: null,
@@ -19,9 +20,7 @@ App({
         loginRequest: null,//登入请求
         // baseUrl:"https://b.zhenler.com",
         // baseUrl:"http://192.168.134.169/zhenler-server",
-        serverAddress: 'https://vip.zhenler.com/api/',
-        //serverAddress: 'http://192.168.134.254:8080/zhenler-server/api/',
-        //serverAddress: 'http://192.168.134.253:8080/zhenler-server/api/',
+        serverAddress: httpConfig.api + '/',
         serverAddressImg: 'http://f.zhenler.com',
     },
     /**
@@ -29,20 +28,12 @@ App({
      * @param options
      */
     onLaunch: function (options) {
-        // console.log(options, 'init');
-        // var url = 'http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D75b0e01375334f5da81c2b883835b716';
-
-        //调用API从本地缓存中获取数据
-        // let logs = wx.getStorageSync('logs') || [];
-        // console.log('监听小程序初始化', options);
-        // console.log('监听小程序初始化', this.globalData);
-        // logs.unshift(Date.now());
-        // wx.setStorageSync('logs', logs);
         let _this = this;
         /**
          * 获取rid
          */
         let rid = _this.getQrcodeRid(options.query);
+        console.log('app.js获取rid', rid);
         /**
          * 初始化登入并获取openId与token
          */
@@ -51,6 +42,7 @@ App({
          * 获取用户信息
          */
         this.getUserInfo();
+
     },
     /**
      * 生命周期函数--监听小程序显示
@@ -64,14 +56,14 @@ App({
      * @param options
      */
     onHide: function (options) {
-        console.log('监听小程序显示', options);
+        console.log('监听小程序隐藏', options);
     },
     /**
      * 错误监听函数
      * @param msg
      */
     onError: function (msg) {
-        console.log('错误监听函数', msg)
+        console.log('错误监听函数', msg);
     },
     /**
      * 获取用户信息
@@ -104,8 +96,8 @@ App({
                     success: function (res) {
                         let userInfo = res.userInfo;
                         _this.globalData.userInfo = userInfo;
-                        _this.globalData.meLogo = userInfo.meLogo;//报存用户头像及昵称
-                        _this.globalData.nickName = userInfo.nickName;
+                        _this.globalData.meLogo = userInfo.meLogo;//用户头像
+                        _this.globalData.nickName = userInfo.nickName;//用户昵称
                         typeof cb == "function" && cb(_this.globalData.userInfo)
                     }
                 })
@@ -117,19 +109,27 @@ App({
      * @param cb
      */
     requestLogin(cb) {
-        let _this = this;
+        let _this = this,
+            openId = wx.getStorageSync('openId'),
+            token = wx.getStorageSync('token');
         wx.login({
             success: function (res) {
                 console.log('保存code', res);
                 const apiService = require('./utils/ApiService');
                 wx.setStorageSync('code', res.code);
-                const requestTask = apiService.getOpenId({jsCode: res.code}, function (rsp) {
-                    _this.globalData.openId = rsp.value.openId;
-                    _this.globalData.token = rsp.value.token;
-                    wx.setStorageSync('openId', rsp.value.openId);
-                    wx.setStorageSync('token', rsp.value.token);
-                    cb && cb(rsp);
-                });
+                const requestTask = apiService.getOpenId(
+                    {
+                        jsCode: res.code,
+                        openId,
+                        token
+                    },
+                    (rsp) => {
+                        _this.globalData.openId = rsp.value.openId;
+                        _this.globalData.token = rsp.value.token;
+                        wx.setStorageSync('openId', rsp.value.openId);
+                        wx.setStorageSync('token', rsp.value.token);
+                        cb && cb(rsp);
+                    });
                 _this.globalData.loginRequest = requestTask;
                 return requestTask;
             }
@@ -140,7 +140,7 @@ App({
      * @param options
      */
     getQrcodeRid(query) {
-        console.log(query);
+        if (!query || util.isEmptyObject(query)) return;
         // query.q = 'http://vip.zhenler.com/H5/qrcode.html?id=75b0e01375334f5da81c2b883835b716';
         if (query.q && query.q.length > 0) {
             this.globalData.rid = queryString.parse(query.q).id || null;
@@ -153,21 +153,76 @@ App({
     getResId(cb) {
         let apiService = require('./utils/ApiService'),
             _this = this;
+        if (!_this.globalData.rid) {
+            return;
+        }
         apiService.getQRcodeTable({id: _this.globalData.rid}, function (res) {
-            console.log("getQRcodeTable----------", res);
+            if (!res.value || util.isEmptyObject(res.value)) {
+                util.showToast('无效的二维码');
+                _this.globalData.rid = null;
+                return;
+            }
+            let resId = res.value.resId;
+            if (!resId && resId.length === 0) {
+                _this.globalData.rid = null;
+                util.showToast('扫描会员卡二维码不正确');
+                return;
+            }
+            _this.globalData.resId = resId;
             _this.globalData.userVerification = {
-                type: res.value.type,
-                resId: res.value.resId,
-                tableName: res.value.tableName,
-                tableCode: res.value.tableCode
+                type: res.value.type || '',
+                resId: res.value.resId || '',
+                tableName: res.value.tableName || '',
+                tableCode: res.value.tableCode || ''
             };
-            _this.globalData.tableCode = res.value.tableCode;
-            _this.globalData.tableName = res.value.tableName;
+            _this.globalData.tableCode = res.value.tableCode || '';
+            _this.globalData.tableName = res.value.tableName || '';
             cb && cb(res)
         })
     },
     getToken() {
         console.log('获取的token：', this.globalData.token);
         return this.globalData.token;
+    },
+    checkIsFirstUse(data, cb) {
+        let apiService = require('./utils/ApiService'),
+            _this = this;
+        apiService.checkIsFirstUse(data, function (res) {
+            if (res.code == 4003) {
+                _this.globalData.isBindMobile = false;
+            } else {
+                _this.globalData.isBindMobile = true;
+            }
+            cb && cb(res)
+        });
+    },
+    /**
+     * 是否绑定手机（用户）
+     * @param data
+     * @param cb
+     */
+    checkBindMobile(data, cb) {
+        let apiService = require('./utils/ApiService'),
+            _this = this;
+        apiService.checkBindMobile(data, function (res) {
+            if (res.code == 2000) {
+                _this.globalData.isBindMobile = true;
+            } else {
+                _this.globalData.isBindMobile = false;
+            }
+            cb && cb(res)
+        });
+    },
+    /**
+     * 是否绑定手机（店铺）
+     * @param data
+     * @param cb
+     */
+    checkMemberBindMobile(data, cb) {
+        let apiService = require('./utils/ApiService'),
+            _this = this;
+        apiService.checkMemberBindMobile(data, function (res) {
+            cb && cb(res)
+        });
     }
 });

@@ -1,150 +1,168 @@
 <view class="wrapper has-nav">
-  <view class="ct bg-color-gray overflow-h">
-    <view class="arrow-list-ctn mg-top-middle" wx:if="{{hasTableCode}}">
-      <view class="list">
-        <view class="entry">
-          <text class="cus-width-4 fontSize">就餐人数</text>
-          <view class="calculate" style="position:absolute;top:0.8rem;" wx:if="{{!hasConsumerId}}">
-            <view class="reduceMe">
-              <image src="/images/icon/reduce.png" bindtap="numberReduce" data-number="{{diningNumber}}" style="z-index:10"></image>
-            </view>
-            <text class="sumMe fontSize">{{diningNumber}}</text>
-            <view class="plusMe">
-              <image src="/images/icon/plus.png" bindtap="numberAdd" data-number="{{diningNumber}}"></image>
-            </view>
-          </view>
-          <view class="calculate" wx:if="{{hasConsumerId}}">
-            <text class="sumMe fontSize" style="padding-left:1rem;top:0;">{{diningNumber}}</text>
-          </view>
-        </view>
-        <view class="entry" style="padding-bottom:0.8rem;" wx:if="{{hasTable}}">
-          <text class="h3 cus-width-8 fontSize">餐桌号:  <text style="line-height:0.2rem;">{{tableName}}</text></text>
-        </view>
-         <view class="entry tableNum" style="padding-bottom:0.8rem;" bindtap="tableBox" wx:else>
-          <view><text class="cus-width-8 fontSize">餐桌号: </text><text>{{tableDetail.name}}</text></view>
-        </view>
-      </view>
-    </view>
-    <view class="arrow-list-ctn mg-top-middle" wx:if="{{!hasTableCode}}">
-      <view class="list">
-        <view class="entry" style="padding-bottom:0.5rem;padding-top:0.5rem;">
-          <text class="h3 cus-width-8 fontSize">餐桌号: 自助取餐</text>
-        </view>
-      </view>
-    </view>
-    <view class="pro-list border-t">
-      <view class="header bg-color-white">
-        <text class="h6">商品列表: </text>
-      </view>
-      <view class="cur-page bg-color-white">
-        <block wx:for="{{consumerData}}" wx:key="*this">
-          <view class="list" style="padding-bottom:0">
-            <view class="entry">
-              <view class="inner">
-                <text class="p  fontSize">{{item.name}}</text>
-                <view class="mark">
-                  <block wx:if="{{item.method.length > 0}}">
-                    <view class="mark">
-                      <block wx:for="{{item.method}}" wx:key="*this" wx:for-item="mItem">
-                        <text class="btn btn-red-default red  fontSize">{{mItem.name}}</text>
-                      </block>
+    <view class="ct bg-color-gray overflow-h">
+        <view class="arrow-list-ctn mg-top-middle" wx:if="{{hasTableCode}}">
+            <view class="list">
+                <view class="entry">
+                    <text class="cus-width-4 fontSize">就餐人数</text>
+                    <view class="calculate" style="position:absolute;top:0.8rem;" wx:if="{{!hasConsumerId}}">
+                        <view class="reduceMe">
+                            <image src="/images/icon/reduce.png" bindtap="numberReduce" data-number="{{diningNumber}}"
+                                   style="z-index:10"></image>
+                        </view>
+                        <text class="sumMe fontSize">{{diningNumber}}</text>
+                        <view class="plusMe">
+                            <image src="/images/icon/plus.png" bindtap="numberAdd"
+                                   data-number="{{diningNumber}}"></image>
+                        </view>
                     </view>
-                  </block>
+                    <view class="calculate" wx:if="{{hasConsumerId}}">
+                        <text class="sumMe fontSize" style="padding-left:1rem;top:0;">{{diningNumber}}</text>
+                    </view>
                 </view>
-              </view>
+                <view class="entry h3 cus-width-8 fontSize" style="padding-bottom:0.8rem;" wx:if="{{hasTable}}">
+                    餐桌号:
+                    <text style="line-height:0.2rem;">{{tableName}}</text>
+                </view>
+                <view class="entry tableNum" style="padding-bottom:0.8rem;" bindtap="tableBox" wx:else>
+                    <view>
+                        <text class="cus-width-8 fontSize">餐桌号:</text>
+                        <text>{{tableDetail.name}}</text>
+                    </view>
+                </view>
             </view>
-            <view class="entry fontSize">
-              <text class="p text-right fontSize">×{{item.foodCount}}</text>
-            </view>
-            <view class="entry fontSize">
-              <text class="p red text-right fontSize">¥ {{item.price*item.foodCount}}</text>
-            </view>
-          </view>
-        </block>
-      </view>
-      <view class="cur-page bg-color-white"  wx:if="{{hasTableCode}}">
-        <view class="list" style="padding-bottom:0">
-          <view class="entry fontSize">
-            <view class="inner">
-              <text class="p fontSize">{{serviceChangeName}}</text>
-            </view>
-          </view>
-          <view class="entry">
-            <text class="p text-right fontSize">×{{diningNumber}}</text>
-          </view>
-          <view class="entry">
-            <text class="p red text-right fontSize">¥ {{diningNumber*serviceChange}}</text>
-          </view>
         </view>
-        <view class="list" style="padding-bottom:0.3rem;">
-          <view class="entry">
-            <view class="inner">
-              <text class="p fontSize">会员折扣</text>
+        <view class="arrow-list-ctn mg-top-middle" wx:if="{{!hasTableCode}}">
+            <view class="list">
+                <view class="entry" style="padding-bottom:0.5rem;padding-top:0.5rem;">
+                    <text class="h3 cus-width-8 fontSize">餐桌号: 自助取餐</text>
+                </view>
             </view>
-          </view>
-          <view class="entry" style="float:right;">
-            <text class="p red text-right  fontSize">{{discount}}折</text>
-          </view>
         </view>
-      </view>
-      <view class="remark bg-color-white" style="padding-bottom:0.4rem;padding-top:0.5rem;">
-        <text class="p cus-width-4  fontSize">备注</text>
-        <input name="remark" placeholder="请填写..." bindchange="bindChange" class="fontSize" />
-      </view>
+        <view class="pro-list border-t">
+            <view class="header bg-color-white">
+                <text class="h6">商品列表:</text>
+            </view>
+            <view class="cur-page bg-color-white">
+                <block wx:for="{{consumerData}}" wx:key="*this">
+                    <view class="list" style="padding-bottom:0">
+                        <view class="entry">
+                            <view class="inner">
+                                <text class="p  fontSize">{{item.name}}</text>
+                                <view class="mark">
+                                    <block wx:if="{{item.method.length > 0}}">
+                                        <view class="mark">
+                                            <block wx:for="{{item.method}}" wx:key="*this" wx:for-item="mItem">
+                                                <view class="btn btn-red-default red  fontSize">
+                                                    <text>{{mItem.name}}</text>
+                                                </view>
+                                            </block>
+                                        </view>
+                                    </block>
+                                </view>
+                            </view>
+                        </view>
+                        <view class="fontSize p text-right entry">
+                            <text>×{{item.foodCount}}</text>
+                        </view>
+                        <view class="fontSize p red text-right entry">
+                            <text>¥ {{ item.singleProductTotal }}</text>
+                        </view>
+                    </view>
+                </block>
+            </view>
+            <view class="cur-page bg-color-white" wx:if="{{hasTableCode}}">
+                <view class="list" style="padding-bottom:0">
+                    <view class="entry fontSize">
+                        <view class="inner p fontSize">
+                            <text>{{serviceChangeName}}</text>
+                        </view>
+                    </view>
+                    <view class="entry p text-right fontSize">
+                        <text>×{{diningNumber}}</text>
+                    </view>
+                    <view class="entry p red text-right fontSize">
+                        <text>¥ {{diningNumber*serviceChange}}</text>
+                    </view>
+                </view>
+                <view class="list" style="padding-bottom:0.3rem;">
+                    <view class="entry">
+                        <view class="inner">
+                            <text class="p fontSize">会员折扣</text>
+                        </view>
+                    </view>
+                    <view class="entry p red text-right  fontSize" style="float:right;">
+                        <text>{{discount}}折</text>
+                    </view>
+                </view>
+            </view>
+            <view class="remark bg-color-white" style="padding-bottom:0.4rem;padding-top:0.5rem;">
+                <text class="p cus-width-4  fontSize">备注</text>
+                <input name="remark" placeholder="请填写..." bindchange="bindChange" class="fontSize"/>
+            </view>
+        </view>
     </view>
-  </view>
 
-  <!--餐后支付-->
-  <block wx:if="{{payType==1}}">
-    <view class="count" style="bottom:0;background:#ffffff;height:3rem;">
-      <view class="entry text-center" style="width:66.66%">
-        <text class="p" style="bottom:0;color:#000000;">*商家支持用餐结束后付款</text>
-      </view>
-      <view class="entry text-right">
-        <button bindtap="submitOrder" class="btn btn-red width-all" style="line-height:3rem">确定点餐</button>
-      </view>
-    </view>
-  </block>
+    <!--餐后支付-->
+    <block wx:if="{{payType==1}}">
+        <view class="count" style="bottom:0;background:#ffffff;height:3rem;">
+            <view class="entry text-center" style="width:66.66%">
+                <view class="p" style="bottom:0;color:#000000;">
+                    <text>*商家支持用餐结束后付款</text>
+                </view>
+            </view>
+            <view class="entry text-right">
+                <button bindtap="submitOrder" class="btn btn-red width-all" style="line-height:3rem">确定点餐</button>
+            </view>
+        </view>
+    </block>
 
-  <!--餐前支付-->
-  <block wx:if="{{payType==0}}">
-    <view class="count" style="bottom:0;background:#ffffff;height:3rem;">
-      <view class="entry text-center">
-        <text class="p" style="bottom:0;color:#000000;">总金额：<text class="red bold">¥{{newAmout+diningNumber*serviceChange}}</text>
-        </text>
-      </view>
-      <view class="entry text-left">
-        <text class="p" style="bottom:-0.1rem;color:#000000;font-size:0.7rem;">(已优惠:¥{{youhui}})</text>
-      </view> 
-      <view class="entry text-right">
-        <button bindtap="submitOrder" class="btn btn-red width-all" style="line-height:3rem">确认订单</button>
-      </view>
-    </view>
-  </block>
+    <!--餐前支付-->
+    <block wx:if="{{payType==0}}">
+        <view class="count" style="bottom:0;background:#ffffff;height:3rem;">
+            <view class="entry text-left p width-40" style="bottom:0;color:#000000;line-height: 3rem">
+                <text>总金额：</text>
+                <text class="red bold">¥{{zongjing}}</text>
+            </view>
+            <view class="entry text-left width-30">
+                <text class="p" style="bottom:-0.1rem;color:#000000;font-size:0.7rem;">(已优惠:¥{{youhui}})</text>
+            </view>
+            <view class="entry text-right width-30">
+                <button bindtap="submitOrder" class="btn btn-red width-all" style="line-height:3rem">确认订单</button>
+            </view>
+        </view>
+    </block>
 </view>
- <view class="entry tableNum tableNN {{tableNo}}" style="padding-bottom:0.8rem;">
-  <view class="table">
-  <view class="tableContent">
-   <view style="text-align:center;padding:0.6rem 0;background:#2d2c34;color:#fff;margin-bottom:0.7rem;">选择桌台</view>
-   <view style="padding-left:0.6rem;">
-      <view class="choice">
-        <view class="taihao">选择</view>
-          <view class="tableNo">
-            <block wx:for="{{subarea}}" wx:for-item="item" wx:key="*this">
-              <text class="ttxt {{usersubarea==index?'subareaAct':''}}"  data-index="{{index}}" data-subarea="{{item.tableList}}" bindtap="subarea">{{item.subareaName}}</text>
-            </block>
-          </view>  
+<view class="entry tableNum tableNN {{tableNo}}" style="padding-bottom:0.8rem;">
+    <view class="table">
+        <view class="tableContent">
+            <view style="text-align:center;padding:0.6rem 0;background:#2d2c34;color:#fff;margin-bottom:0.7rem;">
+                <text>选择桌台</text>
+            </view>
+            <view style="padding-left:0.6rem;">
+                <view class="choice">
+                    <view class="taihao">选择</view>
+                    <view class="tableNo">
+                        <block wx:for="{{subarea}}" wx:for-item="item" wx:key="*this">
+                            <view class="ttxt {{usersubarea==index?'subareaAct':''}}" data-index="{{index}}"
+                                  data-subarea="{{item.tableList}}" bindtap="subarea">
+                                <text>{{item.subareaName}}</text>
+                            </view>
+                        </block>
+                    </view>
+                </view>
+                <view style="position:relative;">
+                    <view class="taihao taihaoM">台号</view>
+                    <view class="tableNo" style="margin-left:2.2rem;">
+                        <block wx:for="{{subareaItem}}" wx:for-item="item" wx:key="*this">
+                            <view class="ttxt {{usersubareaCon==index?'subareaAct':'ttxt'}}" bindtap="subareaItem"
+                                  data-index="{{index}}" data-tableCode="{{item.tableCode}}" data-name="{{item.name}}">
+                                <text>{{item.name}}</text>
+                            </view>
+                        </block>
+                    </view>
+                </view>
+                <view class="queren" bindtap="queren">确定</view>
+            </view>
         </view>
-        <view style="position:relative;">
-          <view class="taihao taihaoM">台号</view>
-          <view class="tableNo" style="margin-left:2.2rem;">
-            <block wx:for="{{subareaItem}}" wx:for-item="item" wx:key="*this">
-            <text class="ttxt {{usersubareaCon==index?'subareaAct':'ttxt'}}"bindtap="subareaItem"  data-index="{{index}}" data-tableCode="{{item.tableCode}}" data-name="{{item.name}}">{{item.name}}</text>
-            </block>
-          </view>  
-        </view> 
-        <view class="queren" bindtap="queren">确定</view>
-      </view>
-   </view>
-  </view>
+    </view>
 </view>

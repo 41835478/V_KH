@@ -1,0 +1,32 @@
+//.px2rem(@name, @px) {
+//    @{name}: @px / 75 * 4rem;
+//}
+.px2rem(@name, @px) {
+    @{name}: @px*2rpx;
+}
+
+//.px2rem-two(@name, @px1,@px2,@px3,@px4) {
+//    @{name}: (@px1 / 75 * 4rem) (@px2 / 75 * 4rem) (@px3 / 75 * 4rem) (@px4 / 75 * 4rem);
+//}
+.px2rem-two(@name, @px1,@px2,@px3,@px4) {
+    @{name}: (@px1*2rpx) (@px2*2rpx) (@px3*2rpx) (@px4*2rpx);
+}
+
+@color-f74b7b: #f74b7b;
+
+.center(@translate) {
+  position: absolute;
+  top: @translate;
+  left: @translate;
+  transform: translate(-@translate, -@translate);
+}
+
+.fullScreen () {
+  position: absolute;
+  overflow: hidden;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}

@@ -1,71 +1,73 @@
 <view class="wrapper has-nav">
-  <view class="headline text-center" wx:if="{{true}}">
-    <image class="icon-user-bigger" src="{{wxInfo.avatarUrl}}"></image>
-    <text class="h2-big blk mg-top name">{{wxInfo.nickName}}</text>
-  </view>
-  <view class="ct arrow-list-ctn relative">
-    <view class="listMe list">
-      <navigator url="" open-type="redirect" url="/pages/init/init">
-        <view class="entry" style="border-bottom:none;margin:0;">
-          <text class="h5">会员卡<text style="color:#aab1cb;">({{memberCardCount}})</text></text>
-          <view class="arrow">
-            <view class="outer">
-              <view class="inner">
-                <image src="/images/icon/arrow-right.png"></image>
-              </view>
-            </view>
-          </view>
-        </view>
-      </navigator>
+    <view class="headline text-center" wx:if="{{true}}">
+        <image class="icon-user-bigger" src="{{wxInfo.avatarUrl}}"></image>
+        <text class="h2-big blk mg-top name">{{wxInfo.nickName}}</text>
     </view>
-    <view class="list">
-      <navigator url="/pages/vkahui/address/address" open-type="navigate">
-        <view class="entry" style="border-bottom:none;margin:0;">
-          <text class="h5">收货地址</text>
-          <view class="arrow">
-            <view class="outer">
-              <view class="inner">
-                <image src="/images/icon/arrow-right.png"></image>
-              </view>
-            </view>
-          </view>
+    <view class="ct arrow-list-ctn relative">
+        <view class="listMe list">
+            <navigator url="" open-type="switchTab" url="/pages/init/init">
+                <view class="entry h5" style="border-bottom:none;margin:0;">
+                    会员卡
+                    <text style="color:#aab1cb;">({{memberCardCount}})</text>
+                    <view class="arrow">
+                        <view class="outer">
+                            <view class="inner">
+                                <image src="/images/icon/arrow-right.png"></image>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </navigator>
         </view>
-      </navigator>
-    </view>
-    <view class="list">
-      <navigator url="/pages/vkahui/phone-add/phone-add" open-type="navigate">
-        <view class="entry" style="border-bottom:none;margin:0;">
-          <text class="h5">绑定手机</text>
-          <view class="arrow">
-            <view class="outer">
-              <view class="inner">
-                <image src="/images/icon/arrow-right.png"></image>
-              </view>
-            </view>
-          </view>
+        <view class="list">
+            <navigator url="/pages/vkahui/address/address" open-type="navigate">
+                <view class="entry" style="border-bottom:none;margin:0;">
+                    <text class="h5">收货地址</text>
+                    <view class="arrow">
+                        <view class="outer">
+                            <view class="inner">
+                                <image src="/images/icon/arrow-right.png"></image>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </navigator>
         </view>
-      </navigator>
+        <view class="list">
+            <navigator url="{{!isBindMobile?'/pages/vkahui/phone-add/phone-add':''}}" open-type="navigate">
+                <view class="entry h5" style="border-bottom:none;margin:0;">
+                    绑定手机
+                    <text style="color:#aab1cb;">{{isBindMobile?'已绑定':''}}</text>
+                    <view class="arrow" wx:if="{{!isBindMobile}}">
+                        <view class="outer">
+                            <view class="inner">
+                                <image src="/images/icon/arrow-right.png"></image>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </navigator>
+        </view>
     </view>
-  </view>
 </view>
 
 <!--<import src="/pages/template/template.wxml" />-->
 
 <!--<template is="navigation" />-->
-<view class="navigation">
-  <view class="entry" bindtap="tab" data-id="{{'shouye'}}">
-    <image class="icon-nav-me unactive" src="/images/icon/nav-homepage.png" wx:if="{{shouye}}"></image>
-    <image class="icon-nav-me unactive" src="/images/icon/nav-homepage-active.png" wx:if="{{!shouye}}"></image>
-    <text class="h3">首页</text>
-  </view>
-  <view class="entry" bindtap="tab" data-id="{{'dingdan'}}">
-    <image class="icon-nav-me unactive" src="/images/icon/nav-order.png" wx:if="{{!dingdan}}"></image>
-    <image class="icon-nav-me unactive" src="/images/icon/nav-order-active.png" wx:if="{{dingdan}}"></image>
-    <text class="h3">订单</text>
-  </view>
-  <view class="entry" bindtap="tab" data-id="{{'wo'}}">
-    <image class="icon-nav-me unactive" src="/images/icon/nav-me.png" wx:if="{{!wo}}"></image>
-    <image class="icon-nav-me unactive" src="/images/icon/nav-me-active.png" wx:if="{{wo}}"></image>
-    <text class="h3" style="color: #f74b7b;"  wx:if="{{wo}}">我</text>
-  </view>
-</view>
+<!--<view class="navigation">-->
+<!--<view class="entry" bindtap="tab" data-id="{{'shouye'}}">-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-homepage.png" wx:if="{{shouye}}"></image>-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-homepage-active.png" wx:if="{{!shouye}}"></image>-->
+<!--<text class="h3">首页</text>-->
+<!--</view>-->
+<!--<view class="entry" bindtap="tab" data-id="{{'dingdan'}}">-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-order.png" wx:if="{{!dingdan}}"></image>-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-order-active.png" wx:if="{{dingdan}}"></image>-->
+<!--<text class="h3">订单</text>-->
+<!--</view>-->
+<!--<view class="entry" bindtap="tab" data-id="{{'wo'}}">-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-me.png" wx:if="{{!wo}}"></image>-->
+<!--<image class="icon-nav-me unactive" src="/images/icon/nav-me-active.png" wx:if="{{wo}}"></image>-->
+<!--<text class="h3" style="color: #f74b7b;" wx:if="{{wo}}">我</text>-->
+<!--</view>-->
+<!--</view>-->

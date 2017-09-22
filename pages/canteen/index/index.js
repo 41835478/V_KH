@@ -1,6 +1,7 @@
 var appUtil = require('../../../utils/appUtil.js');
 var util = require('../../../utils/util.js');
-var app = getApp();
+const apiService = require('../../../utils/ApiService'),
+    app = getApp();
 Page({
     data: {
         resDetailData: {
@@ -12,6 +13,8 @@ Page({
             resName: "餐厅",
             resCooking: "粤菜"
         },
+        isLoading: false,
+        ShopOneData: {},//临时购物信息
         moduleActiveMe: '',
         userCellId: 0,//规格
         userCell0: 0,//做法
@@ -59,6 +62,7 @@ Page({
     },
     onShow: function () {
         var that = this;
+        console.log('显示界面');
         if (!that.data.hasHide) return;
         that.setData({hasHide: false});
         // that.loadCardList();
@@ -85,7 +89,29 @@ Page({
         var that = this;
         that.setData({hasHide: true});
     },
-
+    init() {
+        let ShopCartOneData = {
+            "foodCode": "",//菜品Id
+            "name": "",//菜品名称
+            "foodCount": '',//菜品计数
+            "price": '',//单价
+            "isdiscount": '',//是否打折
+            "rule": {//规格
+                ruleCode: "",//规格ID
+                name: '',//规格名字
+            },
+            "practicesList": [//备注&&口味
+                {
+                    practicesCode: '',
+                    practicesName: ''
+                }
+            ],
+            "total": ''//总价
+        };
+        this.setData({
+            ShopCartOneData
+        })
+    },
     calling: function () {
         wx.makePhoneCall({
             phoneNumber: this.data.resDetailData.resPhone,
@@ -137,7 +163,12 @@ Page({
     },
     shoppingCarClick: function (res) {//打开购物车
         var that = this;
-        var active = res.currentTarget.dataset.active;
+        var active = null;
+        if (res) {
+            active = res.currentTarget.dataset.active;
+        } else {
+            active = 'active';
+        }
         if (active == 'active') {
             that.setData({
                 shoppingCarActive: ''
@@ -149,139 +180,10 @@ Page({
         }
     },
     loadCon: function (data) {
-        var that = this;
-        var url = app.globalData.serverAddress + "microcode/getResDetail";
-        appUtil.httpRequest(url, data, function (rsp) {
-            if (rsp.returnStatus) {
-                //console.log('店铺详情模块');
-                //console.log(rsp);
-                var resDetailData = rsp.value;
-                wx.setNavigationBarTitle({//设置本页面的标头
-                    title: resDetailData.resName,
-                });
-                var str = app.globalData.serverAddressImg;
-                resDetailData.resLogo = str + resDetailData.resLogo;
-                that.setData({
-                    resDetailData: resDetailData,
-                    deliveryAmount: resDetailData.takeoutBusinessRules.deliveryAmount
-                });
-                if ((resDetailData.takeoutBusinessRules.distributionFee == "" && resDetailData.takeoutBusinessRules.distributionFee == undefined && resDetailData.takeoutBusinessRules.distributionFee == null) || resDetailData.takeoutBusinessRules.distributionCostType == 0) {
-                    resDetailData.takeoutBusinessRules.distributionFee = 0;
-                    that.setData({
-                        distributionFee: 0
-                    });
-                }
-                that.setData({
-                    eat: resDetailData.restaurantBusinessRules.status,
-                    takeOutFood: resDetailData.takeoutBusinessRules.status
-                });
-
-                //that.upToAmount();//起送金额判断
-                // 判断是否有外卖
-                if (that.data.takeOutFood == 1 && that.data.eat == 1) {
-                    // console.log('全部都有');
-                    that.setData({
-                        all: true, //tab栏
-                        allEat: true, //堂食内容
-                        allTakeOut: true //外卖内容
-                    });
-                    if (resDetailData.restaurantBusinessRules.isBusiness == 1) {
-                        //console.log('堂食营业');
-                        that.setData({
-                            plus: true
-                        });
-                    }
-                    if (resDetailData.takeoutBusinessRules.isBusiness == 1) {
-                        //console.log('外卖营业');
-                        that.setData({
-                            plusTake: true
-                        });
-                    }
-                } else if (that.data.takeOutFood != 1 && that.data.eat == 1) {
-                    // console.log('只有堂食');
-                    that.setData({
-                        onlyEat: true,
-                        allEat: true,
-                        allTakeOut: false
-                    });
-                    if (resDetailData.restaurantBusinessRules.isBusiness == 1) {
-                        //console.log('堂食营业');
-                        that.setData({
-                            plus: true
-                        });
-                    }
-                } else if (that.data.takeOutFood == 1 && that.data.eat != 1) {
-                    // console.log('只有外卖');
-                    that.setData({
-                        onlyTakeOut: true,
-                        allEat: false,
-                        allTakeOut: true
-                    });
-                    if (resDetailData.takeoutBusinessRules.isBusiness == 1) {
-                        //console.log('外卖营业');
-                        that.setData({
-                            plusTake: true
-                        });
-                    }
-                } else if (that.data.takeOutFood == 0 && that.data.eat == 0) {
-                    // console.log('两个都没有');
-                    that.setData({
-                        all: false,
-                        allEat: false,
-                        allTakeOut: false,
-                        onlyDetail: true
-                    });
-                }
-                that.setData({
-                    canhe: resDetailData.takeoutBusinessRules.packingCharge
-                    // canhe: 0
-                });
-
-                if (that.data.isaddDish) {//继续加菜
-                    // console.log('继续加菜');
-                    that.setData({
-                        consumerId: options.consumerId,
-                        tangshi: true
-                    });
-                } else {//检查是不存在未结账的消费者
-                    var data = {
-                        resId: that.data.resId,
-                        openId: app.globalData.openId
-                    };
-                    //var init = util.initPay(data);
-                    var url = app.globalData.serverAddress + "microcode/checkHasWaitPayConsumer";
-                    appUtil.httpRequest(url, data, function (rsp) {
-                        // console.log('检查是否存在未结账的消费者');
-                        // console.log(rsp);
-                        if (rsp.returnStatus) {
-                            that.setData({
-                                module: 'moduleActive'
-                            });
-                            that.setData({
-                                consumerId: rsp.value.consumerId,
-                                tableCode: rsp.value.tableCode,
-                                tableName: rsp.value.title,
-                                tangshi: true
-                            });
-                        } else {
-                            // console.log('没有存在未结账的消费者');
-                            if ((that.data.tableCode == "" || that.data.tableCode == "undefined" || that.data.tableCode == undefined) && that.data.resDetailData.resOperation == 0) {//堂食
-                                that.setData({
-                                    tangshi: false
-                                });
-                            } else {
-                                that.setData({
-                                    tangshi: true
-                                });
-                            }
-                        }
-                    });
-                }
-                ;
-            } else {
-                console.log('店铺详情模块失败');
-            }
+        this.setData({
+            isLoading: false
         });
+        var that = this;
         that.setData({serverAddressImg: app.globalData.serverAddressImg});
         wx.getSystemInfo({
             success: function (res) {
@@ -291,63 +193,179 @@ Page({
                 });
             }
         });
-
-
-        // 堂食快餐菜品
-        var data = {
-            resId: that.data.resId,
-            isEatin: 1
-        };
-        //var init = util.initPay(data);
-        var url = app.globalData.serverAddress + "food/getFoodList";
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log('堂食');
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                var foodList = rsp.value;
-                var sidebar = [];
-                foodList.forEach(function (val, key) {
-                    sidebar = sidebar.concat(val);
-                });
-                that.setData({
-                    foodDatas: sidebar,
-                });
-            } else {
-                // console.log('查询菜品分类数据失败');
+        that.getResDetail(data);
+        this.getFoodList(
+            {isEatin: 1},
+            'foodDatas',
+            () => {
+                setTimeout(() => {
+                    that.setData({
+                        isLoading: true
+                    });
+                }, 1500);
+                that.getFoodList(
+                    {isTakeaway: 1},
+                    'foodDatasTakeaway', () => {
+                    }
+                )
             }
+        );
+    },
+    /**
+     * 获取点餐店铺列表
+     */
+    getResDetail(data, cb) {
+        let that = this;
+        apiService.getResDetail(data, function (rsp) {
+            var resDetailData = rsp.value;
+            wx.setNavigationBarTitle({//设置本页面的标头
+                title: resDetailData.resName,
+            });
+            var str = app.globalData.serverAddressImg;
+            resDetailData.resLogo = str + resDetailData.resLogo;
+            that.setData({
+                resDetailData: resDetailData,
+                deliveryAmount: resDetailData.takeoutBusinessRules.deliveryAmount
+            });
+            if ((resDetailData.takeoutBusinessRules.distributionFee == "" && resDetailData.takeoutBusinessRules.distributionFee == undefined && resDetailData.takeoutBusinessRules.distributionFee == null) || resDetailData.takeoutBusinessRules.distributionCostType == 0) {
+                resDetailData.takeoutBusinessRules.distributionFee = 0;
+                that.setData({
+                    distributionFee: 0
+                });
+            }
+            that.setData({
+                eat: resDetailData.restaurantBusinessRules.status,
+                takeOutFood: resDetailData.takeoutBusinessRules.status
+            });
+
+            //that.upToAmount();//起送金额判断
+            // 判断是否有外卖
+            if (that.data.takeOutFood == 1 && that.data.eat == 1) {
+                // console.log('全部都有');
+                that.setData({
+                    all: true, //tab栏
+                    allEat: true, //堂食内容
+                    allTakeOut: true //外卖内容
+                });
+                if (resDetailData.restaurantBusinessRules.isBusiness == 1) {
+                    //console.log('堂食营业');
+                    that.setData({
+                        plus: true
+                    });
+                }
+                if (resDetailData.takeoutBusinessRules.isBusiness == 1) {
+                    //console.log('外卖营业');
+                    that.setData({
+                        plusTake: true
+                    });
+                }
+            } else if (that.data.takeOutFood != 1 && that.data.eat == 1) {
+                // console.log('只有堂食');
+                that.setData({
+                    onlyEat: true,
+                    allEat: true,
+                    allTakeOut: false
+                });
+                if (resDetailData.restaurantBusinessRules.isBusiness == 1) {
+                    //console.log('堂食营业');
+                    that.setData({
+                        plus: true
+                    });
+                }
+            } else if (that.data.takeOutFood == 1 && that.data.eat != 1) {
+                // console.log('只有外卖');
+                that.setData({
+                    onlyTakeOut: true,
+                    allEat: false,
+                    allTakeOut: true
+                });
+                if (resDetailData.takeoutBusinessRules.isBusiness == 1) {
+                    //console.log('外卖营业');
+                    that.setData({
+                        plusTake: true
+                    });
+                }
+            } else if (that.data.takeOutFood == 0 && that.data.eat == 0) {
+                // console.log('两个都没有');
+                that.setData({
+                    all: false,
+                    allEat: false,
+                    allTakeOut: false,
+                    onlyDetail: true
+                });
+            }
+            that.setData({
+                canhe: resDetailData.takeoutBusinessRules.packingCharge
+                // canhe: 0
+            });
+
+            if (that.data.isaddDish) {//继续加菜
+                // console.log('继续加菜');
+                that.setData({
+                    consumerId: options.consumerId,
+                    tangshi: true
+                });
+            } else {//检查是不存在未结账的消费者
+                var data = {
+                    resId: that.data.resId,
+                    openId: app.globalData.openId
+                };
+                //var init = util.initPay(data);
+                var url = app.globalData.serverAddress + "microcode/checkHasWaitPayConsumer";
+                appUtil.httpRequest(url, data, function (rsp) {
+                    // console.log('检查是否存在未结账的消费者');
+                    // console.log(rsp);
+                    if (rsp.returnStatus) {
+                        that.setData({
+                            module: 'moduleActive'
+                        });
+                        that.setData({
+                            consumerId: rsp.value.consumerId,
+                            tableCode: rsp.value.tableCode,
+                            tableName: rsp.value.title,
+                            tangshi: true
+                        });
+                    } else {
+                        // console.log('没有存在未结账的消费者');
+                        if ((that.data.tableCode == "" || that.data.tableCode == "undefined" || that.data.tableCode == undefined) && that.data.resDetailData.resOperation == 0) {//堂食
+                            that.setData({
+                                tangshi: false
+                            });
+                        } else {
+                            that.setData({
+                                tangshi: true
+                            });
+                        }
+                    }
+                });
+            }
+            cb && cb();
         });
-
-        // 外卖菜品
-        var data = {
-            resId: that.data.resId,
-            isTakeaway: 1
-        };
-        //var init = util.initPay(data);
-        var url = app.globalData.serverAddress + "food/getFoodList";
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                var foodListTakeaway = rsp.value;
-                var sidebarTakeaway = [];
-                foodListTakeaway.forEach(function (val, key) {
-                    sidebarTakeaway = sidebarTakeaway.concat(val);
-                });
-                that.setData({
-                    foodDatasTakeaway: sidebarTakeaway,
-                });
-            } else {
-                console.log('查询菜品分类数据失败');
-            }
+    },
+    getFoodList(data, datas, cb) {
+        let that = this;
+        data.resId = that.data.resId;
+        apiService.getFoodList(data, (rsp) => {
+            let foodList = rsp.value,
+                sidebar = [],
+                obj = {};
+            foodList.forEach(function (val, key) {
+                sidebar = sidebar.concat(val);
+            });
+            obj[datas] = sidebar;
+            that.setData(obj);
+            cb && cb();
         });
     },
     pay: function () {
         var that = this;
-        wx.redirectTo({
+        wx.navigateTo({
             url: "/pages/order/order-pay/order-pay?resId=" + that.data.resId + "&consumerId=" + that.data.consumerId,
             success: function (res) {
                 // console.log('先去支付')
             }
-        })
+        });
+        this.addDish();
     },
     addDish: function () {
         var that = this;
@@ -421,38 +439,48 @@ Page({
         }
     },
     addToCarts: function (data) {//添加到购物车  菜品结构,规格ID,做法,点餐类型  0堂食1快餐2外
-        var that = this;
         data = data.currentTarget.dataset;
-        var food = data.food;
-        var ruleCode = data.rulecode;
-        var practies = data.practies;
-        var pickType = data.picktype;
-        var name = food.name;
-        var index = this.isInCart(food, pickType);
-        var takeawayCarts = this.data.takeawayCarts;
-        var hallCarts = this.data.hallCarts;
-        console.log(this.data.standard)
+        let that = this, practies = [],
+            food = data.food,
+            pickType = data.picktype,
+            name = food.name,
+            index = this.isInCart(food, pickType),
+            takeawayCarts = this.data.takeawayCarts,
+            hallCarts = this.data.hallCarts;
+        if (data.practies) {
+            practies = data.practies;
+        } else {
+            let practices = food.practies || food.practices || [];
+            for (let i = 0; i < practices.length; i++) {
+                if (practices[i].practicesCode)
+                    practies.push(practices[i].practicesCode);
+            }
+        }
         if (index == -1) {
             var item = {};
             item.foodCode = food.foodCode;
             item.foodCount = 1;
-            item.ruleCode = data.rulecode;
-            item.name = food.name;
-
+            item.name = name;
+            item.ruleCode = food.rule ? food.rule.ruleCode : data.rulecode;
+            item.guigeName = food.rule ? food.rule.name : food.guigeName;
             if (food.foodRuleCount > 1) {
-                if (!food.guigeName) {
+                if (!item.guigeName) {
                     item.guigeName = this.data.standard[0].name
+                }
+                if (food.foodRuleMemberPrice || food.foodRuleMemberPrice == 0) {
+                    item.foodRuleMemberPrice = food.foodRuleMemberPrice;
+                } else if (food.rule) {
+                    item.foodRuleMemberPrice = food.rule.memberPrice || 0;
+                } else if (!food.foodRuleMemberPrice) {
+                    item.foodRuleMemberPrice = this.data.standard[0].foodRuleMemberPrice;
+                }
+                if (food.rule) {
+                    item.status = food.rule.status || 0;
+                } else if (!food.status) {
+                    item.status = this.data.standard[0].status;
                 } else {
-                    item.guigeName = food.guigeName;
+                    item.status = food.status || 0;
                 }
-                if (!food.foodRuleMemberPrice) {
-                    food.foodRuleMemberPrice = this.data.standard[0].foodRuleMemberPrice;
-                }
-                item.foodRuleMemberPrice = food.foodRuleMemberPrice;
-                if (!food.status) {
-                    food.status = this.data.standard[0].status;
-                }
-                item.isdiscount = food.status;
             } else {
                 item.isdiscount = food.isdiscount;
 
@@ -467,12 +495,14 @@ Page({
                     // console.log('规格菜');
                     // console.log(rsp);
                     if (rsp.returnStatus) {
-                        item.foodRuleMemberPrice = rsp.value[0].foodRuleMemberPrice;
+                        if (rsp && rsp.length > 0) {
+                            item.foodRuleMemberPrice = rsp.value[0].foodRuleMemberPrice;
+                        }
                         that.data.takeawayCarts.forEach(function (val, key) {
                             if (val.foodCode == item.foodCode) {
                                 that.data.takeawayCarts[key] = item;
                             }
-                        })
+                        });
                         that.calculatorCounts();
                     }
                 });
@@ -608,6 +638,7 @@ Page({
     hasCard: function (e) {
         var type = e.target.dataset.type;
         // console.log(e.target.dataset.type);
+        this.shoppingCarClick();
         var that = this;
         if (type == 0) {
             if (that.data.hallCount == 0) {
@@ -668,7 +699,7 @@ Page({
         }
     },
     chooseSpec: function (e) {
-        var that = this;
+        let that = this;
         that.setData({
             userCellId: 0,//规格
             userCell0: 0,//做法
@@ -676,66 +707,56 @@ Page({
             userCell2: 0,
             practicesCode: []
         });
-        var foodcode = e.currentTarget.dataset.arr.foodCode
-        // console.log('弹出规格');
-        // console.log(e);
-
-        var data = {
-            resId: that.data.resId,
-            foodCode: foodcode
-        };
-        //var init = util.initPay(data);
-        var url = app.globalData.serverAddress + "foodRule/getFoodRuleList";
-        appUtil.httpGet(url, data, function (rsp) {//规格
-            // console.log('规格菜');
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                that.setData({
-                    moduleActiveMe: 'moduleActiveMe',
-                    standard: rsp.value,
-                    guigeFood: e.currentTarget.dataset.arr,
-                    pickType: e.currentTarget.dataset.key,
-                });
-                if (rsp.value.length > 1) {
+        let foodcode = e.currentTarget.dataset.arr.foodCode;
+        // 获取规格
+        apiService.getFoodRuleList(
+            {
+                resId: that.data.resId,
+                foodCode: foodcode
+            },
+            function (rsp) {//规格
+                if (rsp.returnStatus) {
                     that.setData({
-                        ruleCode: rsp.value[0].ruleCode
+                        moduleActiveMe: 'moduleActiveMe',
+                        standard: rsp.value,
+                        guigeFood: e.currentTarget.dataset.arr,
+                        pickType: e.currentTarget.dataset.key,
                     });
-                } else {
-                    that.setData({
-                        ruleCode: ""
-                    });
-                }
-            }
-        });
-        var practiceVal = [];
-        var url = app.globalData.serverAddress + "foodPractices/getFoodPracticesList";
-        var data = {
-            resId: that.data.resId,
-            foodCode: foodcode
-        };
-        // console.log(data);
-        appUtil.httpGet(url, data, function (rsp) {//口味
-            // console.log('做法');
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                rsp.value.forEach(function (val, key) {
-                    if (val.foodPracticesList) {
-                        practiceVal.push(val);
-                        that.data.practicesCode.push(val.foodPracticesList[0].practicesCode);//默认第一个为选中的做法
+                    if (rsp.value.length > 1) {
                         that.setData({
-                            practiceVal: practiceVal,
-                            practicesCode: that.data.practicesCode//默认做法
+                            ruleCode: rsp.value[0].ruleCode
                         });
                     } else {
-                        // console.log('没有做法');
-                        // that.setData({
-                        //   practiceVal: [],
-                        //   practicesCode: []
-                        // });
+                        that.setData({
+                            ruleCode: ""
+                        });
                     }
-                });
-            }
-        });
+                }
+            });
+        let practiceVal = [];
+
+        // 获取口味
+        apiService.getFoodPracticesList(
+            {
+                resId: that.data.resId,
+                foodCode: foodcode
+            },
+            function (rsp) {//口味
+                if (rsp.returnStatus) {
+                    rsp.value.forEach(function (val, key) {
+                        if (val.foodPracticesList) {
+                            practiceVal.push(val);
+                            that.data.practicesCode.push(val.foodPracticesList[0].practicesCode);//默认第一个为选中的做法
+                            that.setData({
+                                practiceVal: practiceVal,
+                                practicesCode: that.data.practicesCode//默认做法
+                            });
+                        } else {
+
+                        }
+                    });
+                }
+            });
     },
     isguiGe: function (e) {
         var that = this;
@@ -845,5 +866,143 @@ Page({
                 })
             }
         }
+    },
+    /**
+     * 规格弹框事件
+     * @param e
+     */
+    setRule(e) {
+        if (!e.target.dataset.active && e.target.dataset.active !== 'setRule') {
+            return
+        }
+        console.log(e, 'setRule');
+        let that = this,
+            index = e.target.dataset.index.split(','),
+            flagArr = [false, false],
+            value = e.target.dataset.value,
+            obj = {
+                isLoading: false,
+                title: value.name,
+                data: value,
+                footer: ['确定'],
+                picktype: e.target.dataset.picktype
+            };
+        obj.data.ruleList = {};//规格
+        obj.data.rule = {};//规格
+        obj.data.practicesList = [];//备注&&口味
+        obj.data.practices = [];//备注&&口味
+        obj.data.total = 0;//总价
+        this.setData({
+            ShopOneData: obj
+        });
+        // 获取规格
+        apiService.getFoodRuleList(
+            {
+                resId: that.data.resId,
+                foodCode: value.foodCode
+            },
+            (rsp) => {
+                obj.data.ruleList = rsp.value;
+                if (rsp.value && rsp.value.length > 0) {
+                    obj.data.rule = rsp.value[0];
+                }
+                flagArr[0] = true;
+                setData();
+            });
+
+        // 获取口味
+        apiService.getFoodPracticesList(
+            {
+                resId: that.data.resId,
+                foodCode: value.foodCode
+            },
+            (rsp) => {//口味
+                obj.data.practicesList = rsp.value;
+                if (rsp.value && rsp.value.length > 0) {
+                    for (let i = 0, len = rsp.value.length; i < len; i++) {
+                        let val = rsp.value[i];
+                        if (val.foodPracticesList && val.foodPracticesList.length > 0) {
+                            val.foodPracticesList[0].checked = true;
+                            obj.data.practices[i] = val.foodPracticesList[0]
+                        } else {
+                            obj.data.practices[i] = {}
+                        }
+                    }
+                }
+                flagArr[1] = true;
+                setData();
+            });
+
+        function setData() {
+            if (flagArr[0] && flagArr[1]) {
+                obj.isLoading = true;
+                console.log(obj);
+                that.setData({
+                    ShopOneData: obj
+                });
+            }
+        }
+
+        this.openModule('moduleActiveMe');
+    },
+    setShopOneDate(e, text) {
+        let that = this,
+            index = null,
+            value = that.data.ShopOneData;
+        if (text === 'practices') {
+            index = e.target.dataset.index.split(',');
+            let list = value.data[text + 'List'][index[0]].foodPracticesList;
+            for (let i = 0; i < list.length; i++) {
+                list[i].checked = false;
+            }
+            list[index[1]].checked = true;
+            value.data[text][index[0]] = e.target.dataset.value;
+        } else if (text === 'rule') {
+            index = e.target.dataset.index;
+            value.data[text] = e.target.dataset.value;
+        }
+        console.log(value, 'ShopOneData');
+        that.setData({
+            ShopOneData: value
+        });
+    },
+    modulePopup(e) {
+        let active = e.target.dataset.active,
+            _this = this;
+        if (!active)
+            return;
+        console.log(e);
+        if (active === 'close') {
+            // 关闭弹窗
+            _this.closeModule('moduleActiveMe');
+        } else if (active === 'submit') {
+            // 弹窗提交
+            // currentTarget
+            let data = {
+                food: e.target.dataset.value.data,
+                picktype: e.target.dataset.value.picktype
+            };
+            e.currentTarget.dataset = data;
+            _this.addToCarts(e);
+            _this.closeModule('moduleActiveMe');
+        } else if (active === 'buttonItem rule') {
+            _this.setShopOneDate(e, 'rule');
+        } else if (active === 'buttonItem practices') {
+            _this.setShopOneDate(e, 'practices');
+        }
+    },
+    openModule(str) {
+        let data = {
+            isMask: true
+        };
+        data[str] = str;
+        this.setData(data);
+    },
+    closeModule(str) {
+        let data = {
+            isMask: false
+        };
+        data[str] = '';
+        this.setData(data);
     }
-})
+});

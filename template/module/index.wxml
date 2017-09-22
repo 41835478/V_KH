@@ -1,0 +1,36 @@
+<template name="module-popup">
+    <view class="module-popup {{class}}" wx:if="{{class}}">
+        <view class="module-title">
+            <view class="module-close" data-active="close"></view>
+            <text>{{ShopOneData.isLoading?ShopOneData.title:'加载中...'}}</text>
+        </view>
+        <view class="module-content">
+            <scroll-view class="height-all scroll-view" scroll-y="false">
+                <view class="module-radio-list clearfix" wx:if="{{ShopOneData.data.ruleList.length>0}}">
+                    <view class="fl module-left">规格</view>
+                    <view class="fl module-right">
+                        <button wx:for="{{ShopOneData.data.ruleList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                                class="btn btn-red-default {{ShopOneData.data.rule.id === v.id?'active':''}}"
+                                data-active="buttonItem rule" data-index="{{i}}" data-value="{{v}}">
+                            {{v.name}}
+                        </button>
+                    </view>
+                </view>
+                <view class="module-radio-list clearfix" wx:for="{{ShopOneData.data.practicesList}}" wx:key="*this"
+                      wx:if="{{item.foodPracticesList}}">
+                    <view class="fl module-left">{{item.practicesTypeName}}</view>
+                    <view class="fl module-right module-right-item">
+                        <button wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                                class="btn btn-red-default {{v.checked?'active':''}}" data-active="buttonItem practices"
+                                data-index="{{index+','+i}}" data-value="{{v}}">
+                            {{v.practicesName}}
+                        </button>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+        <view class="module-footer">
+            <button data-active="submit" data-value="{{ShopOneData}}">确定</button>
+        </view>
+    </view>
+</template>
