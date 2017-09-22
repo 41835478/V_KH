@@ -41,15 +41,12 @@ Page({
         if (that.data.discount == null || that.data.discount == undefined || that.data.discount == '无') {
             that.setData({discount: 0});
         }
-
-
         // console.log(that.data.discount);
         //查询餐厅服务费
         var url = app.globalData.serverAddress + "microcode/getResDetail";
         var data = {resId: app.globalData.resId};
         appUtil.httpRequest(url, data, function (rsp) {
             if (rsp.returnStatus) {
-                // console.log(rsp);
                 var waimai = rsp.value.takeoutBusinessRules;
                 if (waimai.distributionCostType == 0) {//为0时配送费为0
                     that.setData({
@@ -75,51 +72,58 @@ Page({
                 }
 
                 function money(num) {
+                    if (!num) {
+                        return 0;
+                    }
                     return parseFloat(num).toFixed(2);
                 }
 
-                //计算总价
-                var newAmout = 0;
-                var consumerArr = that.data.consumerData;
-                for (let val of consumerArr) {
-                    val.singleProductTotal = parseFloat(val.price * val.foodCount).toFixed(2);
-                    if (val.isdiscount == 0) {
-                        newAmout += val.price * val.foodCount;
-                    } else if (val.isdiscount == 1) {
-                        if (parseFloat(that.data.discount) == 0) {
+                function getData() {
+                    //计算总价
+                    var newAmout = 0;
+                    var consumerArr = that.data.consumerData;
+                    for (let val of consumerArr) {
+                        val.singleProductTotal = parseFloat(val.price * val.foodCount).toFixed(2);
+                        if (val.isdiscount == 0) {
                             newAmout += val.price * val.foodCount;
-                        } else {
-                            newAmout += val.price * val.foodCount * (that.data.discount / 10);
-                        }
-
-                    } else {
-                        app.globalData.resDetailData.forEach(function (ival, ikey) {
-                            if (ival.resId == app.globalData.resId) {
-                                if (ival.memberType && ival.memberType != "undefind") {
-                                    val.foodRuleMemberPrice.forEach(function (jval, jkey) {
-                                        if (ival.memberType == jval.memberType) {
-                                            newAmout += jval.memberPrice * val.foodCount;
-                                        }
-                                    })
-                                } else {
-                                    newAmout += val.price * val.foodCount;
-                                }
+                        } else if (val.isdiscount == 1) {
+                            if (parseFloat(that.data.discount) == 0) {
+                                newAmout += val.price * val.foodCount;
+                            } else {
+                                newAmout += val.price * val.foodCount * (that.data.discount / 10);
                             }
-                        })
-                    }
-                    that.setData({newAmout: newAmout})
-                }
-                let packingCharge = money(waimai.packingCharge) || 0,
-                    peisong = money(that.data.peisong) || 0,
-                    _amount = money(that.data.amount) || 0;
-                newAmout = money(that.data.newAmout) || 0;
-                that.setData({
-                    consumerData: consumerArr,
-                    canhe: packingCharge,
-                    zongjine: money(newAmout + peisong + packingCharge),
-                    youhui: parseFloat(_amount - newAmout).toFixed(2),
 
-                });
+                        } else {
+                            app.globalData.resDetailData.forEach(function (ival, ikey) {
+                                if (ival.resId == app.globalData.resId) {
+                                    if (ival.memberType && ival.memberType != "undefind") {
+                                        val.foodRuleMemberPrice.forEach(function (jval, jkey) {
+                                            if (ival.memberType == jval.memberType) {
+                                                newAmout += jval.memberPrice * val.foodCount;
+                                            }
+                                        })
+                                    } else {
+                                        newAmout += val.price * val.foodCount;
+                                    }
+                                }
+                            })
+                        }
+                        that.setData({newAmout: newAmout})
+                    }
+                    let packingCharge = money(waimai.packingCharge) || 0,
+                        peisong = money(that.data.peisong) || 0,
+                        _amount = money(that.data.amount) || 0;
+                    newAmout = money(that.data.newAmout) || 0;
+                    that.setData({
+                        consumerData: consumerArr,
+                        canhe: packingCharge,
+                        zongjine: money(Number(newAmout) + Number(peisong) + Number(packingCharge)),
+                        youhui: money(Number(_amount) - Number(newAmout))
+
+                    });
+                }
+
+                getData()
             } else {
                 console.log('店铺详情模块失败');
             }
@@ -145,7 +149,6 @@ Page({
             note: that.data.note
         };
         appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
             var consumerId = rsp.value.id;
             wx.redirectTo({
                 url: "/pages/order/order-pay/order-pay?consumerId=" + consumerId + "&resId=" + app.globalData.resId,

@@ -1,48 +1,52 @@
-<form class="wrapper has-nav" bindsubmit="formSubmit">
+<view class="old-class">
+    <form class="wrapper has-nav" bindsubmit="formSubmit">
 
-  <!--<navigator open-type="redirect" url="/pages/vkahui/address/address" open-type="redirect">-->
+        <!--<navigator open-type="redirect" url="/pages/vkahui/address/address" open-type="redirect">-->
 
-  <!--<view class="area inblk width-all text-right border-box bg-color-gray pd-tb-small"  bindtap="deleteAddress">
-        <image class="icon-normal-equal pd-right-small" src="/images/icon/delete.png"></image>
-    </view>-->
+        <!--<view class="area inblk width-all text-right border-box bg-color-gray pd-tb-small"  bindtap="deleteAddress">
+              <image class="icon-normal-equal pd-right-small" src="/images/icon/delete.png"></image>
+          </view>-->
 
-  <!--</navigator>-->
-  <view class="info pd-lr-small bg-color-white">
-    <view class="ct arrow-list-ctn">
-      <view class="list">
-        <view class="entry">
-          <text class="p cus-width-3 me">联系人</text>
-          <input name="username" placeholder="收货人姓名" value="{{username}}" />
+        <!--</navigator>-->
+        <view class="info pd-lr-small bg-color-white">
+            <view class="ct arrow-list-ctn">
+                <view class="list">
+                    <view class="entry">
+                        <text class="p cus-width-3 me">联系人</text>
+                        <input name="username" placeholder="收货人姓名" value="{{username}}"/>
+                    </view>
+                    <view class="entry">
+                        <text class="p cus-width-3 me">性别</text>
+                        <radio-group class="radio-group" name="radio">
+                            <label class="radio" value="{{sex}}">
+                                <radio color="#f74b7b" name="sex" value="0" checked="{{true}}"/>
+                                男
+                            </label>
+                            <label class="radio" value="{{sex}}">
+                                <radio color="#f74b7b" name="sex" value="1" checked="{{check}}"/>
+                                女
+                            </label>
+                        </radio-group>
+                    </view>
+                    <view class="entry">
+                        <text class="p cus-width-3 me">电话</text>
+                        <input name="phone_number" placeholder="请填写收货手机号" value="{{phone_number}}" maxlength="11"/>
+                        <view class="mes" wx:if="{{phone}}">*您的手机号码格式输入有误，请重新输入</view>
+                    </view>
+                    <view class="entry">
+                        <text class="p cus-width-3  me">地址</text>
+                        <input name="address" placeholder="请填写详细收货地址" value="{{addRess}}"/>
+                    </view>
+                </view>
+            </view>
         </view>
-        <view class="entry">
-          <text class="p cus-width-3 me">性别</text>
-          <radio-group class="radio-group" name="radio">
-            <label class="radio" value="{{sex}}">
-              <radio color="#f74b7b" name="sex" value="0" checked="{{true}}"/>男
-            </label>
-            <label class="radio" value="{{sex}}">
-              <radio color="#f74b7b" name="sex" value="1"checked="{{check}}"/>女
-            </label>
-          </radio-group>
+        <!--<navigator open-type="redirect" url="/pages/vkahui/address/address?isWaimai=true">-->
+        <view class="btn-ctn width-all">
+            <button class="btn inblk btn-red button" formType="submit">确定</button>
         </view>
-        <view class="entry">
-          <text class="p cus-width-3 me">电话</text>
-          <input name="phone_number" placeholder="请填写收货手机号" value="{{phone_number}}" maxlength="11" />
-           <view class="mes"  wx:if="{{phone}}">*您的手机号码格式输入有误，请重新输入</view>
-        </view>
-        <view class="entry">
-          <text class="p cus-width-3  me">地址</text>
-          <input name="address" placeholder="请填写详细收货地址" value="{{addRess}}" />
-        </view>
-      </view>
-    </view>
-  </view>
-  <!--<navigator open-type="redirect" url="/pages/vkahui/address/address?isWaimai=true">-->
-    <view class="btn-ctn width-all">
-      <button class="btn inblk btn-red" formType="submit">确定</button>
-    </view>
-  <!--</navigator>-->
-</form>
+        <!--</navigator>-->
+    </form>
 
-<!--<import src="/pages/template/template.wxml" />
-<template is="navigation" />-->
+    <!--<import src="/pages/template/template.wxml" />
+    <template is="navigation" />-->
+</view>

@@ -1,48 +1,56 @@
 var utilMd5 = require('../../../utils/md5.js');
 var appUtil = require('../../../utils/appUtil.js');
 const apiService = require('../../../utils/ApiService');
+const RegExpUtil = require('../../../utils/RegExpUtil');
 var util = require('../../../utils/util.js');
 var app = getApp();
 Page({
     data: {
         clock: '',
+        isPhone: false,
+        isVerificationCode: false,
+        phone: false,
+        phoneStr: '您的手机号码格式输入有误，请重新输入'
     },
     onLoad: function (options) {
         var that = this;
-        console.log(options);
+        options.jumpUrl = decodeURIComponent(options.jumpUrl || '');
         that.setData(options);
     },
     formSubmit: function (e) {
         var that = this;
         var mobile = e.detail.value.mobile;
-        if (!(/^1[34578]\d{9}$/.test(mobile))) {
-            that.setData({phone: true});
-            return;
-        } else {
-            that.setData({phone: false});
-        }
-        var data = {"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"};
-        //var init = util.initPay(data);
-        var url = app.globalData.serverAddress + "sms/getSmsCode";
-
-        appUtil.httpGet(url, data, function (rsp) {
-            console.log(rsp);
-            that.setData({cookies: rsp.value});
-            if (rsp.returnStatus) {
-                wx.showToast({
-                    title: '验证码已发送',
-                    icon: 'success',
-                    duration: 2000
-                });
-                var total_micro_second = 60 * 1000;
-                that.time(total_micro_second);
+        let value = e.detail.value;
+        if (mobile) {
+            if (!RegExpUtil.isPhone(mobile)) {
+                this.setData({
+                    phone: true,
+                    isPhone: false,
+                })
             } else {
-                wx.showToast({
-                    title: "网络异常,请稍后重试",
-                    duration: 2000
-                });
+                this.setData({
+                    isPhone: true,
+                    phone: false
+                })
             }
-        });
+        }
+        if (!RegExpUtil.isPhone(mobile)) {
+            util.showToast('手机号码格式不正确');
+        } else {
+            apiService.getSmsCode({"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"}, function (rsp) {
+                console.log(rsp);
+                that.setData({cookies: rsp.value});
+                if (rsp.returnStatus) {
+                    wx.showToast({
+                        title: '验证码已发送',
+                        icon: 'success',
+                        duration: 2000
+                    });
+                    var total_micro_second = 60 * 1000;
+                    that.time(total_micro_second);
+                }
+            });
+        }
     },
     time: function (total_micro_second) {
         var that = this;
@@ -80,81 +88,72 @@ Page({
         return num < 10 ? "0" + num : num
     },
     queSubmit: function (e) {
-        var that = this;
+        var that = this,
+            code = e.detail.value.code,
+            mobile = e.detail.value.mobile;
         var data = {
             openId: app.globalData.openId,
             resId: that.data.resId
         };
-        let apiName = 'checkBindMobile';
-        if (data.resId && data.resId.length > 0) {
-            apiName = 'checkMemberBindMobile';
+        if (!code || code.length === 0) {
+            util.showToast('验证码为空');
+            return;
+        } else if (code.length !== 6) {
+            util.showToast('验证码位数不足');
+            return;
         }
-        app[apiName](data, function (rsp) {
-            if (rsp.code === 2000) {//已绑定手机号
-                app.globalData.bindPhonenumber = true;
-                app.globalData.isBindPhone = true;
-                wx.showToast({
-                    title: '已绑定手机号',
-                    duration: 2000
-                });
-                return;
-            } else {
-                var value = e.detail.value;
-                var mobile = value.mobile;
-                if (!mobile) {
-                    wx.showToast({
-                        title: '请输入手机号码',
-                        duration: 2000
-                    });
-                    return;
-                }
-                var code = value.code;
-                // console.log(code);
-                if (!code) {
-                    that.setData({yanzhengma: true});
+        if (this.data.isPhone) {
+            let apiName = 'checkBindMobile';
+            if (data.resId && data.resId.length > 0) {
+                apiName = 'checkMemberBindMobile';
+            }
+            app[apiName](data, function (rsp) {
+                if (rsp.code === 2000) {//已绑定手机号
+                    app.globalData.bindPhonenumber = true;
+                    app.globalData.isBindPhone = true;
+                    util.showToast('已绑定手机号');
                     return;
                 } else {
-                    that.setData({yanzhengma: false})
-                }
-                //var url = app.globalData.serverAddress + "microcode/bindWechatUser";
-                var data = {
-                    "openId": app.globalData.openId,
-                    type: 1,
-                    "mobile": mobile,
-                    "code": code,
-                    "resId": that.data.resId
-                };
-                apiService.bindWechatUser(data, function (rsp) {
-                    if (rsp.returnStatus) {
-                        app.globalData.bindPhonenumber = true;
-                        app.globalData.isBindPhone = true;
-                        wx.showToast({
-                            title: '完成绑定',
-                            duration: 2000,
-                            success: function () {
-                                // wx.redirectTo({
-                                //     url: "/pages/canteen/index/index?resId=" + that.data.resId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
-                                // })
+                    var data = {
+                        "openId": app.globalData.openId,
+                        type: 1,
+                        "mobile": mobile,
+                        "code": code,
+                        "resId": that.data.resId
+                    };
+                    apiService.bindWechatUser(data, function (rsp) {
+                        if (rsp.returnStatus) {
+                            app.globalData.bindPhonenumber = true;
+                            app.globalData.isBindPhone = true;
+                            if (that.data.jumpUrl && RegExpUtil.isPath(that.data.jumpUrl)) {
+                                util.go(that.data.jumpUrl, {
+                                    type: 'blank'
+                                })
+                            } else {
+                                util.go(-1);
                             }
-                        });
-                        if (that.data.jumpUrlUrl && that.data.jumpUrlUrl.length > 0) {
-                            wx.redirectTo({
-                                url: decodeURIComponent(that.data.jumpUrlUrl),
-                            })
-                        } else {
-                            wx.navigateBack({
-                                delta: 1
-                            })
                         }
-                    } else {
-                        wx.showToast({
-                            title: rsp.message,
-                            duration: 2000
-                        });
-                    }
-                });
+                    });
+                }
+            });
+        } else {
+            util.showToast('手机号码格式不正确');
+        }
+    },
+    bindPhoneBlurEvent(e) {
+        let value = e.detail.value;
+        if (value) {
+            if (!RegExpUtil.isPhone(value)) {
+                this.setData({
+                    phone: true,
+                    isPhone: false,
+                })
+            } else {
+                this.setData({
+                    isPhone: true,
+                    phone: false
+                })
             }
-        });
-
+        }
     }
-})
+});

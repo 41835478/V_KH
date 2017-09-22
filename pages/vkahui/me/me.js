@@ -5,50 +5,33 @@ Page({
     data: {
         wxInfo: {},
         meInfo: {},
-        userInfo: {
-            memberCardCount: 0,
-            memberIntegral: 0,
-            memberCouponCount: 0
-        },
+        memberCardCount: 0,
         shouye: true,
         dingdan: false,
-        wo: true
+        wo: true,
+        isBindMobile: false
     },
     onLoad: function (options) {
         var that = this;
         that.setData({
-            wxInfo: app.globalData.userInfo,
-            resId: app.globalData.resId,
-            tableCode: app.globalData.tableCode,
-            tableName: app.globalData.tableName
+            wxInfo: app.globalData.userInfo
         });
-        that.setData({
-            isBindMobile: app.globalData.isBindMobile
-        });
-        // console.log(data);
-        apiService.getMemberCardList({openId: app.globalData.openId}, function (rsp) {
-            // console.log(rsp.value);
-            if (rsp.returnStatus) {
-                that.setData({memberCardCount: rsp.value.length});
+    },
+    onShow() {
+        let that = this;
+        app.checkBindMobile({openId: app.globalData.openId}, (res) => {
+            if (res.returnStatus) {
+                that.setData({isBindMobile: true});
+            } else {
+                that.setData({isBindMobile: false});
             }
         });
-    },
-    onShow(){
-        app.checkBindMobile({openId: app.globalData.openId});
-    },
-    tab: function (e) {
-        var that = this;
-        console.log('tab-me');
-        var id = e.currentTarget.dataset.id;
-        // console.log(id);
-        if (id == "shouye") {
-            wx.redirectTo({
-                url: '/pages/init/init',
-            })
-        } else if (id == "dingdan") {
-            wx.redirectTo({
-                url: '/pages/order/index/index',
-            })
-        }
+        apiService.getMemberCardList({openId: app.globalData.openId}, function (rsp) {
+            if (rsp.returnStatus && rsp.value) {
+                that.setData({memberCardCount: rsp.value.length});
+            } else {
+                that.setData({memberCardCount: 0});
+            }
+        });
     }
-})
+});

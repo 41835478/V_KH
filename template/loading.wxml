@@ -8,6 +8,32 @@
         </view>
     </view>
 </template>
+
+<template name="loading2">
+    <view class="loading">
+        <view class="spinner2">
+            <view class="spinner-container container1">
+                <view class="circle1"></view>
+                <view class="circle2"></view>
+                <view class="circle3"></view>
+                <view class="circle4"></view>
+            </view>
+            <view class="spinner-container container2">
+                <view class="circle1"></view>
+                <view class="circle2"></view>
+                <view class="circle3"></view>
+                <view class="circle4"></view>
+            </view>
+            <view class="spinner-container container3">
+                <view class="circle1"></view>
+                <view class="circle2"></view>
+                <view class="circle3"></view>
+                <view class="circle4"></view>
+            </view>
+        </view>
+    </view>
+</template>
+
 <template name="mask">
-    <view class="mask" hidden="{{!isMask}}" data-active="close"></view>
+    <view class="mask {{class}}" catch:tap="bindAzmCloseMask" hidden="{{!isMask}}" data-active="close"></view>
 </template>

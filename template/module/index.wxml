@@ -1,36 +1,76 @@
+<import src="../loading.wxml"/>
+
 <template name="module-popup">
     <view class="module-popup {{class}}" wx:if="{{class}}">
-        <view class="module-title">
-            <view class="module-close" data-active="close"></view>
-            <text>{{ShopOneData.isLoading?ShopOneData.title:'加载中...'}}</text>
+        <view class="module-title text-overflow">
+            <view class="module-close" catch:tap="bindAzmCloseMask"></view>
+            <text>{{isLoading?title:'加载中...'}}</text>
         </view>
         <view class="module-content">
             <scroll-view class="height-all scroll-view" scroll-y="false">
-                <view class="module-radio-list clearfix" wx:if="{{ShopOneData.data.ruleList.length>0}}">
-                    <view class="fl module-left">规格</view>
-                    <view class="fl module-right">
-                        <button wx:for="{{ShopOneData.data.ruleList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                                class="btn btn-red-default {{ShopOneData.data.rule.id === v.id?'active':''}}"
-                                data-active="buttonItem rule" data-index="{{i}}" data-value="{{v}}">
-                            {{v.name}}
-                        </button>
-                    </view>
+                <view wx:if="{{!isLoading}}">
+                    <template is="loading2"></template>
                 </view>
-                <view class="module-radio-list clearfix" wx:for="{{ShopOneData.data.practicesList}}" wx:key="*this"
-                      wx:if="{{item.foodPracticesList}}">
-                    <view class="fl module-left">{{item.practicesTypeName}}</view>
-                    <view class="fl module-right module-right-item">
-                        <button wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                                class="btn btn-red-default {{v.checked?'active':''}}" data-active="buttonItem practices"
-                                data-index="{{index+','+i}}" data-value="{{v}}">
-                            {{v.practicesName}}
-                        </button>
-                    </view>
-                </view>
+                <template is="{{tableContent}}" data="{{data,data2}}"></template>
             </scroll-view>
         </view>
-        <view class="module-footer">
-            <button data-active="submit" data-value="{{ShopOneData}}">确定</button>
+        <view class="module-footer flexBox" wx:if="{{footer.length>0}}">
+            <view class="module-footer-left flexBox-item fb-6 height-all">
+                <view wx:if="{{tableContent === 'table-rule'}}" class="height-all">
+                    <text class="font-weight-bold text-red">￥{{data.rule.price||0}}</text>
+                </view>
+            </view>
+            <view class="module-footer-right flexBox-item fb-6 height-all">
+                <button class="height-all" catch:tap="bindAzmModulePopupSubmit" data-value="{{data}}">{{footer[0]}}
+                </button>
+            </view>
+
+        </view>
+    </view>
+    <template is="mask" data="{{isMask}}"></template>
+</template>
+
+
+<template name="table-rule">
+    <view class="module-radio-list flexBox" wx:if="{{data.info.ruleList.length>0}}">
+        <view class="module-left flexBox-item fb-2">规格</view>
+        <view class="module-right flexBox-item fb-10">
+            <button plain="true" wx:for="{{data.info.ruleList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                    class="btn btn-red-default {{data.rule.id === v.id?'active':''}}" data-index="{{i}}"
+                    data-value="{{v}}" catch:tap="bindAzmPopupRuleBtn">{{v.name}}
+            </button>
+        </view>
+    </view>
+    <view class="module-radio-list flexBox" wx:for="{{data.info.practicesList}}" wx:key="*this"
+          wx:if="{{item.foodPracticesList}}">
+        <view class="module-left flexBox-item fb-2">{{item.practicesTypeName}}</view>
+        <view class="module-right module-right-item flexBox-item fb-10">
+            <button plain="true" wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                    class="btn btn-red-default {{v.checked?'active':''}}" data-index="{{index+','+i}}"
+                    data-value="{{v}}" catch:tap="bindAzmPopupPracticesBtn">{{v.practicesName}}
+            </button>
+        </view>
+    </view>
+</template>
+
+<template name="table-content">
+    <view class="module-radio-list flexBox" wx:if="{{data.list.length>0}}">
+        <view class="module-left flexBox-item fb-2">选择</view>
+        <view class="module-right flexBox-item fb-10">
+            <button plain="true" wx:for="{{data.list}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                    class="btn btn-red-default {{v.checked?'active':''}}"
+                    catch:tap="bindAzmPopupSubareaBtn" data-index="{{i}}" data-value="{{v}}">{{v.subareaName}}
+            </button>
+        </view>
+    </view>
+    <view class="module-radio-list flexBox" wx:if="{{data.tableList.length>0}}">
+        <view class="module-left flexBox-item fb-2">台号</view>
+        <view class="module-right module-right-item flexBox-item fb-10">
+            <button plain="true" wx:for="{{data.tableList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+                    class="btn btn-red-default {{(data2.tableCode == v.tableCode)?'active':''}}"
+                    catch:tap="bindAzmPopupSubareaItemBtn"
+                    data-index="{{i}}" data-value="{{v}}">{{v.name}}
+            </button>
         </view>
     </view>
 </template>

@@ -1,6 +1,7 @@
 "use strict";
 
-const util = require('./util');
+const util = require('./util'),
+    utilCommon = require('./utilCommon');
 
 class HttpRequest {
     constructor() {
@@ -12,7 +13,6 @@ class HttpRequest {
             data = {},
             url = params.url;
         delete params.url;
-        wx.showNavigationBarLoading();
         params.data.signature = util.getSignature(params.data);
         if (params.method && params.method.toLocaleLowerCase() === 'post') {
             params.header = {
@@ -24,43 +24,74 @@ class HttpRequest {
             params.data = null;
         }
         for (let k in params.data) {
-            if (k == 'consumerId') {
-                debugger
-            }
-            if (!params.data[k] && params.data[k] !== 0) {
+            if (!params.data[k] && !utilCommon.isNumberOfNaN(params.data[k])) {
                 params.data[k] = '';
             }
         }
-        const requestTask = wx.request({
-            url: url || '',
-            data: params.data || {},
-            header: params.header || {},
-            method: params.method || 'GET',
-            success(res) {
-                console.log(res.data.message, res);
-                let code = res.data.returnStatus;
-                if (statusCode) {
-                    code = true;
-                }
-                if (res.statusCode === 200 && code) {
-                    flag = true;
-                    data = res.data;
-                } else {
-                    util.showToast(res.data.message);
-                }
-            },
-            fail(res) {
-                // util.showToast(res.errMsg);
-                util.showToast('网络连接失败，或服务器错误');
-                console.log("网络连接失败，或服务器错误", res);
-            },
-            complete(res) {
-                wx.hideNavigationBarLoading();
-                if (flag) {
-                    callBack && callBack(res.data);
-                }
+
+        function failCallback(res) {
+            let text = '网络连接失败，或服务器错误' + '{' + res.errMsg + '}';
+            if (res.statusCode === 404) {
+                text = '请求失败'
+            } else if (res.statusCode === 500) {
+                text = '服务器错误'
             }
-        });
+            wx.showModal({
+                title: '提示',
+                content: text,
+                showCancel: false,
+                confirmText: '请重试',
+                success: function (res) {
+                    if (res.confirm) {
+                        setRequest();
+                    } else if (res.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            });
+        }
+
+        function setRequest() {
+            wx.showNavigationBarLoading();
+            return wx.request({
+                url: url || '',
+                data: params.data || {},
+                header: params.header || {},
+                method: params.method || 'GET',
+                success(res) {
+                    let code = res.data.returnStatus;
+                    if (res.statusCode !== 200) {
+                        failCallback(res);
+                    }
+                    if (!code && !statusCode) {
+                        util.showToast(res.data.message);
+                    }
+                    if (statusCode) {
+                        code = true;
+                    }
+                    if (res.statusCode === 200 && code) {
+                        flag = true;
+                        data = res.data;
+                        console.log(res.data.message, res);
+                    }
+                },
+                fail(res) {
+                    // util.showToast(res.errMsg);
+                    // util.showToast('网络连接失败，或服务器错误');
+                    failCallback(res);
+                    console.log("网络连接失败，或服务器错误", res, url);
+                },
+                complete(res) {
+                    wx.hideNavigationBarLoading();
+                    console.log('请求数据________________________', url, res);
+                    if (flag) {
+                        callBack && callBack(res.data);
+                    }
+                }
+            });
+        }
+
+        const requestTask = setRequest();
         this.requestTask.push(requestTask);
         return requestTask;
     };
@@ -74,13 +105,13 @@ class HttpRequest {
         return this.request(params, callBack, statusCode);
     };
 
-    get (url, data, callBack) {
+    get(url, data, callBack, statusCode) {
         let params = {
             url,
             data,
             method: 'GET'
         };
-        return this.request(params, callBack);
+        return this.request(params, callBack, statusCode);
     };
 
     postParm(url, data, callBack) {

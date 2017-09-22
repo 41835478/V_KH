@@ -1,3 +1,6 @@
+@import "./lib/css/animate.wxss";
+@import "./lib/icons/addBtn/iconfont.wxss";
 @import "./less/app.wxss";
-@import "./lib/zanui/index.wxss";
+@import "./template/loading.wxss";
+@import "./lib/weui/weui.wxss";
 @import "./template/module/index.wxss";

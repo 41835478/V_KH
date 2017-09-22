@@ -85,17 +85,99 @@ module.exports = {
         loadDefaultAddress: {
             path: '/microcode/loadDefaultAddress',
             query: {}
+        },
+        /**
+         * 获取店铺首页信息
+         */
+        getMainInfo: {
+            path: '/microcode/getMainInfo',
+            query: {}
+        },
+        /**
+         * 获取店铺banner
+         */
+        getCommonBannerList: {
+            path: '/banner/getCommonBannerList ',
+            query: {}
+        },
+        /**
+         * 获取桌位列表
+         */
+        findTableDtoList: {
+            path: '/table/findTableDtoList',
+            query: {}
+        },
+        /**
+         * 提交订单
+         */
+        commitOrder: {
+            path: '/microcode/commitOrder',
+            query: {}
+        },
+        /**
+         * 获取订单详情
+         */
+        getOrderDetail: {
+            path: '/microcode/getOrderDetail',
+            query: {}
+        },
+        /**
+         * 检查是否存在未结账的消费者
+         */
+        checkHasWaitPayConsumer: {
+            path: '/microcode/checkHasWaitPayConsumer',
+            query: {}
+        },
+        /**
+         *
+         */
+        checkSmsCodeByOpenId: {
+            path: '/sms/checkSmsCodeByOpenId',
+            query: {}
+        },
+        /**
+         *
+         */
+        memberCardPay: {
+            path: '/microcode/memberCardPay',
+            query: {}
+        },
+        /**
+         * 获取验证码
+         */
+        getSmsCode: {
+            path: '/sms/getSmsCode',
+            query: {}
+        },
+        /**
+         * 获取订单列表
+         */
+        getOrderList: {
+            path: '/microcode/getOrderList',
+            query: {}
+        },
+        /**
+         * 微信支付
+         */
+        finishPay: {
+            path: '/microcode/finishPay',
+            query: {}
+        },
+        /**
+         * 微信支付接口
+         */
+        wxPayForH5: {
+            path: '/wxpay/wxPayForH5',
+            query: {}
         }
     },
     getToken() {
         const app = getApp();
-        console.log('initPay', app);
-        return app.getToken();
-        // if (app && app.globalData && app.globalData.token) {
-        //     return app.globalData.token;
-        // } else {
-        //     return wx.getStorageSync('token');
-        // }
+        if (this.token && this.token.length > 0) {
+            return this.token;
+        } else {
+            return app.getToken();
+        }
     },
     /**
      * 获取openid
@@ -170,6 +252,12 @@ module.exports = {
         }, true);
         return http;
     },
+    /**
+     * 获取菜品列表
+     * @param data
+     * @param cb
+     * @returns {*}
+     */
     getFoodList(data, cb) {
         const url = this.url + this.api.getFoodList.path;
         data.token = this.getToken();
@@ -192,7 +280,7 @@ module.exports = {
         return http;
     },
     /**
-     * 获取规格列表
+     * 获取口味与做法列表
      */
     getFoodPracticesList(data, cb) {
         const url = this.url + this.api.getFoodPracticesList.path;
@@ -234,6 +322,150 @@ module.exports = {
         const url = this.url + this.api.loadDefaultAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取店铺首页信息
+     */
+    getMainInfo(data, cb) {
+        const url = this.url + this.api.getMainInfo.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取店铺banner
+     */
+    getCommonBannerList(data, cb) {
+        const url = this.url + this.api.getCommonBannerList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取桌位列表
+     */
+    findTableDtoList(data, cb) {
+        const url = this.url + this.api.findTableDtoList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 提交订单
+     */
+    commitOrder(data, cb) {
+        const url = this.url + this.api.commitOrder.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取订单详情
+     */
+    getOrderDetail(data, cb) {
+        const url = this.url + this.api.getOrderDetail.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 检查是否存在未结账的消费者
+     */
+    checkHasWaitPayConsumer(data, cb) {
+        const url = this.url + this.api.checkHasWaitPayConsumer.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, true);
+        return http;
+    },
+    /**
+     *
+     */
+    checkSmsCodeByOpenId(data, cb) {
+        const url = this.url + this.api.checkSmsCodeByOpenId.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, true);
+        return http;
+    },
+    /**
+     *
+     */
+    memberCardPay(data, cb) {
+        const url = this.url + this.api.memberCardPay.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取验证码
+     */
+    getSmsCode(data, cb) {
+        const url = this.url + this.api.getSmsCode.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 获取订单列表
+     */
+    getOrderList(data, cb) {
+        const url = this.url + this.api.getOrderList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 微信支付
+     */
+    finishPay(data, cb) {
+        const url = this.url + this.api.finishPay.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        });
+        return http;
+    },
+    /**
+     * 微信支付接口
+     */
+    wxPayForH5(data, cb) {
+        const url = this.url + this.api.wxPayForH5.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
         });

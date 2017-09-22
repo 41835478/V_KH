@@ -1,5 +1,5 @@
 var appUtil = require('../../../utils/appUtil.js');
-var dateUtil = require('../../../utils/util.js');
+var util = require('../../../utils/util.js');
 var app = getApp();
 Page({
     data: {},
@@ -89,11 +89,6 @@ Page({
     toWaimai: function (e) {
         var that = this;
         that.changAddress(e);
-        wx.redirectTo({
-            url: '/pages/waimai/order/order',
-            success: function () {
-                // console.log('外卖地址变化成功')
-            }
-        })
+        util.go(-1);
     }
 })

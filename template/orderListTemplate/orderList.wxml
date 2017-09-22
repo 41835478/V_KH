@@ -110,7 +110,7 @@
     </view>
     <view class="shopping-car {{shoppingCarActive}}" bindtap="close" data-close="close"
           wx:if="{{hallCount>0}}">
-        <view class="pro-list border-t" style="margin-bottom:-4.2rem">
+        <view class="pro-list border-t">
             <view class="header bg-color-white">
                 <text class="h2 text-left">购物车</text>
             </view>

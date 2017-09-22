@@ -1,7 +1,11 @@
-var appUtil = require('../../utils/appUtil.js');
-var util = require('../../utils/util.js');
-const apiService = require('../../utils/ApiService');
-var app = getApp();
+const appUtil = require('../../utils/appUtil.js'),
+    util = require('../../utils/util.js'),
+    apiService = require('../../utils/ApiService'),
+    queryString = require('../../utils/queryString'),
+    utilPage = require('../../utils/utilPage'),
+    app = getApp(),
+    // shopUrl = '/pages/canteen/index/index';
+    shopUrl = '/pages/shop/order/order';
 Page({
     data: {
         module: '',
@@ -18,11 +22,15 @@ Page({
         //options.resId = "0000000055dd15670155ddd056ef0121";//洪记01id
         //options.tableCode = "7cd5d5c6a57643ae9a9fb87a514c3ce9";
         //options.tableName = "A1";
-        console.log(options, '-----------options');
+        let _this = this;
         /**
          * 登入
          */
-        this.login(options);
+        app.globalData.loginRequestPromise.then((res) => {
+            console.log('init登入', res);
+            _this.login(options);
+            _this.loadCardList();//加载会员卡列表
+        });
     },
     onShow: function (options) {
         console.log('进入界面');
@@ -77,8 +85,8 @@ Page({
         };
         appUtil.httpRequest(url, data, function (rsp) {
             // console.log(rsp);
-            that.loadCardList();
             if (rsp.returnStatus) {
+
             }
         });
     },
@@ -87,7 +95,7 @@ Page({
         // app.globalData.openId = openId;
         // app.globalData.token = token;
         let _this = this,
-            rid = app.globalData.rid || app.getQrcodeRid(options),
+            rid = options.q,
             flag = false,
             openId = app.globalData.openId;
         console.log(rid, "----------------rid", options);
@@ -117,62 +125,73 @@ Page({
             } else {
                 setUserInfo();
             }
-            _this.loadCardList();//加载会员卡列表
         }
 
         function setUserInfo() {
-            let resId = app.globalData.resId;
-            if (flag) {
-                console.log('获取二维码店铺ID登入');
-                app.getResId(setResId);
-            } else {
-                console.log('非二维码店铺ID登入', resId);
+            let QRcodeTable = utilPage.getQRcodeTable(rid, true);
+            if (!flag) {
+                return;
             }
-        }
-
-        function setResId() {
-            let resId = app.globalData.resId;
-            if (!resId || resId.length === 0) return;
-            let userVerification = app.globalData.userVerification;
-            console.log('进入setResId', userVerification);
-            if (userVerification && !util.isEmptyObject(userVerification)) {
-                _this.setData(userVerification);
-                _this.initiaLogin(userVerification.resId);
-            } else {
-                console.log('用户验证对象为空');
-            }
+            QRcodeTable.then((res) => {
+                if (res.status) {
+                    _this.initiaLogin(res.value);
+                } else {
+                    util.showToast(res.message);
+                }
+            }, (rsp) => {
+                util.showToast(rsp.message);
+            })
         }
     },
-    initiaLogin(resId) {
+    initiaLogin(options) {
         let _this = this,
             data = {
                 openId: app.globalData.openId,
                 nikeName: app.globalData.userInfo.nickName,
                 sex: app.globalData.userInfo.gender,
                 headImgUrl: app.globalData.userInfo.avatarUrl,
-                resId: resId
+                resId: options.resId
             };
-        console.log('是否首次登录', resId);
-        if (!resId || resId.length === 0) return;
+        console.log('是否首次登录', options.resId);
+        if (!options.resId || options.resId.length === 0) return;
         app.checkIsFirstUse(data, function (rsp) {
-            let options = _this.data;
-            app.globalData.rid = null;
-            app.globalData.resId = null;
             console.log('是否首次登录__', rsp, options);
             if (rsp.returnStatus) {
-                //首次登录
-                _this.setData({
-                    module: 'moduleActive'
+                wx.showModal({
+                    title: '温馨提示',
+                    content: '您是首次登陆，如果您已经注册过商家会员，请绑定手机号，系统将自动匹配您的信息。',
+                    cancelText: '直接使用',
+                    confirmText: '绑定手机',
+                    confirmColor: '#f74b7b',
+                    success: function (res) {
+                        if (res.confirm) {
+                            _this.phone(options);
+                        } else if (res.cancel) {
+                            go();
+                        }
+                    }
                 });
             } else {
+                go();
+            }
+
+            function go() {
                 if (options.resId && options.type == 0) {
-                    wx.navigateTo({
-                        url: "/pages/canteen/index/index?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName,
-                    })
+                    util.go(shopUrl, {
+                        data: {
+                            resId: options.resId,
+                            tableCode: options.tableCode,
+                            tableName: options.tableName,
+                            orderType: 0
+                        }
+                    });
                 } else if (options.resId && options.type == 1) {
-                    wx.navigateTo({
-                        url: "/pages/canteen/index/index?resId=" + _this.data.resId + "&tableCode=" + _this.data.tableCode + "&tableName=" + _this.data.tableName + "&currentTab=2",
-                    })
+                    let url = '/pages/shop/home/home';
+                    util.go(url, {
+                        data: {
+                            resId: options.resId
+                        }
+                    });
                 }
             }
         });
@@ -180,11 +199,8 @@ Page({
     /**
      * 加载会员拉列表
      */
-    loadCardList: function () {
+    loadCardList: function (cb) {
         var that = this;
-        app.globalData.resDetailData = JSON.parse(wx.getStorageSync('getMemberCardList') || '[]');
-        if (app.globalData.resDetailData && app.globalData.resDetailData.length > 0)
-            setMemberCardList(app.globalData.resDetailData);
 
         function setMemberCardList(value) {
             var vkahuiData = value;
@@ -221,9 +237,11 @@ Page({
 
         apiService.getMemberCardList({openId: app.globalData.openId}, (rsp) => {
             if (rsp.returnStatus) {
-                app.globalData.resDetailData = rsp.value;
-                wx.setStorageSync('getMemberCardList', JSON.stringify(rsp.value));
-                setMemberCardList(rsp.value)
+                app.globalData.memberCardDto = rsp.value;
+                for (let i = 0; i < rsp.value; i++) {
+                    app.globalData.memberCardDtoObj[rsp.value[i][that.data.resId]] = rsp.value[i];
+                }
+                setMemberCardList(rsp.value);
             } else {
                 that.setData({
                     vkahuiData: []
@@ -273,25 +291,40 @@ Page({
         });
         if (that.data.resId) {
             wx.navigateTo({
-                url: "/pages/canteen/index/index?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName,
+                url: shopUrl + "?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName,
                 success(res) {
 
                 }
             })
         }
     },
-    phone: function () {
-        var that = this;
-        var options = that.data,
-            url = encodeURIComponent("/pages/canteen/index/index?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName);
-        wx.navigateTo({
-            url: "/pages/vkahui/phone-add/phone-add?resId=" + options.resId + "&tableCode=" + options.tableCode + "&tableName=" + options.tableName + '&jumpUrl=' + url,
-            success: function (res) {
-                // console.log('跳转到绑定手机页面')
-                that.setData({
-                    module: ''
+    phone: function (data) {
+        var that = this, url;
+        if (data.resId && data.resId.length > 0) {
+            var shopHomeUrl = '/pages/shop/home/home',
+                stringify = queryString.stringify({
+                    resId: data.resId
                 });
-            },
+            url = encodeURIComponent(shopHomeUrl + "?" + stringify);
+            if (data.tableCode && data.tableCode.length > 0) {
+                stringify = queryString.stringify({
+                    resId: data.resId,
+                    tableCode: data.tableCode,
+                    tableName: data.tableName
+                });
+                url = encodeURIComponent(shopUrl + "?" + stringify);
+            }
+        }
+        util.go('/pages/vkahui/phone-add/phone-add', {
+            data: {
+                resId: data.resId,
+                tableCode: data.tableCode,
+                tableName: data.tableName,
+                jumpUrl: url
+            }
+        });
+        that.setData({
+            module: ''
         });
     },
 });

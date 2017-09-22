@@ -1,7 +1,8 @@
-var utilMd5 = require('../../../utils/md5.js');
-var appUtil = require('../../../utils/appUtil.js');
-var util = require('../../../utils/util.js');
-var app = getApp();
+const apiService = require('../../../utils/ApiService'),
+    utilMd5 = require('../../../utils/md5.js'),
+    appUtil = require('../../../utils/appUtil.js'),
+    util = require('../../../utils/util.js'),
+    app = getApp();
 
 // 使用function初始化array，相比var initSubMenuDisplay = [] 既避免的引用复制的，同时方式更灵活，将来可以是多种方式实现，个数也不定的
 function initSubMenuDisplay() {
@@ -32,22 +33,22 @@ Page({
         // console.log('支付页面');
         // console.log(options);
         that.setData(options);
-
     },
     onShow(options) {
         this.setLoad();
     },
     setLoad(options) {
         var that = this;
-        var url = app.globalData.serverAddress + 'microcode/getOrderDetail';
         var data = {consumerId: that.data.consumerId, resId: that.data.resId};
         // console.log(data);
-        appUtil.httpRequest(url, data, function (rsp) {
+        apiService.getOrderDetail(data, function (rsp) {
             // console.log('订单详情')
             // console.log(rsp);
             that.setData({dingdan: rsp.value});
             if (rsp.returnStatus) {
-                that.setData({orderFood: rsp.value});
+                let orderFood = rsp.value;
+                orderFood.mealNumber = orderFood.consumerNo.substring(orderFood.consumerNo.length - 5);
+                that.setData({orderFood});
                 if (rsp.value.consumerType == 0) {
                     that.setData({menu: "堂食"});
                 } else if (rsp.value.consumerType == 1) {
@@ -85,10 +86,9 @@ Page({
                         })
                     }
                 }
-                // that.paymentClick();
-                var url = app.globalData.serverAddress + 'microcode/getMemberCardList';//获取会员卡余额
-                var data = {openId: app.globalData.openId, resId: that.data.resId};
-                appUtil.httpRequest(url, data, function (rsp) {
+                that.paymentClick(null, true);
+                let data = {openId: app.globalData.openId, resId: that.data.resId};
+                apiService.getMemberCardList(data, function (rsp) {
                     if (rsp.returnStatus) {
                         // console.log('会员卡余额');
                         // console.log(rsp);
@@ -110,39 +110,57 @@ Page({
                         });
                     }
                 });
-            } else {
-                wx.showToast({
-                    title: rsp.message,
-                    duration: 2000
-                });
             }
         });
     },
-    paymentClick: function (e) {
+    paymentClick: function (e, bol) {
         var that = this;
         let payment = 'huiyuan';
         if (e) {
             payment = e.detail.value;
         }
-        that.setData({payment: payment});
+        if (!bol) {
+            that.setData({payment});
+        }
         if (payment == 'huiyuan') {
-            var url = app.globalData.serverAddress + "microcode/checkIsFirstUse";
             var data = {
                 openId: app.globalData.openId,
                 resId: that.data.resId
             };
-            appUtil.httpRequest(url, data, function (rsp) {
+            if (that.data.bindPhonenumber) {
+                return;
+            }
+            apiService.checkIsFirstUse(data, (rsp) => {
                 if (rsp.code == 4003) {//未绑定手机号
-                    app.globalData.bindPhonenumber = false;
                     that.setData({
-                        module: 'moduleActive',
-                        bindPhonenumber: false
+                        bindPhonenumber: false,
+                        payment: ''
                     });
+                    if (!bol) {
+                        wx.showModal({
+                            title: '温馨提示',
+                            content: '对不起，您的会员卡还未绑定手机号，请先绑定手机！',
+                            confirmText: '去绑定',
+                            cancelText: '不绑定',
+                            confirmColor: '#f74b7b',
+                            success: function (res) {
+                                if (res.confirm) {
+                                    that.goBinding()
+                                } else if (res.cancel) {
+                                    // console.log('用户点击取消')
+                                }
+                            }
+                        });
+                    }
                 } else {
-                    app.globalData.bindPhonenumber = true;
                     that.setData({
-                        bindPhonenumber: true
-                    })
+                        bindPhonenumber: true,
+                    });
+                    if (!bol) {
+                        that.setData({
+                            payment: ''
+                        })
+                    }
                 }
             });
         }
@@ -175,10 +193,7 @@ Page({
                 // var url ='http://119.23.132.192/zhenler-server/api/wxpay/wxPayForMini?' + init;
 
                 // var url = app.globalData.serverAddress + "wxpay/wxPayForMini?" + init;
-                var url = app.globalData.serverAddress + "wxpay/wxPayForH5";
-                appUtil.httpGet(url, params, function (rsp) {
-                    // console.log('12132132132132132');
-                    // console.log(rsp);
+                apiService.wxPayForH5(params, function (rsp) {
                     if (rsp.returnStatus) {
                         var value = rsp.value;
                         var wxPay = value.woi;
@@ -197,17 +212,20 @@ Page({
                             },
                             'fail': function (res) {
                                 console.log(res);
-                                wx.redirectTo({
-                                    url: '../order-detail/order-detail?resId=' + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
-                                    success: function (res) {
-                                        // console.log('微信支付取消');
+                                util.go('/pages/order/order-detail/order-detail', {
+                                    type: 'blank',
+                                    data: {
+                                        resId: that.data.resId,
+                                        consumerId: that.data.consumerId,
+                                        tableCode: that.data.tableCode,
+                                        tableName: that.data.tableName,
+                                        status: 3
                                     }
-                                })
+                                });
                             }
                         });
                     } else {
                         console.log('微信支付失败');
-                        console.log(rsp);
                         wx.showToast({
                             title: "微信支付失败",
                             duration: 3000
@@ -246,22 +264,25 @@ Page({
     finishPay: function () {//完成支付
         app.globalData.clrCar = true;
         var that = this;
-        var url = app.globalData.serverAddress + 'microcode/finishPay';
         var data = {
             consumerId: that.data.consumerId,
-            resId: app.globalData.resId,
+            resId: that.data.resId,
             type: 0,
             openId: app.globalData.openId,
         };
-        appUtil.httpRequest(url, data, function (rsp) {
+        apiService.finishPay(data, function (rsp) {
             // console.log(rsp)
             if (rsp.returnStatus) {
-                wx.redirectTo({
-                    url: '../order-detail/order-detail?resId=' + app.globalData.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
-                    success: function (res) {
-                        // console.log('微信支付成功');
-                    },
-                })
+                util.go('/pages/order/order-detail/order-detail', {
+                    type: 'blank',
+                    data: {
+                        resId: that.data.resId,
+                        consumerId: that.data.consumerId,
+                        tableCode: that.data.tableCode,
+                        tableName: that.data.tableName,
+                        status: 5
+                    }
+                });
             } else {
                 wx.showToast({
                     title: rsp.message,
@@ -343,11 +364,11 @@ Page({
             // timeout则跳出递归
             return;
         }
-        setTimeout(function () {
-            // 放在最后--
-            total_micro_second -= 10;
-            that.time(total_micro_second);
-        }, 10)
+        // setTimeout(function () {
+        //     // 放在最后--
+        //     total_micro_second -= 10;
+        //     // that.time(total_micro_second);
+        // }, 10)
     },
     date_format: function (micro_second) {
         var that = this;
@@ -384,12 +405,6 @@ Page({
         var timeHaoMiao = (new Date(currentdate)).getTime(); //得到毫秒数
         return timeHaoMiao;
     },
-    binding: function () {
-        var that = this;
-        that.setData({
-            module: ''
-        });
-    },
     timeCode: function (total_micro_second) {
         var that = this;
         // 渲染倒计时时钟
@@ -403,11 +418,11 @@ Page({
             });
             return;
         }
-        setTimeout(function () {
-            // 放在最后--
-            total_micro_second -= 10;
-            that.timeCode(total_micro_second);
-        }, 10)
+        // setTimeout(function () {
+        //     // 放在最后--
+        //     total_micro_second -= 10;
+        //     that.timeCode(total_micro_second);
+        // }, 10)
     },
     date_formatCode: function (micro_second) {
         var that = this;
@@ -424,10 +439,14 @@ Page({
     },
     goBinding: function () {
         var that = this;
-        wx.navigateTo({
-            url: "/pages/vkahui/phone-add/phone-add?verification=true&resId=" + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName
+        util.go("/pages/vkahui/phone-add/phone-add", {
+            data: {
+                resId: that.data.resId,
+                consumerId: that.data.consumerId,
+                tableCode: that.data.tableCode,
+                tableName: that.data.tableName
+            }
         });
-        this.binding();
     },
     getCode: function () {
         var that = this;
@@ -464,11 +483,20 @@ Page({
     codeText: function (e) {
         // console.log('输入的验证码');
         this.data.codeText = e.detail.value;
+        return {
+            value: this.data.codeText
+        }
     },
     confirmCode: function () {
         var that = this;
         // console.log(that.data.codeText);
-
+        if (!that.data.codeText || that.data.codeText.length === 0) {
+            util.showToast('验证码不能为空');
+            return;
+        } else if (that.data.codeText.length < 6) {
+            util.showToast('验证码少于6位');
+            return;
+        }
         var data = {
             code: that.data.codeText,
             openId: app.globalData.openId,
@@ -478,7 +506,6 @@ Page({
         that.setData({
             isCheckSmsCodeByOpenId: false
         });
-        var url = app.globalData.serverAddress + "sms/checkSmsCodeByOpenId";
 
         function resFlag() {
             that.setData({
@@ -486,9 +513,8 @@ Page({
             })
         }
 
-        appUtil.httpGet(url, data, function (res) {
+        apiService.checkSmsCodeByOpenId(data, function (res) {
             if (res.returnStatus) {
-                var url = app.globalData.serverAddress + "microcode/memberCardPay";
                 var data = {
                     openId: app.globalData.openId,
                     amount: that.data.orderFood.actualPrice,
@@ -496,38 +522,33 @@ Page({
                     resId: that.data.resId,
                     code: that.data.codeText
                 };
-                appUtil.httpRequest(url, data, function (res) {
+                apiService.memberCardPay(data, function (res) {
+                    resFlag();
                     if (res.returnStatus) {
                         app.globalData.clrCar = true;
-                        wx.showToast({
+                        util.showToast({
                             title: "会员卡支付成功",
                             duration: 6500,
                             success: function (res) {
-                                wx.redirectTo({
-                                    url: '../order-detail/order-detail?resId=' + that.data.resId + "&consumerId=" + that.data.consumerId + "&tableCode=" + that.data.tableCode + "&tableName=" + that.data.tableName,
-                                    success: function (res) {
-                                        // console.log('会员卡支付成功');
-                                        // console.log(res);
-                                        that.setData({
-                                            message: ''
-                                        });
+                                util.go('/pages/order/order-detail/order-detail', {
+                                    type: 'blank',
+                                    data: {
+                                        resId: that.data.resId,
+                                        consumerId: that.data.consumerId,
+                                        tableCode: that.data.tableCode,
+                                        tableName: that.data.tableName,
+                                        status: 5
                                     }
-                                })
+                                });
                             }
                         });
                     } else {
-                        wx.showToast({
-                            title: "会员卡支付失败",
-                            duration: 3000
-                        });
+                        resFlag();
+                        util.showToast('会员卡支付失败');
                     }
-                    resFlag();
                 });
             } else {
-                wx.showToast({
-                    title: res.message,
-                    duration: 3000
-                });
+                util.showToast(res.message);
                 resFlag();
             }
         });

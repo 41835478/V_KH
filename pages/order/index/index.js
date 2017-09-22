@@ -1,6 +1,7 @@
-var appUtil = require('../../../utils/appUtil.js');
-var dateUtil = require('../../../utils/util.js');
-var app = getApp();
+const appUtil = require('../../../utils/appUtil.js'),
+    util = require('../../../utils/util.js'),
+    ApiService = require('../../../utils/ApiService'),
+    app = getApp();
 Page({
     data: {
         module: '',
@@ -56,35 +57,26 @@ Page({
     },
     loadData: function () {
         var that = this;
-        var url = app.globalData.serverAddress + "microcode/getOrderList";
-        var data = {"openId": app.globalData.openId, "pageNum": that.data.pageNum, "pageSize": that.data.pageSize};
-        console.log(that.data.pageNum + "----" + that.data.pageSize)
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                if (rsp.value.length < that.data.pageSize) {
-                    that.setData({hasMoreData: false})
-                } else {
-                    that.setData({hasMoreData: true})
-                }
-                var orderList = rsp.value;
-                var consumerStatus;
-                orderList.forEach(function (val, key) {
-                    val.amount = val.amount.toFixed(2);
-                    val.resLogo = app.globalData.serverAddressImg + val.resLogo;
-                });
-                if (that.data.pageNum == 1) {
-                    that.setData({orderList: orderList});
-                } else {
-                    that.setData({orderList: that.data.orderList.concat(orderList)});
-                }
-
-                // console.log(orderList);
+        ApiService.getOrderList({
+            "openId": app.globalData.openId,
+            "pageNum": that.data.pageNum,
+            "pageSize": that.data.pageSize
+        }, function (rsp) {
+            if (rsp.value.length < that.data.pageSize) {
+                that.setData({hasMoreData: false})
             } else {
-                wx.showToast({
-                    title: "网络异常,请稍后重试",
-                    duration: 2000
-                });
+                that.setData({hasMoreData: true})
+            }
+            var orderList = rsp.value;
+            var consumerStatus;
+            orderList.forEach(function (val, key) {
+                val.amount = val.amount.toFixed(2);
+                val.resLogo = app.globalData.serverAddressImg + val.resLogo;
+            });
+            if (that.data.pageNum == 1) {
+                that.setData({orderList: orderList});
+            } else {
+                that.setData({orderList: that.data.orderList.concat(orderList)});
             }
         });
     },
@@ -123,18 +115,29 @@ Page({
         });
     },
     pay: function (e) {//去支付
-        // console.log(e.currentTarget.dataset);
         var pay = e.currentTarget.dataset;
-        wx.navigateTo({
-            url: "/pages/order/order-pay/order-pay?resId=" + pay.resid + "&consumerId=" + pay.consumerid,
-        })
+        util.go('/pages/order/order-pay/order-pay', {
+            data: {
+                resId: pay.resid,
+                consumerId: pay.consumerid
+            }
+        });
     },
     addDish: function (e) {//加菜
-        // console.log(e.currentTarget.dataset);
-        var pay = e.currentTarget.dataset;
-        wx.navigateTo({
-            url: "/pages/canteen/index/index?resId=" + pay.resid + "&consumerId=" + pay.consumerid + "&isaddDish=true" + "&tableCode=" + pay.tablecode + "&tableName=" + pay.tablename,
-        })
+        var value = e.currentTarget.dataset.value,
+            orderType = 0;
+        if (Number(value.consumerType) === 2) {
+            orderType = 1;
+        }
+        util.go('/pages/shop/order/order', {
+            data: {
+                resId: value.resId,
+                orderType,
+                consumerId: value.consumerId,
+                tableCode: value.tableCode,
+                tableName: value.tableName
+            }
+        });
     },
     tab: function (e) {
         // console.log('tab-order');
@@ -150,7 +153,7 @@ Page({
             })
         }
     },
-    dd(){
+    dd() {
         console.log('456456');
     }
 })
