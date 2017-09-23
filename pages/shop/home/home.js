@@ -65,14 +65,26 @@ const appPage = {
             token = app.globalData.token,
             resId = options.resId;
         console.log('店铺首页获取openId_______________________________', openId);
-        apiService.token = token;
-        _this.setData({openId, token, resId});
-        _this.getMainInfo();
-        _this.getCommonBannerList();
-        // app.globalData.loginRequestPromise.then((res) => {
-        //     console.log('店铺首页获取openId_______________________________', options);
-        //
-        // })
+        if (!utilCommon.isFalse(openId)) {
+            if (!options.resId && options.resId.length === 0) {
+                app.setLoginRequestPromise();
+            }
+            app.globalData.loginRequestPromise.then((res) => {
+                console.log('店铺首页重新获取openId_______________________________', res);
+                openId = app.globalData.openId;
+                token = app.globalData.token;
+                load();
+            })
+        } else {
+            load();
+        }
+
+        function load() {
+            apiService.token = token;
+            _this.setData({openId, token, resId});
+            _this.getMainInfo();
+            _this.getCommonBannerList();
+        }
     },
     onReady: function () {
         // 页面渲染完成

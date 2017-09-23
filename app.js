@@ -39,35 +39,9 @@ App({
         let rid = _this.getQrcodeRid(options.query);
         console.log('app.js获取rid', rid);
         /**
-         * 初始化登入并获取openId与token
+         * 初始化登入并获取openId与token并设置Promise
          */
-        let loginRequestPromise = new Promise(function (resolve, reject) {
-            _this.requestLogin(function (res) {
-                if (res.returnStatus) {
-                    let flag = true;
-                    /**
-                     * 获取用户信息
-                     */
-                    _this.getUserInfo();
-                    // if (rid && rid.length > 0) {
-                    //     _this.getResId(function (rsp) {
-                    //         if (res.value && res.value.resId) {
-                    //             wx.navigateTo({
-                    //                 url: '/pages/shop/home/home?resId=' + rsp.value.resId
-                    //             })
-                    //         }
-                    //         resolve(res)
-                    //     });
-                    // }else {
-                    //
-                    // }
-                    resolve(res)
-                } else {
-                    reject(res)
-                }
-            });
-        });
-        this.globalData.loginRequestPromise = loginRequestPromise;
+        _this.setLoginRequestPromise();
         _this.getShopCartsStorage();
     },
     /**
@@ -175,6 +149,36 @@ App({
                     });
             }
         });
+    },
+    setLoginRequestPromise() {
+        let _this = this;
+        let loginRequestPromise = new Promise(function (resolve, reject) {
+            _this.requestLogin(function (res) {
+                if (res.returnStatus) {
+                    let flag = true;
+                    /**
+                     * 获取用户信息
+                     */
+                    _this.getUserInfo();
+                    // if (rid && rid.length > 0) {
+                    //     _this.getResId(function (rsp) {
+                    //         if (res.value && res.value.resId) {
+                    //             wx.navigateTo({
+                    //                 url: '/pages/shop/home/home?resId=' + rsp.value.resId
+                    //             })
+                    //         }
+                    //         resolve(res)
+                    //     });
+                    // }else {
+                    //
+                    // }
+                    resolve(res)
+                } else {
+                    reject(res)
+                }
+            });
+        });
+        this.globalData.loginRequestPromise = loginRequestPromise;
     },
     /**
      * 获取二维码扫描登入

@@ -15,13 +15,6 @@ Page({
         vkahuiData: null
     },
     onLoad: function (options) {
-        //options = {};
-        //options.resId = "000000005673d86e015677bbc51d0102";//简约派id
-        //options.tableCode = "1c0302581b104623848d1e0acaddcc4f";
-        //options.tableName = "A1";
-        //options.resId = "0000000055dd15670155ddd056ef0121";//洪记01id
-        //options.tableCode = "7cd5d5c6a57643ae9a9fb87a514c3ce9";
-        //options.tableName = "A1";
         let _this = this;
         /**
          * 登入
@@ -33,12 +26,7 @@ Page({
         });
     },
     onShow: function (options) {
-        console.log('进入界面');
-        if (!app.globalData.rid) {
-            app.globalData.resId = '';
-            app.globalData.tableCode = '';
-            app.globalData.tableName = '';
-        }
+        console.log('进入init界面');
         if (!this.data.hasHide) return;
         this.setData({hasHide: false});
         if (app.globalData.isBindPhone) {
@@ -58,7 +46,7 @@ Page({
     onShareAppMessage: function () {
         return {
             title: 'V卡汇',
-            path: '/pages/init/init?resId=' + "000000005673d86e015677bbc51d0102",//简约派id
+            path: '/pages/init/init',
             success: function (res) {
                 wx.showToast({
                     title: '分享成功',

@@ -175,9 +175,9 @@ module.exports.isEmptyObject = isEmptyObject;
 
 function isFalse(arg) {
     if (isString(arg) && arg.trim() === '') {
-        return false;
+        return arg.trim();
     }
-    if (arg === undefined || arg === null || isNaN(arg) || arg === false || arg === 'false') {
+    if (arg === 'false' || arg === false || arg === null) {
         return false;
     } else if (arg === 'undefined') {
         return undefined;
