@@ -11,7 +11,12 @@ class HttpRequest {
     request(params, callBack, statusCode) {
         let flag = false,
             data = {},
-            url = params.url;
+            url = params.url,
+            isLoading = false;//是否显示加载信息
+        if (params.data.config && params.data.config.isLoading) {
+            isLoading = params.data.config.isLoading;
+            delete params.data.config;
+        }
         delete params.url;
         params.data.signature = util.getSignature(params.data);
         if (params.method && params.method.toLocaleLowerCase() === 'post') {
@@ -52,6 +57,12 @@ class HttpRequest {
         }
 
         function setRequest() {
+            if (isLoading) {
+                wx.showLoading({
+                    title: '加载中',
+                    mask: true
+                });
+            }
             wx.showNavigationBarLoading();
             return wx.request({
                 url: url || '',
@@ -83,6 +94,7 @@ class HttpRequest {
                 },
                 complete(res) {
                     wx.hideNavigationBarLoading();
+                    wx.hideToast();
                     console.log('请求数据________________________', url, res);
                     if (flag) {
                         callBack && callBack(res.data);
@@ -96,7 +108,8 @@ class HttpRequest {
         return requestTask;
     };
 
-    post(url, data, callBack, statusCode) {
+    post(url, options, callBack, statusCode) {
+        let data = options || {};
         let params = {
             url,
             data,
@@ -105,7 +118,8 @@ class HttpRequest {
         return this.request(params, callBack, statusCode);
     };
 
-    get(url, data, callBack, statusCode) {
+    get (url, options, callBack, statusCode) {
+        let data = options || {};
         let params = {
             url,
             data,
@@ -114,7 +128,8 @@ class HttpRequest {
         return this.request(params, callBack, statusCode);
     };
 
-    postParm(url, data, callBack) {
+    postParm(url, options, callBack) {
+        let data = options || {};
         let params = {
             url,
             data,

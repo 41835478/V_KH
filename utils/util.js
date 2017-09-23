@@ -287,12 +287,12 @@ module.exports.extend = extend;
  * 当前页面路径
  * @returns {*}
  */
-function getCurrentPages() {
+function CurrentPages() {
     let urlArr = getCurrentPages();
     return urlArr[urlArr.length - 1].route;
 }
 
-module.exports.getCurrentPages = getCurrentPages;
+module.exports.CurrentPages = CurrentPages;
 
 /**
  * 跳转路径

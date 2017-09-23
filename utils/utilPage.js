@@ -180,13 +180,13 @@ module.exports = {
      * @returns {{title: string, path: string, success: success, fail: fail}}
      */
     onShareAppMessage(options) {
-        let route = util.getCurrentPages(),
+        let route = util.CurrentPages(),
             resId = this.data.resId,
             orderType = this.data.orderType,
             shopInfo = this.data.shopInfo,
             imageUrl = shopInfo ? this.data.imageServer + shopInfo.resLogo : null,
             path = '/' + route,
-            data = {resId, orderType};
+            data = {resId, orderType, isShare: 1};
         if (!this.data.isShareCurrentPage) {
             path = '/pages/shop/home/home'
         }
