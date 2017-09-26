@@ -63,7 +63,7 @@
                                         <!----------------------规格按钮-->
                                         <view wx:if="{{val.foodRuleCount>1 || val.foodPracticesCount>0}}"
                                               class="pa select food-btn-rule">
-                                            <button plain="true" class="btn btn-red-default height-all"
+                                            <button plain="true" type="mini" class="btn-red-default"
                                                     catch:tap="bindOpenRuleBtn"
                                                     data-value="{{val}}"
                                                     data-index="{{index+','+i}}">选规格
@@ -112,7 +112,7 @@
     <view class="shopCart transition-all {{!!shopCartModule?'':'height-0 hide'}} {{shopCart.length>5?'height-all':''}}">
         <view class="top flexBox flexBox-between">
             <view class="left flexBox-item fb-7">
-
+                <view class="h2">购物车</view>
             </view>
             <view class="right flexBox-item fb-5">
                 <button type="default" size="mini" plain="true" catch:tap="bindAzmClearShopCart">清空购物车</button>
@@ -165,29 +165,28 @@
 <!--规格弹窗-->
 <template is="module-popup" data="{{...ShopOneData,class:moduleActiveMe,animated}}"></template>
 
+
 <template name="foodBtnPlus">
     <!--transition-all-->
     <view class="row flexBox flexBox-between">
         <block wx:if="{{replaceData&&replaceData[data.foodCode]}}">
-            <view class="left flexBox-item {{replaceData[data.foodCode].info.counts?'':'food-btn-plus-default'}}"
+            <view class="left flexBox-item {{replaceData[data.foodCode].info.counts?'':'food-btn-plus-default'}} azm-reduce"
                   catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
-                <button plain="true" size="mini">-</button>
             </view>
             <view class="center flexBox-item {{replaceData[data.foodCode].info.counts? '':'food-btn-plus-default'}}">
                 <text>{{replaceData[data.foodCode].info.counts}}</text>
             </view>
         </block>
         <block wx:else>
-            <view class="left flexBox-item {{data.info.counts?'':'food-btn-plus-default'}}"
+            <view class="left flexBox-item {{data.info.counts?'':'food-btn-plus-default'}} azm-reduce"
                   catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
-                <button plain="true" size="mini">-</button>
             </view>
             <view class="center flexBox-item {{data.info.counts? '':'food-btn-plus-default'}}">
                 <text>{{data.info.counts}}</text>
             </view>
         </block>
-        <view class="right flexBox-item" catch:tap="bindAzmAddFood" data-value="{{data}}" data-index="{{index}}">
-            <button plain="true" size="mini">+</button>
+        <view class="right flexBox-item azm-plus" catch:tap="bindAzmAddFood" data-value="{{data}}"
+              data-index="{{index}}">
         </view>
     </view>
 </template>

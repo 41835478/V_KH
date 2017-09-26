@@ -128,7 +128,6 @@ page {
   }
   button {
     text-align: center;
-    line-height: normal;
     &.btn {
       .px2rpx(border-radius, 5);
       .px2rpx-two(padding, 0, 5, 0, 5);
@@ -206,6 +205,30 @@ page {
   //选菜按钮
   .food-btn-plus {
     .food-btn-plus();
+    .azm-plus {
+      &::after {
+        position: absolute;
+        .translateY(50%);
+        left: 0;
+        content: ' ';
+        .px2rpx(width, 24);
+        .px2rpx(height, 24);
+        background: data-uri('../images/icon/plus.png') no-repeat 0 0;
+        background-size: 24*2rpx 24*2rpx;
+      }
+    }
+    .azm-reduce {
+      &::after {
+        position: absolute;
+        .translateY(50%);
+        left: 0;
+        content: ' ';
+        .px2rpx(width, 24);
+        .px2rpx(height, 24);
+        background: data-uri('../images/icon/reduce.png') no-repeat 0 0;
+        background-size: 24*2rpx 24*2rpx;
+      }
+    }
   }
 
   view.new-class {
@@ -215,6 +238,8 @@ page {
       color: #fff;
     }
     button {
+      .px2rpx(padding-left, 10);
+      .px2rpx(padding-right, 10);
       box-sizing: border-box;
     }
     .content {

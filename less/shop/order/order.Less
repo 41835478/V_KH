@@ -140,8 +140,7 @@ page {
               bottom: 0;
               &.food-btn-rule {
                 button {
-                  .btn-height-align(30);
-                  .px2rpx(width, 56);
+                  .px2rpx(font-size, 13);
                 }
               }
             }
@@ -201,17 +200,35 @@ page {
     position: absolute;
     left: 0;
     .px2rpx(bottom, 50);
-    .px2rpx(max-height, 300);
-    background-color: #fff;
+    .px2rpx(max-height, 250);
     width: 100%;
     z-index: 401;
     overflow: hidden;
+    background-color: #F8F8F8;
     .top {
       .px2rpx-two(padding, 5, 15, 5, 15);
       .px2rpx(height, 40);
       .px2rpx(line-height, 40);
       border-bottom: @border-1px;
-      background-color: #F8F8F8;
+      background-color: #e8e8e8;
+      .left {
+        position: relative;
+        .h2 {
+          position: relative;
+          .px2rpx(height, 30);
+          .px2rpx(line-height, 30);
+          .px2rpx(padding-left, 8);
+          .px2rpx(font-size, 15);
+          &::after {
+            position: absolute;
+            content: '';
+            .translateY(50%);
+            left: 0;
+            .px2rpx(height, 16);
+            border-left: 2*2rpx solid @color-f74b7b;
+          }
+        }
+      }
       .right {
         position: relative;
         .px2rpx(padding-left, 20);
@@ -254,8 +271,8 @@ page {
           height: 0;
         }
         margin-bottom: 0;
-        .px2rpx(height, 42.5);
-        .px2rpx(line-height, 40);
+        .px2rpx(height, 50);
+        .px2rpx(line-height, 50);
         border-bottom: @border-1px;
         &, view {
           .px2rpx(font-size, 15.5);

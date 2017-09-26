@@ -151,9 +151,7 @@ page {
   bottom: 0;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select.food-btn-rule button {
-  height: 60rpx;
-  line-height: 50rpx;
-  width: 112rpx;
+  font-size: 26rpx;
 }
 .orderPage .footer {
   position: absolute;
@@ -206,18 +204,37 @@ page {
   position: absolute;
   left: 0;
   bottom: 100rpx;
-  max-height: 600rpx;
-  background-color: #fff;
+  max-height: 500rpx;
   width: 100%;
   z-index: 401;
   overflow: hidden;
+  background-color: #F8F8F8;
 }
 .orderPage .shopCart .top {
   padding: 10rpx 30rpx 10rpx 30rpx;
   height: 80rpx;
   line-height: 80rpx;
   border-bottom: 2rpx solid #e2e2e2;
-  background-color: #F8F8F8;
+  background-color: #e8e8e8;
+}
+.orderPage .shopCart .top .left {
+  position: relative;
+}
+.orderPage .shopCart .top .left .h2 {
+  position: relative;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding-left: 16rpx;
+  font-size: 30rpx;
+}
+.orderPage .shopCart .top .left .h2::after {
+  position: absolute;
+  content: '';
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  height: 32rpx;
+  border-left: 4rpx solid #f74b7b;
 }
 .orderPage .shopCart .top .right {
   position: relative;
@@ -257,8 +274,8 @@ page {
 .orderPage .shopCart .ul .li {
   overflow: hidden;
   margin-bottom: 0;
-  height: 85rpx;
-  line-height: 80rpx;
+  height: 100rpx;
+  line-height: 100rpx;
   border-bottom: 2rpx solid #e2e2e2;
 }
 .orderPage .shopCart .ul .li::after {
