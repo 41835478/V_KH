@@ -154,9 +154,7 @@
             </block>
         </view>
     </view>
-
 </view>
-
 <import src="../../../template/loading.wxml"/>
 <!--遮罩-->
 <template is="mask" data="{{isMask,class:shopCartModule+'-mask'}}"></template>
@@ -170,23 +168,26 @@
     <!--transition-all-->
     <view class="row flexBox flexBox-between">
         <block wx:if="{{replaceData&&replaceData[data.foodCode]}}">
-            <view class="left flexBox-item {{replaceData[data.foodCode].info.counts?'':'food-btn-plus-default'}} azm-reduce"
+            <view class="left flexBox-item {{replaceData[data.foodCode].info.counts?'':'food-btn-plus-default'}}"
                   catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
+                <text class="azm-icon iconfont icon-jianhao"></text>
             </view>
             <view class="center flexBox-item {{replaceData[data.foodCode].info.counts? '':'food-btn-plus-default'}}">
                 <text>{{replaceData[data.foodCode].info.counts}}</text>
             </view>
         </block>
         <block wx:else>
-            <view class="left flexBox-item {{data.info.counts?'':'food-btn-plus-default'}} azm-reduce"
+            <view class="left flexBox-item {{data.info.counts?'':'food-btn-plus-default'}}"
                   catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
+                <text class="azm-icon iconfont icon-jianhao"></text>
             </view>
             <view class="center flexBox-item {{data.info.counts? '':'food-btn-plus-default'}}">
                 <text>{{data.info.counts}}</text>
             </view>
         </block>
-        <view class="right flexBox-item azm-plus" catch:tap="bindAzmAddFood" data-value="{{data}}"
+        <view class="right flexBox-item" catch:tap="bindAzmAddFood" data-value="{{data}}"
               data-index="{{index}}">
+            <text class="azm-icon iconfont icon-jiahao2"></text>
         </view>
     </view>
 </template>

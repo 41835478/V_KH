@@ -209,15 +209,25 @@ page .food-btn-plus.food-btn-plus .right {
   flex-basis: 48rpx;
   width: 48rpx;
 }
+page .food-btn-plus.food-btn-plus .left .azm-icon,
+page .food-btn-plus.food-btn-plus .right .azm-icon {
+  font-size: 48rpx;
+}
 page .food-btn-plus.food-btn-plus .food-btn-plus-default {
   transform: translate(120rpx, 0) rotate(360deg);
   opacity: 0;
+}
+page .food-btn-plus.food-btn-plus .left .azm-icon {
+  color: #aab0ca;
 }
 page .food-btn-plus.food-btn-plus .center {
   font-size: 27rpx;
   color: #000;
   text-align: center;
   flex-grow: 1;
+}
+page .food-btn-plus.food-btn-plus .right .azm-icon {
+  color: #f74b7b;
 }
 page .food-btn-plus .azm-plus::after {
   position: absolute;

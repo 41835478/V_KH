@@ -48,16 +48,18 @@
                                 </view>
                                 <view class="flexBox-item fb-9 food-btn-plus">
                                     <view class="row flexBox flexBox-start">
-                                        <view class="left flexBox-item azm-reduce" wx:if="{{!hasConsumerId}}"
+                                        <view class="left flexBox-item" wx:if="{{!hasConsumerId}}"
                                               catch:tap="numberAdd"
                                               data-number="-1">
+                                            <text class="azm-icon iconfont icon-jianhao"></text>
                                         </view>
                                         <view class="center flexBox-item {{hasConsumerId?'text-left':''}}">
                                             <text>{{diningNumber}}</text>
                                         </view>
-                                        <view class="right flexBox-item azm-plus" catch:tap="numberAdd"
+                                        <view class="right flexBox-item" catch:tap="numberAdd"
                                               wx:if="{{!hasConsumerId}}"
                                               data-number="1">
+                                            <text class="azm-icon iconfont icon-jiahao2"></text>
                                         </view>
                                     </view>
                                 </view>
