@@ -21,21 +21,44 @@ Page({
         subMenuHighLight: initSubMenuHighLight,
         animationData: ['', '', ''],
         clock: '',
-        clockCode: '',
+
         paymentTime: 15 * 60 * 1000,
         hasMOney: false,
         module: '',
         message: '',
-        isCheckSmsCodeByOpenId: true
+        isCheckSmsCodeByOpenId: true,
+        endTime: null,//结束时间
+
+        countdownTime: '15:00',//倒计时时间
+        countdown: null,//倒计时实例
+        clockCode: '',//60s倒计时时间
+        clockCodeCountdown: null,//60s倒计时实例
     },
     onLoad: function (options) {
         var that = this;
-        // console.log('支付页面');
-        // console.log(options);
         that.setData(options);
     },
     onShow(options) {
         this.setLoad();
+    },
+    onHide: function () {
+        // 页面隐藏
+        if (this.data.countdown) {
+            this.data.countdown.clear();
+        }
+        if (this.data.clockCodeCountdown) {
+            this.data.clockCodeCountdown.clear();
+        }
+
+    },
+    onUnload: function () {
+        // 关闭页面
+        if (this.data.countdown) {
+            this.data.countdown.clear();
+        }
+        if (this.data.clockCodeCountdown) {
+            this.data.clockCodeCountdown.clear();
+        }
     },
     setLoad(options) {
         var that = this;
@@ -45,72 +68,98 @@ Page({
             // console.log('订单详情')
             // console.log(rsp);
             that.setData({dingdan: rsp.value});
-            if (rsp.returnStatus) {
-                let orderFood = rsp.value;
-                orderFood.mealNumber = orderFood.consumerNo.substring(orderFood.consumerNo.length - 5);
-                that.setData({orderFood});
-                if (rsp.value.consumerType == 0) {
-                    that.setData({menu: "堂食"});
-                } else if (rsp.value.consumerType == 1) {
-                    that.setData({menu: "快餐"});
-                    var systemTime = that.getNowFormatDate();
-                    // console.log(systemTime);
-                    var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
-                    var xiadanHaoMiao = (new Date(xiadanTime)).getTime(); //得到毫秒数
-                    // console.log(xiadanHaoMiao);
-                    var timeLag = systemTime - xiadanHaoMiao;
-                    var total_micro_second = that.data.paymentTime - timeLag;
-                    if (timeLag < 15 * 60 * 1000) {
-                        that.time(total_micro_second);
-                    } else {
-                        total_micro_second = 0;
-                        that.setData({
-                            clock: "订单已取消"
-                        })
-                    }
+            let orderFood = rsp.value;
+            orderFood.mealNumber = orderFood.consumerNo.substring(orderFood.consumerNo.length - 5);
+            that.setData({orderFood});
+            if (rsp.value.consumerType == 0) {
+                that.setData({menu: "堂食"});
+            } else if (rsp.value.consumerType == 1) {
+                that.setData({menu: "快餐"});
+                var systemTime = that.getNowFormatDate();
+                // console.log(systemTime);
+                var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
+                var xiadanHaoMiao = (new Date(xiadanTime)).getTime(); //得到毫秒数
+                // console.log(xiadanHaoMiao);
+                var timeLag = systemTime - xiadanHaoMiao;
+                var total_micro_second = that.data.paymentTime - timeLag;
+                if (timeLag < 15 * 60 * 1000) {
+                    that.time(total_micro_second);
                 } else {
-                    that.setData({menu: "外卖"});
-                    var systemTime = that.getNowFormatDate();
-                    // console.log(systemTime);
-                    var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
-                    var xiadanHaoMiao = (new Date(xiadanTime)).getTime(); //得到毫秒数
-                    // console.log(xiadanHaoMiao);
-                    var timeLag = systemTime - xiadanHaoMiao;
-                    var total_micro_second = that.data.paymentTime - timeLag;
-                    if (timeLag < 15 * 60 * 1000) {
-                        that.time(total_micro_second);
-                    } else {
-                        total_micro_second = 0;
-                        that.setData({
-                            clock: "订单已取消"
-                        })
-                    }
+                    total_micro_second = 0;
+                    that.setData({
+                        clock: "订单已取消"
+                    })
                 }
-                that.paymentClick(null, true);
-                let data = {openId: app.globalData.openId, resId: that.data.resId};
-                apiService.getMemberCardList(data, function (rsp) {
-                    if (rsp.returnStatus) {
-                        // console.log('会员卡余额');
-                        // console.log(rsp);
-                        rsp.value.forEach(function (val, key) {
-                            if (val.resId == that.data.resId) {
-                                // console.log(that.data.orderFood);
+            } else {
+                that.setData({menu: "外卖"});
 
-                                var memberBalance = parseFloat(val.memberBalance).toFixed(2);
-                                that.setData({
-                                    memberBalance: memberBalance,
-                                    resName: val.resName
-                                });
-                                if (that.data.orderFood.actualPrice > memberBalance) {
-                                    that.setData({
-                                        hasMOney: true
-                                    });
-                                }
-                            }
+                that.data.endTime = util.formatTime(rsp.value.createTime, {m: 15, spacer: '-'});
+                console.log(that.data.endTime);
+
+                // 设置倒计时
+                let time = util.formatTimeDifference(new Date(), that.data.endTime);
+
+                function onCountdownEnd() {
+                    return;
+                    util.go('/pages/order/order-detail/order-detail', {
+                        type: 'blank',
+                        data: {
+                            resId: that.data.resId,
+                            consumerId: that.data.consumerId,
+                            status: 8
+                        }
+                    })
+                }
+
+                if (time > 0) {
+
+
+                    that.data.countdown = new util.Countdown(time, 'mm:ss');
+                    that.data.countdown.onCountdownEnd = onCountdownEnd;
+                    that.data.countdown.countdown(that, 'countdownTime');
+                } else {
+
+                    that.setData({
+                        countdownTime: '00:00'
+                    });
+                    onCountdownEnd()
+                }
+
+
+                var systemTime = that.getNowFormatDate();
+                // console.log(systemTime);
+                var xiadanTime = rsp.value.createTime.replace(new RegExp("-", "gm"), "/");
+                var xiadanHaoMiao = (new Date(xiadanTime)).getTime(); //得到毫秒数
+                // console.log(xiadanHaoMiao);
+                var timeLag = systemTime - xiadanHaoMiao;
+                var total_micro_second = that.data.paymentTime - timeLag;
+                if (timeLag < 15 * 60 * 1000) {
+                    that.time(total_micro_second);
+                } else {
+                    total_micro_second = 0;
+                    that.setData({
+                        clock: "订单已取消"
+                    })
+                }
+            }
+            that.paymentClick(null, true);
+            let data = {openId: app.globalData.openId, resId: that.data.resId};
+            apiService.getMemberCardList(data, function (rsp) {
+                rsp.value.forEach(function (val, key) {
+                    if (val.resId == that.data.resId) {
+                        var memberBalance = util.money(val.memberBalance);
+                        that.setData({
+                            memberBalance: memberBalance,
+                            resName: val.resName
                         });
+                        if (that.data.orderFood.actualPrice > memberBalance) {
+                            that.setData({
+                                hasMOney: true
+                            });
+                        }
                     }
                 });
-            }
+            });
         });
     },
     paymentClick: function (e, bol) {
@@ -123,14 +172,13 @@ Page({
             that.setData({payment});
         }
         if (payment == 'huiyuan') {
-            var data = {
-                openId: app.globalData.openId,
-                resId: that.data.resId
-            };
             if (that.data.bindPhonenumber) {
                 return;
             }
-            apiService.checkIsFirstUse(data, (rsp) => {
+            apiService.checkMemberBindMobile({
+                openId: app.globalData.openId,
+                resId: that.data.resId
+            }, (rsp) => {
                 if (rsp.code == 4003) {//未绑定手机号
                     that.setData({
                         bindPhonenumber: false,
@@ -147,12 +195,12 @@ Page({
                                 if (res.confirm) {
                                     that.goBinding()
                                 } else if (res.cancel) {
-                                    // console.log('用户点击取消')
+
                                 }
                             }
                         });
                     }
-                } else {
+                } else if (rsp.code == 2000) {
                     that.setData({
                         bindPhonenumber: true,
                     });
@@ -161,6 +209,10 @@ Page({
                             payment: ''
                         })
                     }
+                } else {
+                    that.setData({
+                        bindPhonenumber: false,
+                    });
                 }
             });
         }
@@ -405,38 +457,6 @@ Page({
         var timeHaoMiao = (new Date(currentdate)).getTime(); //得到毫秒数
         return timeHaoMiao;
     },
-    timeCode: function (total_micro_second) {
-        var that = this;
-        // 渲染倒计时时钟
-        that.setData({
-            clockCode: that.date_formatCode(total_micro_second)
-        });
-
-        if (total_micro_second <= 0) {
-            that.setData({
-                clockCode: ""
-            });
-            return;
-        }
-        // setTimeout(function () {
-        //     // 放在最后--
-        //     total_micro_second -= 10;
-        //     that.timeCode(total_micro_second);
-        // }, 10)
-    },
-    date_formatCode: function (micro_second) {
-        var that = this;
-        // 秒数
-        var second = Math.floor(micro_second / 1000);
-        // 小时位
-        var hr = Math.floor(second / 3600);
-        // 分钟位
-        var min = that.zero(Math.floor((second - hr * 3600) / 60));
-        // 秒位
-        var sec = that.zero((second - hr * 3600 - min * 60));//
-
-        return sec;
-    },
     goBinding: function () {
         var that = this;
         util.go("/pages/vkahui/phone-add/phone-add", {
@@ -450,35 +470,19 @@ Page({
     },
     getCode: function () {
         var that = this;
-
-        var data = {
-            resId: that.data.resId,
-            consumerId: that.data.dingdan.consumerId,
-            openId: app.globalData.openId,
-            msgTemp: "SMS_XIAOFEICODE_CONTENT"
-        };
-        //var init = util.initPay(data);
-        var url = app.globalData.serverAddress + "sms/getSmsCodeByConn";//根据openId获取验证码
-        // console.log(data);
-        appUtil.httpGet(url, data, function (rsp) {
-            // console.log(rsp);
-            that.setData({cookies: rsp.value});
-            if (rsp.returnStatus) {
-                wx.showToast({
-                    title: '验证码已发送',
-                    icon: 'success',
-                    duration: 2000
-                });
-                var total_micro_second = 60 * 1000;
-                that.timeCode(total_micro_second);
-            } else {
-                wx.showToast({
-                    title: "网络异常,请稍后重试",
-                    image: '/images/icon/fail.png',
-                    duration: 2000
-                });
-            }
-        });
+        apiService.getSmsCodeByConn(
+            {
+                resId: that.data.resId,
+                consumerId: that.data.dingdan.consumerId,
+                openId: app.globalData.openId,
+                msgTemp: "SMS_XIAOFEICODE_CONTENT"
+            },
+            function (rsp) {
+                that.setData({cookies: rsp.value});
+                util.showToast('验证码已发送');
+                that.data.clockCodeCountdown = new util.Countdown(60 * 1000, 'ss');
+                that.data.clockCodeCountdown.countdown(that, 'clockCode');
+            });
     },
     codeText: function (e) {
         // console.log('输入的验证码');
@@ -522,14 +526,14 @@ Page({
                     resId: that.data.resId,
                     code: that.data.codeText
                 };
-                apiService.memberCardPay(data, function (res) {
-                    resFlag();
-                    if (res.returnStatus) {
+                apiService.memberCardPay(data,
+                    function () {
+                        resFlag();
                         app.globalData.clrCar = true;
                         util.showToast({
                             title: "会员卡支付成功",
                             duration: 6500,
-                            success: function (res) {
+                            success: function () {
                                 util.go('/pages/order/order-detail/order-detail', {
                                     type: 'blank',
                                     data: {
@@ -542,11 +546,12 @@ Page({
                                 });
                             }
                         });
-                    } else {
+                    },
+                    function () {
                         resFlag();
                         util.showToast('会员卡支付失败');
                     }
-                });
+                );
             } else {
                 util.showToast(res.message);
                 resFlag();

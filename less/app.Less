@@ -27,9 +27,19 @@ page {
   .clearfix {
     zoom: 1;
   }
+  .fl {
+    float: left;
+  }
 
-  .text-hotPink {
-    color: #f96f95 !important;
+  .fr {
+    float: right;
+  }
+
+  .pr {
+    position: relative;
+  }
+  .pa {
+    position: absolute;
   }
   .bg-color-hotPink {
     background-color: #f96f95 !important;
@@ -106,10 +116,6 @@ page {
     display: block;
   }
 
-  .text-overflow {
-    .text-overflow();
-  }
-
   .height-all {
     height: 100%;
   }
@@ -126,6 +132,38 @@ page {
   .text-red {
     color: @color-f74b7b;
   }
+  .block {
+    display: block;
+  }
+
+  .inline-block {
+    display: inline-block;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-right {
+    text-align: right !important;
+  }
+
+  .text-left {
+    text-align: left !important;
+  }
+
+  .text-hotPink {
+    color: #f96f95 !important;
+  }
+
+  .text-overflow {
+    .text-overflow();
+  }
+
   button {
     text-align: center;
     &.btn {
@@ -204,32 +242,7 @@ page {
 
   //选菜按钮
   .food-btn-plus {
-    
     .food-btn-plus();
-    .azm-plus {
-      &::after {
-        position: absolute;
-        .translateY(50%);
-        left: 0;
-        content: ' ';
-        .px2rpx(width, 24);
-        .px2rpx(height, 24);
-        background: data-uri('../images/icon/plus.png') no-repeat 0 0;
-        background-size: 24*2rpx 24*2rpx;
-      }
-    }
-    .azm-reduce {
-      &::after {
-        position: absolute;
-        .translateY(50%);
-        left: 0;
-        content: ' ';
-        .px2rpx(width, 24);
-        .px2rpx(height, 24);
-        background: data-uri('../images/icon/reduce.png') no-repeat 0 0;
-        background-size: 24*2rpx 24*2rpx;
-      }
-    }
   }
 
   view.new-class {
@@ -247,48 +260,7 @@ page {
       .px2rpx-two(margin, 0, 21, 0, 21);
       margin-top: 0;
     }
-    .fl {
-      float: left;
-    }
 
-    .fr {
-      float: right;
-    }
-
-    .block {
-      display: block;
-    }
-
-    .inline-block {
-      display: inline-block;
-    }
-
-    .bold {
-      font-weight: bold;
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .text-right {
-      text-align: right !important;
-    }
-
-    .text-left {
-      text-align: left !important;
-    }
-
-    .text-hotPink {
-      color: #f96f95 !important;
-    }
-
-    .pr {
-      position: relative;
-    }
-    .pa {
-      position: absolute;
-    }
     .overflow-h {
       overflow: hidden;
     }
@@ -450,18 +422,6 @@ page {
 
     .bold {
       font-weight: bold;
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .text-right {
-      text-align: right !important;
-    }
-
-    .text-left {
-      text-align: left !important;
     }
 
     .boxshadow-top {

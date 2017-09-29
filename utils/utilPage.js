@@ -54,6 +54,8 @@ module.exports = {
                         distributionFee = takeawayInfo.distributionFee || 0, //配送费
                         packingCharge = Number(takeawayInfo.packingCharge) || 0;//打包费
                     shopCarts.takeawayCarts.info = takeawayInfo;
+                    takeawayInfo.name = '配送费';
+                    takeawayInfo.price = distributionFee;
                     shopCarts.takeawayCarts.otherList.push({
                         name: '打包费',
                         price: util.money(packingCharge),
@@ -98,9 +100,13 @@ module.exports = {
             return;
         }
         apiService.getMemberCardList({resId, openId}, (res) => {
-            if (res.value[0].resId === resId) {
-                app.globalData.memberCardDtoObj[resId] = res.value[0];
-                this.data.memberCardDto && Object.assign(this.data.memberCardDto, res.value[0]);
+            if (res.value && res.value.length > 0 && res.value[0].resId === resId) {
+                let memberCardDto = res.value[0];
+                memberCardDto.memberTypeDiscount = util.moneyToFloat(memberCardDto.memberTypeDiscount);
+                memberCardDto.memberBalance = util.moneyToFloat(memberCardDto.memberBalance);
+                memberCardDto.memberIntegral = util.moneyToFloat(memberCardDto.memberIntegral);
+                app.globalData.memberCardDtoObj[resId] = memberCardDto;
+                this.data.memberCardDto && Object.assign(this.data.memberCardDto, memberCardDto);
                 // _this.setData({memberCardDto});
             }
             _this.updateShopCart && _this.updateShopCart();
@@ -191,7 +197,7 @@ module.exports = {
             path = '/pages/shop/home/home'
         }
         return {
-            title: 'V卡汇',
+            title: '欢迎光临' + shopInfo.resName,
             path: path + '?' + queryString.stringify(data),
             success: function (res) {
                 wx.showToast({

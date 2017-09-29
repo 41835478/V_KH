@@ -1,3 +1,50 @@
+<script src="../../../utils/utilPage.js"></script>
+<view>
+    <view class="azm-section azm-progressBar">
+        <view class="azm-top flexBox">
+            <view class="flexBox-item fb-4">
+                <text class="azm-icon text-red iconfont icon-time"></text>
+                <text decode="true" class="text-red azm-starts">&nbsp;&nbsp;已支付</text>
+            </view>
+            <view class="flexBox-item fb-8 orderTime text-right">
+                <text decode="true">下单时间：2016-09-12&nbsp;20:30</text>
+            </view>
+        </view>
+        <view class="row flexBox">
+            <view class="active">
+                <view class="row">
+                    <text class="azm-round iconfont icon-point"></text>
+                </view>
+                <view class="row azm-text">
+                    <text>订单确认</text>
+                </view>
+            </view>
+            <block wx:for="abc">
+                <view class="flexBox-item">
+                    <view class="flexBox">
+                        <view class="azm-line flexBox-item fb-8"></view>
+                        <view class="row flexBox-item fb-4">
+                            <text class="azm-round iconfont icon-point"></text>
+                        </view>
+                    </view>
+                    <view class="row azm-text">
+                        <text>订单确认</text>
+                    </view>
+                </view>
+            </block>
+        </view>
+    </view>
+
+    <view class="azm-section">
+
+    </view>
+
+    <view class="azm-section">
+
+    </view>
+</view>
+
+
 <view class="old-class">
     <view class="wrapper has-nav">
         <view class="ct bg-color-gray">

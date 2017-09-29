@@ -8,11 +8,23 @@ class HttpRequest {
         this.requestTask = []
     }
 
-    request(params, callBack, statusCode) {
+    request(params, resolve) {
+
         let flag = false,
             data = {},
             url = params.url,
-            isLoading = false;//是否显示加载信息
+            isLoading = false,
+            promise = null,
+            reject = null,
+            isReturnStatus = false;//是否显示加载信息
+        for (let i = 2; i < arguments.length; i++) {
+            if (utilCommon.isBoolean(arguments[i])) {
+                isReturnStatus = arguments[i];
+            }
+            if (utilCommon.isFunction(arguments[i])) {
+                reject = arguments[i];
+            }
+        }
         if (params.data.config && params.data.config.isLoading) {
             isLoading = params.data.config.isLoading;
             delete params.data.config;
@@ -50,13 +62,14 @@ class HttpRequest {
                     if (res.confirm) {
                         setRequest();
                     } else if (res.cancel) {
-                        console.log('用户点击取消')
+
                     }
                 }
             });
         }
 
         function setRequest() {
+            promise = null;
             if (isLoading) {
                 wx.showLoading({
                     title: '加载中',
@@ -64,71 +77,71 @@ class HttpRequest {
                 });
             }
             wx.showNavigationBarLoading();
-            return wx.request({
+            console.log('请求数据_____________________', url, params.data);
+            wx.request({
                 url: url || '',
                 data: params.data || {},
                 header: params.header || {},
                 method: params.method || 'GET',
                 success(res) {
-                    let code = res.data.returnStatus;
+                    let returnStatus = res.data.returnStatus;
                     if (res.statusCode !== 200) {
-                        failCallback(res);
+                        // failCallback(res);
                     }
-                    if (!code && !statusCode) {
+                    if (!returnStatus && !isReturnStatus) {
                         util.showToast(res.data.message);
                     }
-                    if (statusCode) {
-                        code = true;
+                    if (isReturnStatus) {
+                        returnStatus = true;
                     }
-                    if (res.statusCode === 200 && code) {
-                        flag = true;
-                        data = res.data;
-                        console.log(res.data.message, res);
+                    if (res.statusCode === 200) {
+                        if (returnStatus) {
+                            flag = true;
+                            data = res.data;
+                        } else {
+                            reject && reject(res.data);
+                        }
                     }
                 },
                 fail(res) {
-                    // util.showToast(res.errMsg);
-                    // util.showToast('网络连接失败，或服务器错误');
-                    failCallback(res);
+                    // failCallback(res);
                     console.log("网络连接失败，或服务器错误", res, url);
                 },
                 complete(res) {
                     wx.hideNavigationBarLoading();
                     wx.hideToast();
-                    console.log('请求数据________________________', url, res);
+                    console.log('获取数据________________________', url, res);
                     if (flag) {
-                        callBack && callBack(res.data);
+                        resolve && resolve(res.data);
                     }
                 }
-            });
+            })
         }
 
-        const requestTask = setRequest();
-        this.requestTask.push(requestTask);
-        return requestTask;
+        setRequest();
     };
 
-    post(url, options, callBack, statusCode) {
+    post(url, options, resolve, isReturnStatus, reject) {
         let data = options || {};
         let params = {
             url,
             data,
             method: 'POST'
         };
-        return this.request(params, callBack, statusCode);
+        return this.request(params, resolve, isReturnStatus, reject);
     };
 
-    get (url, options, callBack, statusCode) {
+    get(url, options, resolve, isReturnStatus, reject) {
         let data = options || {};
         let params = {
             url,
             data,
             method: 'GET'
         };
-        return this.request(params, callBack, statusCode);
+        return this.request(params, resolve, isReturnStatus, reject);
     };
 
-    postParm(url, options, callBack) {
+    postParm(url, options, resolve, isReturnStatus, reject) {
         let data = options || {};
         let params = {
             url,
@@ -136,17 +149,8 @@ class HttpRequest {
             flag: true,
             method: 'POST'
         };
-        return this.request(params, callBack);
+        return this.request(params, resolve, isReturnStatus, reject);
     };
-
-    /**
-     * 终止所有实例中的请求
-     */
-    abort() {
-        for (let v of this.requestTask) {
-            v.abort();
-        }
-    }
 }
 
 module.exports = new HttpRequest();

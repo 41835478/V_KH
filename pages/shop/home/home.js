@@ -55,7 +55,11 @@ const appPage = {
         ],
         topInfoList: [],
         shopList: [],//店铺就餐方式列表
-        memberCardDto: {},//会员卡信息
+        memberCardDto: {//会员卡信息
+            memberTypeDiscount: 0,//折扣
+            memberBalance: 0,//余额
+            memberIntegral: 0,//积分
+        },
     },
     onLoad: function (options) {
         // 页面初始化 options为页面跳转所带来的参数
@@ -82,6 +86,23 @@ const appPage = {
         function load() {
             apiService.token = token;
             _this.setData({openId, token, resId});
+            wx.getUserInfo({
+                success: function (res) {
+                    let userInfo = res.userInfo;
+                    app.globalData.userInfo = userInfo;
+                    typeof cb == "function" && cb(app.globalData.userInfo)
+                    let data = {
+                        openId: app.globalData.openId,
+                        nikeName: userInfo.nickName,
+                        sex: userInfo.gender,
+                        headImgUrl: userInfo.avatarUrl,
+                        resId: options.resId
+                    };
+                    console.log('是否首次登录', options.resId);
+                    if (!options.resId || options.resId.length === 0) return;
+                    app.checkIsFirstUse(data);
+                }
+            });
             _this.getMainInfo();
             _this.getCommonBannerList();
         }
@@ -121,7 +142,11 @@ const methods = {
             _this.setNavigationBarTitle(shopInfo.resName);
             util.extend(shopList[0], shopInfo.restaurantBusinessRules);//堂食
             util.extend(shopList[1], shopInfo.takeoutBusinessRules);//外卖
-            app.globalData.memberCardDtoObj[resId] = res.value.memberCardDto;
+            let memberCardDto = res.value.memberCardDto;
+            memberCardDto.memberTypeDiscount = util.moneyToFloat(memberCardDto.memberTypeDiscount);//会员折扣
+            memberCardDto.memberBalance = util.money(memberCardDto.memberBalance);//会员卡余额
+            memberCardDto.memberIntegral = util.moneyToFloat(memberCardDto.memberIntegral);//会员卡积分
+            app.globalData.memberCardDtoObj[resId] = memberCardDto;
             let topInfoList = this.data.topInfoList;
             if (res.value.resDetailDto.notice) {
                 topInfoList = [];
@@ -131,7 +156,7 @@ const methods = {
                 shopInfo,//店铺信息
                 specialServiceList: res.value.specialServiceList,//店铺服务列表
                 shopList,//店铺点餐列表
-                memberCardDto: res.value.memberCardDto,//会员卡信息
+                memberCardDto,//会员卡信息
                 topInfoList
             });
             _this.setShopCartsStorage();

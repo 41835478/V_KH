@@ -140,11 +140,9 @@ Page({
                 headImgUrl: app.globalData.userInfo.avatarUrl,
                 resId: options.resId
             };
-        console.log('是否首次登录', options.resId);
         if (!options.resId || options.resId.length === 0) return;
         app.checkIsFirstUse(data, function (rsp) {
-            console.log('是否首次登录__', rsp, options);
-            if (rsp.returnStatus) {
+            if (rsp.code == 2000 || rsp.code == 4003) {
                 wx.showModal({
                     title: '温馨提示',
                     content: '您是首次登陆，如果您已经注册过商家会员，请绑定手机号，系统将自动匹配您的信息。',
@@ -159,8 +157,10 @@ Page({
                         }
                     }
                 });
-            } else {
+            } else if (rsp.code == 4000) {
                 go();
+            } else {
+                util.showToast(rsp.message);
             }
 
             function go() {
@@ -212,7 +212,6 @@ Page({
                     i += 14;
                 }
                 ctx.draw();
-                console.log("7--------------");
                 if (val.resId == that.data.resId) {
                     val.tableCode = app.globalData.tableCode;
                     val.tableName = app.globalData.tableName;
@@ -222,20 +221,22 @@ Page({
                 vkahuiData
             });
         };
-
-        apiService.getMemberCardList({openId: app.globalData.openId}, (rsp) => {
-            if (rsp.returnStatus) {
-                app.globalData.memberCardDto = rsp.value;
+        apiService.getMemberCardList({openId: app.globalData.openId},
+            (rsp) => {
                 for (let i = 0; i < rsp.value; i++) {
-                    app.globalData.memberCardDtoObj[rsp.value[i][that.data.resId]] = rsp.value[i];
+                    let memberCardDto = rsp.value[i];
+                    memberCardDto.memberTypeDiscount = util.moneyToFloat(memberCardDto.memberTypeDiscount);
+                    memberCardDto.memberBalance = util.moneyToFloat(memberCardDto.memberBalance);
+                    memberCardDto.memberIntegral = util.moneyToFloat(memberCardDto.memberIntegral);
+                    app.globalData.memberCardDtoObj[rsp.value[i][that.data.resId]] = memberCardDto;
                 }
                 setMemberCardList(rsp.value);
-            } else {
+            },
+            () => {
                 that.setData({
                     vkahuiData: []
                 });
-            }
-        })
+            })
     },
     tab: function (e) {
         var that = this;

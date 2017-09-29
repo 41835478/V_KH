@@ -35,7 +35,4 @@
         </view>
         <view class="clear"></view>
     </form>
-
-    <!--<import src="/pages/template/template.wxml" />
-    <template is="navigation" />-->
 </view>

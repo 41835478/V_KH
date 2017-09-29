@@ -46,7 +46,8 @@
         <view class="module-left flexBox-item fb-2">{{item.practicesTypeName}}</view>
         <view class="module-right module-right-item flexBox-item fb-10">
             <button plain="true" wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                    class="btn btn-red-default {{v.checked?'active':''}}" data-index="{{index+','+i}}"
+                    class="btn btn-red-default {{(v.id === data.practicesList[index].practicesCheckedId)?'active':''}}"
+                    data-index="{{index+','+i}}"
                     data-value="{{v}}" catch:tap="bindAzmPopupPracticesBtn">{{v.practicesName}}
             </button>
         </view>

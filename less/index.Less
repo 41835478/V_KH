@@ -35,6 +35,7 @@
 @color-ccc: #dcdcdc;
 
 @border-1px: 1*2rpx solid #e2e2e2;
+@border-8px: 8*2rpx solid #e2e2e2;
 
 @bg-navigationBar-default: #2d2c34;
 @bg-navigationBar-4b4b4b: #4b4b4b;
@@ -115,12 +116,10 @@
     }
     .left, .right {
       .px2rpx(height, 24);
-      //.px2rpx(line-height, 24);
-      //color: transparent;
+      .px2rpx(line-height, 24);
+      color: transparent;
       .px2rpx(flex-basis, 24);
       .px2rpx(width, 24);
-      //.px2rpx(font-size, 20);
-      //text-align: center;
       .azm-icon {
         .px2rpx(font-size, 24);
       }
@@ -130,7 +129,6 @@
       opacity: 0;
     }
     .left {
-      //background-color: #aab0ca;
       .azm-icon {
         color: #aab0ca;
       }
@@ -145,7 +143,6 @@
       .azm-icon {
         color: @color-f74b7b;
       }
-      //background-color: @color-f74b7b;
     }
   }
 }

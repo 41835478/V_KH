@@ -1,6 +1,53 @@
 page {
   background: #f1f3f4;
 }
+page .azm-section {
+  margin-top: 20rpx;
+  background-color: #fff;
+}
+page .azm-section view {
+  box-sizing: border-box;
+}
+page .azm-progressBar {
+  height: 225rpx;
+  padding-left: 44rpx;
+  padding-right: 44rpx;
+}
+page .azm-progressBar .azm-top {
+  height: 100rpx;
+  line-height: 100rpx;
+}
+page .azm-progressBar .azm-top .azm-starts {
+  font-size: 30rpx;
+}
+page .azm-progressBar .azm-top .azm-icon {
+  font-size: 35rpx;
+}
+page .azm-progressBar .azm-top .orderTime {
+  color: rgba(45, 44, 52, 0.8);
+  font-size: 24rpx;
+}
+page .azm-progressBar .row {
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+page .azm-progressBar .row .azm-round {
+  font-size: 36rpx;
+  text-shadow: 0 0 10rpx #7e7e7e;
+  color: #fff;
+}
+page .azm-progressBar .row .azm-line {
+  height: 10px;
+  background-color: #f74b7b;
+}
+page .azm-progressBar .row .azm-text {
+  font-size: 24rpx;
+}
+page .azm-progressBar .row .active .azm-round {
+  text-shadow: 0 0 10rpx #b4385a;
+  color: #f74b7b;
+}
 page view.old-class .ct .head {
   background: #fff;
   min-height: 6rem;

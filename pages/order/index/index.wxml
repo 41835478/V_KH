@@ -1,90 +1,48 @@
-<view class="old-class">
-    <view class="wrapper overflow-h">
-        <view class="ct arrow-list-ctn">
-            <view class="list-choose right">
-                <view class="category">
-                    <block wx:for="{{orderList}}" wx:key="*this">
-                        <view class="title" style="font-weight:normal;">
-                            <text>订单类型</text>
-                            <text class="tit" style="font-weight:normal;" wx:if="{{item.consumerType==0}}">堂食</text>
-                            <text class="tit" style="font-weight:normal;" wx:if="{{item.consumerType==1}}">快餐</text>
-                            <text class="tit" style="font-weight:normal;" wx:if="{{item.consumerType==2}}">外卖</text>
-                        </view>
-                        <view class="nav">
-                            <view class="entry relative pd-lr-big border-box">
-                                <view class="img-area">
-                                    <image class="img-product boxshadow-top-bottom" src="{{item.resLogo}}"></image>
-                                </view>
-                                <navigator class="" open-type="navigate"
-                                           url="../order-detail/order-detail?resId={{item.resId}}&consumerId={{item.consumerId}}&tableCode={{item.tableCode}}&status={{item.consumerStatus}}">
-                                    <view class="word-area">
-                                        <view class="cus-table">
-                                            <view class="cus-table-cell">
-                                                <text class="h2" style="font-weight:normal;">{{item.resName}}</text>
-                                                <text class="p-small gray-1 mg-top-small timeMe">{{item.consumerTime}}
-                                                </text>
-                                                <text class="p gray-1">
-                                                    <text class="span red p bold"> 实付: ¥{{item.amount}}</text>
-                                                </text>
-                                            </view>
-                                        </view>
-                                    </view>
-                                </navigator>
-                                <view class="choose-area">
-                                    <!--堂食没支付加菜-->
-                                    <view wx:if="{{item.consumerStatus==3&&item.consumerType==0}}">
-                                        <text class="gray-1 red">状态：待支付</text>
-                                        <text bindtap="pay" data-resId="{{item.resId}}"
-                                              data-consumerId="{{item.consumerId}}">去支付
-                                        </text>
-                                        <block wx:if="{{item.dinnerType !== 1}}">
-                                            <text class="gray-1 red" bindtap="addDish" data-value="{{item}}">加菜</text>
-                                        </block>
-                                    </view>
-
-                                    <!--堂食完成支付-->
-                                    <view wx:if="{{item.consumerStatus==5&&item.consumerType==0}}">
-                                        <text class="gray-1">状态：已完成</text>
-                                    </view>
-
-                                    <!--外卖快餐没支付-->
-                                    <view wx:if="{{item.consumerStatus==3&&(item.consumerType==2||item.consumerType==1)}}">
-                                        <text class="gray-1 red">状态：待支付</text>
-                                        <text style="margin-top:1.5rem" bindtap="pay" data-resId="{{item.resId}}"
-                                              data-consumerId="{{item.consumerId}}">去支付
-                                        </text>
-                                    </view>
-
-                                    <!--外卖快餐支付完成-->
-                                    <view wx:if="{{item.consumerStatus==5&&(item.consumerType==1||item.consumerType==2)}}">
-                                        <text class="gray-1">状态：等待接单</text>
-                                    </view>
-
-                                    <text class="gray-1" wx:if="{{item.consumerStatus==8}}">状态：已取消</text>
-
-                                    <view wx:if="{{item.consumerStatus==11}}">
-                                        <text class="gray-1">状态：商家接单</text>
-                                        <text bindtap="addDish" data-value="{{item}}">再来一单</text>
-                                    </view>
-
-                                    <text class="gray-1" wx:if="{{item.consumerStatus==12}}">状态：商家拒单</text>
-                                </view>
-                            </view>
-                        </view>
-                    </block>
+<view class="orderIndex">
+    <block wx:for="{{orderList}}">
+        <view class="row">
+            <view class="azm-title">
+                <view class="h2">订单类型</view>
+                <view class="azm-span">
+                    <text wx:if="{{item.consumerType==2}}">外卖</text>
+                    <text wx:elif="{{item.consumerType==1}}">快餐</text>
+                    <text wx:else>堂食</text>
                 </view>
             </view>
-            <view class="clear"></view>
-        </view>
-    </view>
-    <scroll-view class="module {{module}}" scroll-y="{{false}}">
-        <view class="tanchuang">
-            <text class="p content">订单删除后不可回复，确认删除？</text>
-            <view class="h4">
-                <button class="fl use" bindtap="close">取消</button>
-                <button class="fr phone" bindtap="confirm">确认</button>
-                <view class="clear"></view>
+            <view class="azm-section">
+                <view class="flexBox">
+                    <view class="flexBox-item fb-4 azm-image">
+                        <image src="{{item.resLogo}}"></image>
+                    </view>
+                    <navigator class="flexBox-item fb-5 azm-center" open-type="navigate"
+                               url="../order-detail/order-detail?resId={{item.resId}}&consumerId={{item.consumerId}}&tableCode={{item.tableCode}}&status={{item.consumerStatus}}">
+                        <view class="h3 text-overflow">{{item.resName}}</view>
+                        <view class="azm-time text-overflow">{{item.consumerTime}}</view>
+                        <view class="azm-money text-overflow">
+                            <text>实付：</text>
+                            <text class="text-red" decode> ¥{{item.amount}}</text>
+                        </view>
+                    </navigator>
+                    <view class="flexBox-item fb-3 azm-right">
+                        <view class="azm-status text-overflow">状态：{{statusStr[item.consumerStatus]}}</view>
+                        <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:key="*this" wx:for-item="val">
+                            <button class="azm-btn {{val.class}}" plain type="mini"
+                                    data-value="{{item}}" data-type="{{val.jumpType}}"
+                                    wx:if="{{val.type === 100 || val.type == item.consumerType}}" catch:tap="jumpBtn">
+                                {{val.name}}
+                            </button>
+                        </block>
+                    </view>
+                </view>
             </view>
         </view>
-    </scroll-view>
+    </block>
+    <view class="weui-loadmore" wx:if="{{hasMoreData}}">
+        <view class="weui-loading"></view>
+        <view class="weui-loadmore__tips">正在加载</view>
+    </view>
+    <view class="weui-loadmore weui-loadmore_line" wx:if="{{!hasMoreData && isShow}}">
+        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
+    </view>
 </view>
+

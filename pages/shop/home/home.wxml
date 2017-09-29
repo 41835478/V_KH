@@ -3,7 +3,7 @@
     <view class="header">
         <swiper indicator-dots="true" indicator-color="rgba(247, 75, 123, 0.3)" indicator-active-color="#f74b7b"
                 autoplay="true" bindchange="" circular="true">
-            <swiper-item wx:for="{{topImages}}" wx:key="*this">
+            <swiper-item wx:for="{{topImages}}">
                 <image lazy-load="true" src="{{item.id?(imageServer + item.imageUrl):item.imageUrl}}"
                        class="topImages" data-index="{{index}}" binderror="imageError" bindload=""/>
             </swiper-item>
@@ -79,8 +79,12 @@
                 </view>
                 <view class="clubCard-info clearfix">
                     <view class="fl col-3">
-                        <view class="p">{{memberCardDto.memberTypeDiscount/10}}折</view>
-                        <view class="p">会员等级</view>
+                        <view class="p" wx:if="{{memberCardDto.memberTypeDiscount == 0}}">-</view>
+                        <view class="p" wx:elif="{{memberCardDto.memberTypeDiscount > 0}}">
+                            <text>{{memberCardDto.memberTypeDiscount/10}}折</text>
+                        </view>
+                        <view class="p" wx:if="{{memberCardDto.memberTypeName}}">{{memberCardDto.memberTypeName}}</view>
+                        <view class="p" wx:else>会员等级</view>
                     </view>
                     <view class="fl col-3">
                         <view class="p">{{memberCardDto.memberBalance}}</view>

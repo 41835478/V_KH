@@ -23,20 +23,20 @@ Page({
         orderStatusName: ''
     },
     onLoad: function (options) {
-        var that = this;
-        console.log('options.status__________________', options.status);
-        options.status = Number(options.status) || 3;
-        that.setData(options);
-        if (options.resId && options.resId.length > 0) {
-            // 获取店铺信息
-            apiService.getResDetail({resId: options.resId}, function (rsp) {
-                that.setData({res: rsp.value});
-            });
-            that.loadData();
-            that.setData({
-                redirectUrl: "/pages/order/order-pay/order-pay?" + queryString.stringify(options)
-            });
-        }
+        // var that = this;
+        // console.log('options.status__________________', options.status);
+        // options.status = Number(options.status) || 3;
+        // that.setData(options);
+        // if (options.resId && options.resId.length > 0) {
+        //     // 获取店铺信息
+        //     apiService.getResDetail({resId: options.resId}, function (rsp) {
+        //         that.setData({res: rsp.value});
+        //     });
+        //     that.loadData();
+        //     that.setData({
+        //         redirectUrl: "/pages/order/order-pay/order-pay?" + queryString.stringify(options)
+        //     });
+        // }
     },
     loadData: function () {
         var that = this;

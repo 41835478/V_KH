@@ -2,6 +2,58 @@
 
 page {
   background: @color-f1f3f4;
+  .azm-section {
+    view {
+      box-sizing: border-box;
+    }
+    .px2rpx(margin-top, 10);
+    background-color: #fff;
+  }
+  .azm-progressBar {
+    .px2rpx(height, 112.5);
+    .px2rpx(padding-left, 22);
+    .px2rpx(padding-right, 22);
+
+    .azm-top {
+      .px2rpx(height, 50);
+      .px2rpx(line-height, 50);
+      .azm-starts {
+        .px2rpx(font-size, 15);
+      }
+      .azm-icon {
+        .px2rpx(font-size, 17.5);
+      }
+      .orderTime {
+        color: rgba(45, 44, 52, .8);
+        .px2rpx(font-size, 12);
+      }
+    }
+    .row {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      .azm-round {
+        .px2rpx(font-size, 18);
+        text-shadow: 0 0 5*2rpx #7e7e7e;
+        color: #fff;
+      }
+      .azm-line {
+        height: 10px;
+        background-color: @color-f74b7b;
+      }
+      .azm-text {
+        .px2rpx(font-size, 12);
+      }
+      .active {
+        .azm-round {
+          text-shadow: 0 0 5*2rpx #b4385a;
+          color: @color-f74b7b;
+        }
+      }
+
+    }
+  }
+
   view.old-class {
 
     .ct .head {

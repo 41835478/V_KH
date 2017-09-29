@@ -150,6 +150,13 @@ module.exports = {
             query: {}
         },
         /**
+         * 支付获取验证码
+         */
+        getSmsCodeByConn: {
+            path: '/sms/getSmsCodeByConn',
+            query: {}
+        },
+        /**
          * 获取订单列表
          */
         getOrderList: {
@@ -180,15 +187,78 @@ module.exports = {
         }
     },
     /**
+     * 添加会员卡
+     * @param data
+     * @param cb
+     * @returns {*}
+     */
+    checkIsFirstUse(data, cb, reject) {
+        var isReturnStatus = true;
+        const url = this.url + this.api.checkIsFirstUse.path;
+        data.token = this.getToken();
+        // console.log('checkIsFirstUse接口调用', data, url);
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    checkBindMobile(data, cb, reject) {
+        var isReturnStatus = true;
+        const url = this.url + this.api.checkBindMobile.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    checkMemberBindMobile(data, cb, reject) {
+        var isReturnStatus = true;
+        const url = this.url + this.api.checkMemberBindMobile.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 检查是否存在未结账的消费者
+     */
+    checkHasWaitPayConsumer(data, cb, reject) {
+        var isReturnStatus = true;
+        const url = this.url + this.api.checkHasWaitPayConsumer.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     *
+     */
+    checkSmsCodeByOpenId(data, cb, reject) {
+        var isReturnStatus = true;
+        const url = this.url + this.api.checkSmsCodeByOpenId.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
      * 获取openid
      * @param data
      * @param cb
      */
-    getOpenId(data, cb) {
+    getOpenId(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getOpenId.path;
         const http = $http.post(url, data, (res) => {
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
@@ -196,12 +266,12 @@ module.exports = {
      * @param data
      * @param cb
      */
-    getMemberCardList(data, cb) {
+    getMemberCardList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getMemberCardList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
@@ -210,46 +280,12 @@ module.exports = {
      * @param cb
      * @returns {*}
      */
-    getQRcodeTable(data, cb) {
+    getQRcodeTable(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getQRcodeTable.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             cb && cb(res);
-        });
-        return http;
-    },
-    /**
-     * 添加会员卡
-     * @param data
-     * @param cb
-     * @returns {*}
-     */
-    checkIsFirstUse(data, cb) {
-        const url = this.url + this.api.checkIsFirstUse.path;
-        data.token = this.getToken();
-        // console.log('checkIsFirstUse接口调用', data.token, url);
-        const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            cb && cb(res);
-        }, true);
-        return http;
-    },
-    checkBindMobile(data, cb) {
-        const url = this.url + this.api.checkBindMobile.path;
-        data.token = this.getToken();
-        const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            cb && cb(res);
-        }, true);
-        return http;
-    },
-    checkMemberBindMobile(data, cb) {
-        const url = this.url + this.api.checkMemberBindMobile.path;
-        data.token = this.getToken();
-        const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            cb && cb(res);
-        }, true);
+        }, isReturnStatus, reject);
         return http;
     },
     /**
@@ -258,217 +294,205 @@ module.exports = {
      * @param cb
      * @returns {*}
      */
-    getFoodList(data, cb) {
+    getFoodList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getFoodList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取规格列表
      */
-    getFoodRuleList(data, cb) {
+    getFoodRuleList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getFoodRuleList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取口味与做法列表
      */
-    getFoodPracticesList(data, cb) {
+    getFoodPracticesList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getFoodPracticesList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取点餐店铺列表
      */
-    getResDetail(data, cb) {
+    getResDetail(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getResDetail.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取点餐店铺列表
      */
-    bindWechatUser(data, cb) {
+    bindWechatUser(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.bindWechatUser.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取收货地址
      */
-    loadDefaultAddress(data, cb) {
+    loadDefaultAddress(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.loadDefaultAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取店铺首页信息
      */
-    getMainInfo(data, cb) {
+    getMainInfo(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getMainInfo.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取店铺banner
      */
-    getCommonBannerList(data, cb) {
+    getCommonBannerList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getCommonBannerList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取桌位列表
      */
-    findTableDtoList(data, cb) {
+    findTableDtoList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.findTableDtoList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 提交订单
      */
-    commitOrder(data, cb) {
+    commitOrder(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.commitOrder.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取订单详情
      */
-    getOrderDetail(data, cb) {
+    getOrderDetail(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getOrderDetail.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
-        return http;
-    },
-    /**
-     * 检查是否存在未结账的消费者
-     */
-    checkHasWaitPayConsumer(data, cb) {
-        const url = this.url + this.api.checkHasWaitPayConsumer.path;
-        data.token = this.getToken();
-        const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            cb && cb(res);
-        }, true);
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      *
      */
-    checkSmsCodeByOpenId(data, cb) {
-        const url = this.url + this.api.checkSmsCodeByOpenId.path;
-        data.token = this.getToken();
-        const http = $http.get(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            cb && cb(res);
-        }, true);
-        return http;
-    },
-    /**
-     *
-     */
-    memberCardPay(data, cb) {
+    memberCardPay(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.memberCardPay.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取验证码
      */
-    getSmsCode(data, cb) {
+    getSmsCode(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getSmsCode.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 支付获取验证码
+     */
+    getSmsCodeByConn(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getSmsCodeByConn.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 获取订单列表
      */
-    getOrderList(data, cb) {
+    getOrderList(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getOrderList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 微信支付
      */
-    finishPay(data, cb) {
+    finishPay(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.finishPay.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     },
     /**
      * 微信支付接口
      */
-    wxPayForH5(data, cb) {
+    wxPayForH5(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.wxPayForH5.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
             cb && cb(res);
-        });
+        }, isReturnStatus, reject);
         return http;
     }
 };

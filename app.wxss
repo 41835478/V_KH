@@ -1,5 +1,6 @@
 @import "./lib/css/animate.wxss";
 @import "./fontIcon/iconfont.wxss";
+@import "./lib/icons/iconfont.wxss";
 @import "./less/app.wxss";
 @import "./template/loading.wxss";
 @import "./lib/weui/weui.wxss";

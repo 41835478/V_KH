@@ -4,6 +4,7 @@ const appUtil = require('../../../utils/appUtil.js'),
     app = getApp();
 Page({
     data: {
+        isShow: false,
         module: '',
         isFirst: true,
         isHide: false,
@@ -13,7 +14,38 @@ Page({
         wo: false,
         hasMoreData: true,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        statusStr: {
+            3: '待支付',
+            5: '已支付',
+            8: '已取消',
+            11: '已接单',
+            12: '已拒单'
+        },
+        statusBtn: {
+            3: [
+                {
+                    class: 'azm-btn-red',
+                    name: '去支付',
+                    jumpType: 'pay',
+                    type: 100
+                },
+                {
+                    class: '',
+                    name: '去加菜',
+                    jumpType: 'addDish',
+                    type: 0
+                }
+            ],
+            11: [
+                {
+                    class: '',
+                    name: '再来一单',
+                    jumpType: 'addDish',
+                    type: 100
+                }
+            ]
+        }
     },
     onLoad: function (options) {
         var that = this;
@@ -24,6 +56,12 @@ Page({
         if (!that.data.isHide) return;
         that.loadData();
     },
+    onReady: function () {
+        // 页面渲染完成
+        this.setData({
+            isShow: true
+        })
+    },
     onHide: function () {
         var that = this;
         that.setData({isHide: true});
@@ -32,9 +70,9 @@ Page({
      * 页面相关事件处理函数--监听用户下拉动作
      */
     onPullDownRefresh: function () {
-        wx.showToast({
-            title: "正在下拉",
-            duration: 2000
+        this.data.pageNum = 1;
+        this.loadData(function () {
+            wx.stopPullDownRefresh();
         });
     },
 
@@ -44,18 +82,11 @@ Page({
     onReachBottom: function () {
         var that = this;
         if (that.data.hasMoreData) {
-            that.setData({
-                pageNum: that.data.pageNum + 1
-            });
+            that.data.pageNum++;
             that.loadData();
-        } else {
-            wx.showToast({
-                title: "没有更多数据了...",
-                duration: 2000
-            });
         }
     },
-    loadData: function () {
+    loadData: function (cb) {
         var that = this;
         ApiService.getOrderList({
             "openId": app.globalData.openId,
@@ -78,52 +109,25 @@ Page({
             } else {
                 that.setData({orderList: that.data.orderList.concat(orderList)});
             }
-        });
+            cb && cb();
+        }, cb);
     },
-    module: function (e) {
-        // console.log(res);
-        var that = this;
-        var deleteOrder = e.currentTarget.dataset;
-        that.setData({
-            deleteOrder: deleteOrder,
-            module: 'moduleActive'
-        });
+    jumpBtn(e) {
+        var type = e.currentTarget.dataset.type;
+        this[type](e);
     },
-    close: function (res) {//点击直接使用，跳转到点餐业
-        var that = this;
-        // console.log('关闭弹窗');
-        that.loadData();
-        that.setData({
-            module: ''
-        });
-    },
-    confirm: function (e) {
-        var that = this;
-        var url = app.globalData.serverAddress + "order/deleteOrder";
-        var data = {
-            resId: that.data.deleteOrder.resid,
-            consumerId: that.data.deleteOrder.consumerid
-        };
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                that.setData({
-                    pageNum: 1
-                });
-                that.close();
-            }
-        });
-    },
-    pay: function (e) {//去支付
-        var pay = e.currentTarget.dataset;
+    //去支付
+    pay: function (e) {
+        var value = e.currentTarget.dataset.value;
         util.go('/pages/order/order-pay/order-pay', {
             data: {
-                resId: pay.resid,
-                consumerId: pay.consumerid
+                resId: value.resId,
+                consumerId: value.consumerId
             }
         });
     },
-    addDish: function (e) {//加菜
+    //加菜
+    addDish: function (e) {
         var value = e.currentTarget.dataset.value,
             orderType = 0;
         if (Number(value.consumerType) === 2) {
@@ -138,22 +142,5 @@ Page({
                 tableName: value.tableName
             }
         });
-    },
-    tab: function (e) {
-        // console.log('tab-order');
-        var id = e.currentTarget.dataset.id;
-        // console.log(id);
-        if (id == "shouye") {
-            wx.redirectTo({
-                url: '/pages/init/init',
-            })
-        } else if (id == "wo") {
-            wx.redirectTo({
-                url: '/pages/vkahui/me/me',
-            })
-        }
-    },
-    dd() {
-        console.log('456456');
     }
-})
+});

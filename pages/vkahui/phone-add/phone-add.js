@@ -37,19 +37,19 @@ Page({
         if (!RegExpUtil.isPhone(mobile)) {
             util.showToast('手机号码格式不正确');
         } else {
-            apiService.getSmsCode({"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"}, function (rsp) {
-                console.log(rsp);
-                that.setData({cookies: rsp.value});
-                if (rsp.returnStatus) {
+            apiService.getSmsCode(
+                {"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"},
+                function (rsp) {
+                    console.log(rsp);
+                    that.setData({cookies: rsp.value});
                     wx.showToast({
                         title: '验证码已发送',
                         icon: 'success',
                         duration: 2000
                     });
-                    var total_micro_second = 60 * 1000;
-                    that.time(total_micro_second);
-                }
-            });
+                    let total_micro_second = 60 * 1000;
+                    new util.Countdown(total_micro_second, 'ss').countdown(that, 'clock');
+                });
         }
     },
     time: function (total_micro_second) {
@@ -108,32 +108,28 @@ Page({
                 apiName = 'checkMemberBindMobile';
             }
             app[apiName](data, function (rsp) {
-                if (rsp.code === 2000) {//已绑定手机号
-                    app.globalData.bindPhonenumber = true;
-                    app.globalData.isBindPhone = true;
+                if (rsp.code == 2000) {//已绑定手机号
                     util.showToast('已绑定手机号');
                     return;
-                } else {
-                    var data = {
+                } else if (rsp.code == 4003) {
+                    let data = {
                         "openId": app.globalData.openId,
                         type: 1,
                         "mobile": mobile,
                         "code": code,
                         "resId": that.data.resId
                     };
-                    apiService.bindWechatUser(data, function (rsp) {
-                        if (rsp.returnStatus) {
-                            app.globalData.bindPhonenumber = true;
-                            app.globalData.isBindPhone = true;
-                            if (that.data.jumpUrl && RegExpUtil.isPath(that.data.jumpUrl)) {
-                                util.go(that.data.jumpUrl, {
-                                    type: 'blank'
-                                })
-                            } else {
-                                util.go(-1);
-                            }
+                    apiService.bindWechatUser(data, function () {
+                        if (that.data.jumpUrl && RegExpUtil.isPath(that.data.jumpUrl)) {
+                            util.go(that.data.jumpUrl, {
+                                type: 'blank'
+                            })
+                        } else {
+                            util.go(-1);
                         }
                     });
+                } else {
+                    util.showToast(rsp.message);
                 }
             });
         } else {

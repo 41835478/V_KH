@@ -1,7 +1,7 @@
 <view class="old-class">
     <view class="pr">
         <view class="wrapper title height-all pr">
-            <block class="pr" wx:for="{{vkahuiData}}" wx:key="*this" wx:if="{{item.resId}}">
+            <block class="pr" wx:for="{{vkahuiData}}" wx:if="{{item.resId}}">
                 <!--/pages/canteen/index/index?resId={{item.resId}}&tableCode={{item.tableCode}}&tableName={{item.tableName}}-->
                 <navigator class="ct pr" open-type="navigate"
                            url="/pages/shop/home/home?resId={{item.resId}}">

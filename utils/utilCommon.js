@@ -46,6 +46,12 @@ function isNullOrUndefined(arg) {
 
 module.exports.isNullOrUndefined = isNullOrUndefined;
 
+function isEqualToString(value, other) {
+    return JSON.stringify(value) === JSON.stringify(other);
+}
+
+module.exports.isEqualToString = isEqualToString;
+
 function isNumber(arg) {
     return typeof arg === 'number';
 }

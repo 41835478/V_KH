@@ -33,6 +33,7 @@ App({
      */
     onLaunch: function (options) {
         let _this = this;
+        _this.dateformater = require('./utils/formateDate');
         /**
          * 获取rid
          */
@@ -134,6 +135,7 @@ App({
                 console.log('保存code', res);
                 const apiService = require('./utils/ApiService');
                 wx.setStorageSync('code', res.code);
+
                 apiService.getOpenId(
                     {
                         jsCode: res.code,

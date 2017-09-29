@@ -1,9 +1,9 @@
 <view class="old-class">
     <view class="wrapper has-nav overflow-h" style="margin-bottom:1rem">
-        <!--<view class="headline" wx:if="{{menu=='外卖'||menu=='快餐'}}">-->
-            <!--<text>支付剩余时间：</text>-->
-            <!--<text>{{clock}} {{micro_second}}</text>-->
-        <!--</view>-->
+        <view class="headline" wx:if="{{(menu=='外卖'||menu=='快餐')&&countdownTime}}">
+            <text decode>支付剩余时间&nbsp;&nbsp;</text>
+            <text>{{countdownTime}}</text>
+        </view>
         <view class="area bg-color-white pd-lr">
             <view class="list-3 inblk width-all" style="position:relative">
                 <view class="entry">
@@ -122,18 +122,6 @@
             <button class="btn btn-red inblk  fontSize color" bindtap="startPay">确认支付</button>
         </view>
     </view>
-    <!--<view class="module {{module}}">-->
-    <!--<view class="tanchuang">-->
-    <!--<text class="p content">对不起，您的会员卡还未绑定手机号，请先绑定手机！</text>-->
-    <!--<view class="h4">-->
-    <!--<button class="fl use" bindtap="binding">不绑定</button>-->
-    <!--<button class="fr phone" bindtap="goBinding">去绑定</button>-->
-    <!--<view class="clear"></view>-->
-    <!--</view>-->
-    <!--</view>-->
-    <!--<view class="clear"></view>-->
-    <!--</view>-->
-
     <!--短信验证码-->
     <view class="message {{message}}" wx:if="{{message}}">
         <view class="tanchuangMe">
