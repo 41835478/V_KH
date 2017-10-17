@@ -1,6 +1,9 @@
 const queryString = require('./utils/queryString');
 const util = require('./utils/util');
 const httpConfig = require('./utils/httpConfig');
+const utilPage = require('./utils/utilPage');
+import {ToastPannel} from './template/toast/toast';
+
 App({
     globalData: {
         rid: null,
@@ -45,6 +48,8 @@ App({
         _this.setLoginRequestPromise();
         _this.getShopCartsStorage();
     },
+    utilPage,
+    ToastPannel,//toast弹框
     /**
      * 生命周期函数--监听小程序显示
      * @param options

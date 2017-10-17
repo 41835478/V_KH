@@ -1,13 +1,13 @@
 const util = require('./util'),
     utilCommon = require('./utilCommon'),
     queryString = require('./queryString'),
-    apiService = require('./ApiService'),
-    app = getApp();
+    apiService = require('./ApiService');
 module.exports = {
     /**
      * 设置并并保存本地购物车信息
      */
     setShopCartsStorage() {
+        let app = getApp();
         let resId = this.data.resId,
             shopCartsStorage = wx.getStorageSync('shopCarts'),
             shopInfo = this.data.shopInfo,
@@ -29,7 +29,7 @@ module.exports = {
                     list: [],
                     otherList: [],
                     info: {}
-                },
+                }
             };
         if (!shopInfo) {
             this.getResDetail(function (res) {
@@ -41,45 +41,42 @@ module.exports = {
         }
 
         function setShopCartsInfo() {
-            if (orderType === undefined || !orderType) {
-                if (shopInfo.restaurantBusinessRules && shopInfo.restaurantBusinessRules.status) {
-                    let hallInfo = shopInfo.restaurantBusinessRules;
-                    shopCarts.hallCarts.info = hallInfo;
-                    hallInfo.name = hallInfo.serviceChangeName;
-                    hallInfo.price = hallInfo.serviceChange;
-                    hallInfo.counts = 1;
-                }
-                if (shopInfo.takeoutBusinessRules && shopInfo.takeoutBusinessRules.status) {
-                    let takeawayInfo = shopInfo.takeoutBusinessRules,
-                        distributionFee = takeawayInfo.distributionFee || 0, //配送费
-                        packingCharge = Number(takeawayInfo.packingCharge) || 0;//打包费
-                    shopCarts.takeawayCarts.info = takeawayInfo;
-                    takeawayInfo.name = '配送费';
-                    takeawayInfo.price = distributionFee;
-                    shopCarts.takeawayCarts.otherList.push({
-                        name: '打包费',
-                        price: util.money(packingCharge),
-                        counts: 1
-                    })
-                }
+            if (shopInfo.restaurantBusinessRules && shopInfo.restaurantBusinessRules.status) {
+                let hallInfo = shopInfo.restaurantBusinessRules;
+                shopCarts.hallCarts.info = hallInfo;
+                hallInfo.name = hallInfo.serviceChangeName;
+                hallInfo.price = hallInfo.serviceChange;
+                hallInfo.counts = 1;
+            }
+            if (shopInfo.takeoutBusinessRules && shopInfo.takeoutBusinessRules.status) {
+                let takeawayInfo = shopInfo.takeoutBusinessRules,
+                    distributionFee = takeawayInfo.distributionFee || 0, //配送费
+                    packingCharge = Number(takeawayInfo.packingCharge) || 0;//打包费
+                shopCarts.takeawayCarts.info = takeawayInfo;
+                takeawayInfo.name = '配送费';
+                takeawayInfo.price = distributionFee;
+                shopCarts.takeawayCarts.otherList.push({
+                    name: '打包费',
+                    price: util.money(packingCharge),
+                    counts: 1
+                })
             }
             if (!!shopCartsStorage) {
                 shopCartsStorage = JSON.parse(shopCartsStorage);
             }
-            if (shopCartsStorage && shopCartsStorage[resId]) {
-                shopCartsStorage[resId].hallCarts.otherList = shopCarts.hallCarts.otherList;
-                shopCartsStorage[resId].hallCarts.info = shopCarts.hallCarts.info;
-                shopCartsStorage[resId].hallCarts.unsetOrders = shopCarts.hallCarts.unsetOrders;
-                if (!utilCommon.isArray(shopCartsStorage[resId].hallCarts.list)) {
-                    shopCartsStorage[resId].hallCarts.list = shopCarts.hallCarts.list;
-                }
-                shopCartsStorage[resId].takeawayCarts.otherList = shopCarts.takeawayCarts.otherList;
-                shopCartsStorage[resId].takeawayCarts.info = shopCarts.takeawayCarts.info;
-                if (!utilCommon.isArray(shopCartsStorage[resId].takeawayCarts.list)) {
-                    shopCartsStorage[resId].takeawayCarts.list = shopCarts.takeawayCarts.list;
-                }
-            } else {
+            if (!shopCartsStorage || !shopCartsStorage[resId]) {
                 shopCartsStorage[resId] = shopCarts;
+            }
+            shopCartsStorage[resId].hallCarts.otherList = shopCarts.hallCarts.otherList;
+            shopCartsStorage[resId].hallCarts.info = shopCarts.hallCarts.info;
+            shopCartsStorage[resId].hallCarts.unsetOrders = shopCarts.hallCarts.unsetOrders;
+            if (!utilCommon.isArray(shopCartsStorage[resId].hallCarts.list)) {
+                shopCartsStorage[resId].hallCarts.list = shopCarts.hallCarts.list;
+            }
+            shopCartsStorage[resId].takeawayCarts.otherList = shopCarts.takeawayCarts.otherList;
+            shopCartsStorage[resId].takeawayCarts.info = shopCarts.takeawayCarts.info;
+            if (!utilCommon.isArray(shopCartsStorage[resId].takeawayCarts.list)) {
+                shopCartsStorage[resId].takeawayCarts.list = shopCarts.takeawayCarts.list;
             }
             app.globalData.shopCarts = shopCartsStorage;
             app.setShopCartsStorage();
@@ -89,6 +86,7 @@ module.exports = {
      * 获取会员卡信息
      */
     getOneMemberCardList(resId) {
+        let app = getApp();
         if (!resId) {
             return;
         }
@@ -215,6 +213,13 @@ module.exports = {
             }
         }
     },
+    /**
+     * 获取二维码桌台
+     * @param qrCode
+     * @param resId
+     * @param bol
+     * @returns {Promise}
+     */
     getQRcodeTable(qrCode, resId, bol) {
         if (utilCommon.isBoolean(resId)) {
             bol = resId;
@@ -275,5 +280,36 @@ module.exports = {
             }
         });
         return promise;
+    },
+    setOrderType(info) {
+        let data = {//默认堂食
+            isOrderType: 0,
+            text: '堂食'
+        };
+
+        if (this.data.orderType == 1) {
+            data.isOrderType = 1;//外卖
+            data.text = '外卖';
+        } else if (info) {
+            data = this.getOrderType(info)
+        }
+        this.setNavigationBarTitle(data.text + ' - ' + this.data.text);
+        this.setData(data);
+    },
+    getOrderType(info) {
+        let data = {
+            isOrderType: 0,
+            text: '堂食'
+        };
+        if (info.payType == 1) {
+            data.isOrderType = 3;//餐后付款
+            data.text = '餐后付款';
+        } else {
+            if (info.dinnerType == 1) {
+                data.isOrderType = 2;//自助取餐
+                data.text = '自助取餐';
+            }
+        }
+        return data;
     }
 };

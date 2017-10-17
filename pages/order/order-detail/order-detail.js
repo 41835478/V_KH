@@ -4,56 +4,87 @@ const apiService = require('../../../utils/ApiService'),
     queryString = require('../../../utils/queryString'),
     utilCommon = require('../../../utils/utilCommon'),
     app = getApp();
-Page({
+
+const appPage = {
     data: {
         module: '',
-        addDishUrl: '',//加菜按钮地址
-        redirectUrl: '',//支付按钮地址
+        isOrderType: 0,//0：堂食 1：自助取餐 2：外卖 3餐后付款
         serverAddressImg: app.globalData.serverAddressImg,
         progressBar: [
             {
                 name: '待支付',
-                status: true,
+                status: true
             },
             {
-                name: '等待商家确认',
-                status: false,
+                name: '订单完成',
+                status: false
             }
         ],//进度条
-        orderStatusName: ''
+        orderStatus: {
+            name: '待支付',
+            iconName: 'icon-time'
+        },
+        foodBtnList: [
+            {
+                name: '再来一单',
+                color: 'red',
+                type: 2
+            }
+        ]
     },
     onLoad: function (options) {
-        // var that = this;
-        // console.log('options.status__________________', options.status);
-        // options.status = Number(options.status) || 3;
-        // that.setData(options);
-        // if (options.resId && options.resId.length > 0) {
-        //     // 获取店铺信息
-        //     apiService.getResDetail({resId: options.resId}, function (rsp) {
-        //         that.setData({res: rsp.value});
-        //     });
-        //     that.loadData();
-        //     that.setData({
-        //         redirectUrl: "/pages/order/order-pay/order-pay?" + queryString.stringify(options)
-        //     });
-        // }
+        var that = this;
+        console.log('options.status__________________', options.status);
+        options.status = 1;
+        that.setData(options);
+        if (options.resId && options.resId.length > 0) {
+            // 获取店铺信息
+            apiService.getResDetail({resId: that.data.resId}, function (rsp) {
+                that.setData({res: rsp.value});
+                that.loadData();
+            });
+        }
     },
-    loadData: function () {
+    onShow: function () {
+        var that = this;
+        if (!that.data.isHide) return;
+        that.loadData();
+    },
+    onReady: function () {
+        // 页面渲染完成
+        this.setData({
+            isShow: true
+        })
+    },
+    onHide: function () {
+        var that = this;
+        that.setData({isHide: true});
+    },
+    /**
+     * 页面相关事件处理函数--监听用户下拉动作
+     */
+    onPullDownRefresh: function () {
+        this.loadData(function () {
+            wx.stopPullDownRefresh();
+        });
+    }
+};
+const methods = {
+    loadData(cb) {
         var that = this;
         apiService.getOrderDetail({resId: that.data.resId, consumerId: that.data.consumerId}, function (rsp) {
-            let orderDetailData = rsp.value,
-                stringify = queryString.stringify({
-                    resId: that.data.resId,
-                    consumerId: orderDetailData.consumerId,
-                    tableCode: that.data.tableCode,
-                    fNumber: orderDetailData.fNumber || 1,
-                    tableName: orderDetailData.title
-                });
-            orderDetailData.status = that.data.status || orderDetailData.status;
+            let orderDetailData = rsp.value;
+            // orderDetailData.status = that.data.status || orderDetailData.status;
             orderDetailData.mealNumber = orderDetailData.consumerNo.substring(orderDetailData.consumerNo.length - 5);
+            orderDetailData.totalPrice = util.money(orderDetailData.totalPrice);//总价
+            orderDetailData.discountPrice = util.money(orderDetailData.discountPrice);//折扣
+            orderDetailData.actualPrice = util.money(orderDetailData.actualPrice);//实付
+            if (orderDetailData.orderJson) {
+                orderDetailData.orderJson = JSON.parse(orderDetailData.orderJson);
+            }
             that.setProgressBar(orderDetailData);
-            let addDishUrl = '/pages/shop/order/order?' + stringify;
-            that.setData({orderDetailData, addDishUrl});
+            that.setData({orderDetailData, status: orderDetailData.status});
+            cb && cb();
         });
     },
     /**
@@ -63,130 +94,205 @@ Page({
         if (!utilCommon.isNumberOfNaN(data.status)) {
             return;
         }
-        let progressBar = [], orderStatusName = this.data.orderStatusName;
+        let foodBtnList = this.data.foodBtnList,
+            res = this.data.res,
+            isOrderType = 0;
+
+        let progressBar = this.data.progressBar, orderStatus = this.data.orderStatus;
         switch (data.status) {
-            case 3:
-                orderStatusName = '待支付';
+            case 1:
+                orderStatus = {
+                    name: '待支付',
+                    iconName: 'icon-time'
+                };
+                foodBtnList = [
+                    {
+                        name: '去支付',
+                        color: 'red',
+                        type: 0
+                    }
+                ];
+                if (data.consumerType == 0 && !data.dinnerType) {
+                    foodBtnList.push({
+                        name: '加菜',
+                        color: 'white',
+                        type: 1
+                    })
+                }
                 progressBar = [
                     {
                         name: '待支付',
                         status: true
                     },
                     {
-                        name: '等待商家确认',
+                        name: '订单完成',
                         status: false
                     }
                 ];
                 break;
-            case 5:
-                orderStatusName = '已完成';
-                if (Number(data.consumerType) === 1 || Number(data.consumerType) === 2) {
-                    orderStatusName = '等待接单';
+            case 2:
+                orderStatus = {
+                    name: '待支付',
+                    iconName: 'icon-time'
+                };
+                foodBtnList = [
+                    {
+                        name: '去支付',
+                        color: 'red',
+                        type: 0
+                    }
+                ];
+                if (data.consumerType == 0 && !data.dinnerType) {
+                    foodBtnList.push({
+                        name: '加菜',
+                        color: 'white',
+                        type: 1
+                    })
                 }
+                progressBar = [
+                    {
+                        name: '待支付',
+                        status: true
+                    },
+                    {
+                        name: '订单完成',
+                        status: false
+                    }
+                ];
+                break;
+            case 3:
+                orderStatus = {
+                    name: '已支付',
+                    iconName: 'icon-yiwancheng'
+                };
+                // if (Number(data.consumerType) === 1 || Number(data.consumerType) === 2) {
+                //     orderStatusName = '等待接单';
+                // }
                 progressBar = [
                     {
                         name: '已支付',
                         status: true
                     },
                     {
-                        name: '等待商家确认',
+                        name: '订单完成',
                         status: true
                     }
                 ];
                 break;
-            case 8:
-                orderStatusName = '已取消';
+            case 4:
+                orderStatus = {
+                    name: '已取消',
+                    iconName: 'icon-roundclose'
+                };
                 progressBar = [
                     {
                         name: '待支付',
                         status: true
                     },
                     {
-                        name: '等待商家确认',
+                        name: '订单完成',
                         status: false
                     }
                 ];
                 break;
             case 11:
-                orderStatusName = '已接单';
+                orderStatus = {
+                    name: '已接单',
+                    iconName: 'icon-roundcheck'
+                };
+
                 progressBar = [
                     {
                         name: '已支付',
                         status: true
                     },
                     {
-                        name: '等待商家确认',
-                        status: true
-                    },
-                    {
-                        name: '已接单',
+                        name: '订单完成',
                         status: true
                     }
                 ];
                 break;
             case 12:
-                orderStatusName = '已拒单';
+                orderStatus = {
+                    name: '已拒单',
+                    iconName: 'icon-roundclose'
+                };
                 progressBar = [
                     {
                         name: '已支付',
                         status: true
                     },
                     {
-                        name: '等待商家确认',
-                        status: true
-                    },
-                    {
-                        name: '已拒单',
+                        name: '订单完成',
                         status: true
                     }
                 ];
                 break;
         }
-        this.setData({
-            progressBar, orderStatusName
-        });
-    },
-    isFirst: function () {
-        var that = this;
-        var url = app.globalData.serverAddress + 'microcode/checkOrderHasWaiConfirm';
-        var data = {consumerId: that.data.consumerId};
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-                wx.redirectTo({
-                    url: that.data.redirectUrl,
-                    success: function (res) {
-                        // console.log('堂食去支付');
-                    }
-                })
-            } else {
-                wx.showToast({
-                    title: "网络异常,请稍后重试",
-                    duration: 2000
-                });
-            }
-        });
-    },
-    module: function (res) {
-        var that = this;
-        var moduleActive = res.currentTarget.dataset.moduleActive;
-        if (moduleActive == 'moduleActive') {
-            that.setData({
-                module: ''
-            });
+
+        if (data.consumerType == 2) {
+            isOrderType = 1;
         } else {
-            that.setData({
-                module: 'moduleActive'
-            });
+            isOrderType = app.utilPage.getOrderType(res.restaurantBusinessRules).isOrderType;
+        }
+
+        if (isOrderType === 3) {
+            progressBar[0].name = '用餐中';
+        }
+
+        this.setData({
+            progressBar, orderStatus, foodBtnList, isOrderType
+        });
+    },
+    goPay(e) {
+        let type = e.currentTarget.dataset.type,
+            that = this,
+            orderDetailData = this.data.orderDetailData;
+        switch (type) {
+            case 0:
+                util.go('/pages/order/order-pay/order-pay', {
+                    data: {
+                        resId: that.data.resId,
+                        consumerId: that.data.consumerId
+                    }
+                });
+                break;
+            case 1:
+                util.go('/pages/shop/order/order', {
+                    type: 'blank',
+                    data: {
+                        resId: that.data.resId,
+                        consumerId: orderDetailData.consumerId,
+                        tableCode: orderDetailData.tableCode,
+                        fNumber: orderDetailData.fNumber || 1,
+                        tableName: orderDetailData.title
+                    }
+                });
+                break;
+            case 2:
+                let orderType = 0;
+                if (orderDetailData.consumerType == 2) {
+                    orderType = 1;
+                }
+                util.go('/pages/shop/order/order', {
+                    data: {
+                        resId: that.data.resId,
+                        orderType
+                    }
+                });
+                break;
         }
     },
-    close: function (res) {
-        var that = this;
-        // console.log('关闭弹窗');
-        // console.log(res);
-        that.setData({
-            module: ''
+    openModuleMeal: function () {
+        this.setData({
+            moduleMeal: 'moduleMeal'
         });
-        // console.log(that.data.module);
+    },
+    closeModuleMeal: function () {
+        var that = this;
+        that.setData({
+            moduleMeal: ''
+        });
     }
-});
+};
+Page(Object.assign(appPage, methods));

@@ -10,9 +10,10 @@ const appPage = {
         text: '确认订单',
         isShow: false,//进入初始是否刷新数据
         isShareCurrentPage: false,//是否分享首页
-        isOrderType: 0,//0：堂食 1：自助取餐 2：外卖,
+        isOrderType: 0,//0：堂食 1：自助取餐 2：外卖 3餐后付款
+        isSubmitOrder: true,//是否提交订单
         imageServer: app.globalData.serverAddressImg,//图片服务器地址
-        orderType: 0,//0：堂食  1：外卖,
+        orderType: 0,//0：堂食  1：外卖
         orderList: ['hall', 'takeaway'],//hall：堂食  takeaway：外卖,
         shopCarts: [],//购物车信息
         usersubarea: 0,
@@ -21,8 +22,6 @@ const appPage = {
         consumerData: '',
         amount: '',
         count: '',
-
-
         tableDtoList: {},//获取的桌台List信息
         hasConsumerId: false,//是否有订单
         hasTableCode: false,//是否带桌台
@@ -80,17 +79,13 @@ const appPage = {
         /**
          * 设置就餐方式
          * @type {number}
-         * @isOrderType {number} 0：堂食 1：自助取餐 2：外卖,
+         * @isOrderType {number} 0：堂食 1：外卖, 2：自助取餐 3:餐后付款
          */
-        let dinnerType = Number(shopCartsInfo.info.dinnerType) || 0;
-        this.data.isOrderType = orderType === 1 ? 2 : (dinnerType === 1 ? 1 : 0);
+        this.setOrderType(shopCartsInfo.info);
         let isOrderType = this.data.isOrderType;
-        if (isOrderType == 2) {
-            _this.setNavigationBarTitle('外卖 - ' + _this.data.text);
+        if (isOrderType == 1) {
             _this.setLoadDefaultAddress();
-        } else if (isOrderType == 1) {
-            _this.setNavigationBarTitle('自助取餐 - ' + _this.data.text);
-        } else {
+        } else if (isOrderType == 0 || isOrderType == 3) {
             _this.setNavigationBarTitle('堂食 - ' + _this.data.text);
             //判断有桌子就显示桌子，没桌子就手动填入桌子号
             if (userOrderInfo.tableCode && userOrderInfo.tableCode.length > 0) {
@@ -103,9 +98,6 @@ const appPage = {
                 });
             }
         }
-        _this.setData({
-            isOrderType
-        });
         /**
          * 设置购物车数据
          */
@@ -267,18 +259,6 @@ const methods = {
         });
         this.closeModule('moduleActiveMe');//规格弹框
     },
-    // queren: function () {
-    //     var that = this;
-    //     if (that.data.tableDetail.name == "请选择桌台") {
-    //         that.data.tableDetail.name = that.data.subareaItem[0].name;
-    //         that.data.tableDetail.code = that.data.subareaItem[0].tableCode;
-    //         that.setData({selectTable: that.data.tableDetail.code});
-    //         that.setData({tableDetail: that.data.tableDetail});
-    //     }
-    //     that.setData({tableCode: that.data.selectTable});
-    //     that.setData({tableNo: 'tableBox'});
-    // },
-
     /**
      * 设置人数
      * @param res
@@ -350,6 +330,10 @@ const methods = {
      * @param res
      */
     submitOrder: function (res) {
+        if (!this.data.isSubmitOrder) {
+            return;
+        }
+        this.data.isSubmitOrder = false;
         var that = this, orderType = that.data.orderType,
             consumerData = that.data.consumerData,
             consumerDataList = [],
@@ -364,6 +348,7 @@ const methods = {
             consumerDataList[i].foodCode = consumerData[i].foodCode;
             consumerDataList[i].isdiscount = consumerData[i].isdiscount;
             consumerDataList[i].ruleCode = consumerData[i].ruleCode;
+            consumerDataList[i].foodType = consumerData[i].foodType;
             consumerDataList[i].practies = [];
             if (consumerData[i].practices && consumerData[i].practices.length > 0) {
                 for (let j = 0; j < consumerData[i].practices.length; j++) {
@@ -372,18 +357,14 @@ const methods = {
                     }
                 }
             }
+            consumerDataList[i].foodPackages = [];
+            if (consumerData[i].foodPackages && consumerData[i].foodPackages.length > 0) {
+                consumerDataList[i].foodPackages = consumerData[i].foodPackages;
+            }
         }
         data.orderFoodVosJson = JSON.stringify(consumerDataList);
         data.note = that.data.note;
-        if (this.data.isOrderType === 2) {
-            data.type = 2;
-            data.addressId = that.data.loadDefault.id;//配送地址Id
-            data.distributionFee = this.data.otherFees.totalPrice;//配送费
-            data.packingCharge = info.packingCharge;//打包费
-        } else if (this.data.isOrderType === 1) {
-            data.type = 0;
-            data.consumerId = that.data.userOrderInfo.consumerId;//消费者ID（可选，存在即为加菜）l
-        } else {
+        if (this.data.isOrderType === 0 || this.data.isOrderType === 3) {
             if (!orderType && !that.data.userOrderInfo.tableCode) {
                 wx.showToast({
                     title: '请选择桌台',
@@ -396,9 +377,23 @@ const methods = {
             data.fNumber = that.data.diningNumber || 1;
             data.consumerId = that.data.userOrderInfo.consumerId;//消费者ID（可选，存在即为加菜）
             data.tableCode = that.data.userOrderInfo ? (that.data.userOrderInfo.tableCode || '') : '';
+        } else if (this.data.isOrderType === 1) {
+            if (that.data.DefaultAddress) {
+                data.type = 2;
+                data.addressId = that.data.loadDefault.id;//配送地址Id
+                data.distributionFee = this.data.otherFees.totalPrice;//配送费
+                data.packingCharge = info.packingCharge;//打包费
+            } else {
+                that.openAddressModule();
+                return;
+            }
+        } else if (this.data.isOrderType === 2) {
+            data.type = 0;
+            data.consumerId = that.data.userOrderInfo.consumerId;//消费者ID（可选，存在即为加菜）l
         }
         // 提交数据
         apiService.commitOrder(data, function (rsp) {
+            that.data.isSubmitOrder = true;
             let consumerId = rsp.value.id,
                 data = {
                     consumerId: consumerId,
@@ -413,22 +408,19 @@ const methods = {
             if (!orderType) {
                 data.tableCode = that.data.tableCode;
             }
-            //餐前与外卖支付
-            util.go(redirctToUrl('order-pay'), {
-                type: 'blank',
-                data
-            });
-            // that.data.payType == 1
-            // if (isOrderType === 0&&) {
-            //
-            // }
-            // if (!orderType && that.data.payType == 1) {
-            //     //餐后支付
-            //     util.go(redirctToUrl('order-detail'), {
-            //         type: 'blank'
-            //     });
-            // } else {
-            // }
+            if (that.data.isOrderType == 3) {//餐后
+                util.go('/pages/order/order-detail/order-detail', {
+                    type: 'blank',
+                    data
+                });
+            } else {//餐前与外卖支付
+                util.go(redirctToUrl('order-pay'), {
+                    type: 'blank',
+                    data
+                });
+            }
+        }, () => {
+            that.data.isSubmitOrder = true;
         })
     },
     /**
@@ -436,19 +428,21 @@ const methods = {
      */
     setLoadDefaultAddress() {
         let _this = this;
-        apiService.loadDefaultAddress({openId: app.globalData.openId}, function (rsp) {
-            if (rsp.returnStatus) {
+        apiService.loadDefaultAddress(
+            {openId: app.globalData.openId},
+            (rsp) => {
                 //有默认地址
                 _this.setData({
-                    loadDefault: rsp.value
-                });
-            } else {
-                //没有默认地址
-                _this.setData({
+                    loadDefault: rsp.value,
                     DefaultAddress: true,
                 });
-            }
-        });
+            }, () => {
+                //没有默认地址
+                _this.openAddressModule();
+                _this.setData({
+                    DefaultAddress: false,
+                });
+            });
     },
     /**
      * 设置店铺信息
@@ -458,11 +452,10 @@ const methods = {
         let _this = this,
             info = this.data.shopCartsInfo.info,
             isOrderType = this.data.isOrderType,
-            orderType = this.data.orderType,
             totalPrice = Number(this.data.totalPrice) || 0,
             fullFreeAmount = Number(info.fullFreeAmount) || 0,
-            otherFees = {}, payType = 0;
-        if (isOrderType === 2) {
+            otherFees = {};
+        if (isOrderType === 1) {
             this.data.diningNumber = 0;
             otherFees = {
                 name: '免配送费',//配送费名字
@@ -480,11 +473,10 @@ const methods = {
                 otherFees.totalPrice = 0;
                 otherFees.price = 0;
             }
-        } else if (isOrderType === 1) {
+        } else if (isOrderType === 2) {
             // 自助取餐
             otherFees = {};
-        } else {
-            // info.payType 付款方式 0、餐前付款 1、餐后付款
+        } else if (isOrderType === 0 || isOrderType === 3) {
             let serviceChange = Number(info.serviceChange) || 0;
             otherFees = {
                 counts: 1,
@@ -506,6 +498,35 @@ const methods = {
         _this.updatePrice();//更新价钱
         cb && cb();
     },
+    /**
+     * 弹框提示是否有默认地址
+     */
+    openAddressModule() {
+        let that = this;
+        wx.showModal({
+            title: '温馨提示',
+            content: '请设置配送地址',
+            showCancel: false,
+            confirmText: '添加地址',
+            success: function (res) {
+                if (res.confirm) {
+                    that.goAddress()
+                } else if (res.cancel) {
+
+                }
+            }
+        });
+    },
+    /**
+     * 新添加收货地址
+     */
+    goAddress() {
+        util.go('/pages/vkahui/address-edit/address-edit', {
+            data: {
+                isWaimai: true
+            }
+        })
+    }
 };
 // 事件类
 const events = {

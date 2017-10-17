@@ -8,6 +8,7 @@
     "pages/shop/home/home",
     "pages/shop/order/order",
     "pages/shop/confirm-order/confirm-order",
+    "pages/shop/home_scanCode/home_scanCode",
     "pages/vkahui/address-edit/address-edit",
     "pages/vkahui/address/address",
     "pages/vkahui/phone-add/phone-add",

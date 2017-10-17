@@ -189,7 +189,6 @@ Page({
      */
     loadCardList: function (cb) {
         var that = this;
-
         function setMemberCardList(value) {
             var vkahuiData = value;
             //折扣百分比转化

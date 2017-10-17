@@ -10,19 +10,19 @@
                 </view>
             </view>
             <view class="azm-section">
-                <view class="flexBox">
+                <view class="flexBox"
+                      data-value="{{item}}" catch:tap="goOrderDetail">
                     <view class="flexBox-item fb-4 azm-image">
                         <image src="{{item.resLogo}}"></image>
                     </view>
-                    <navigator class="flexBox-item fb-5 azm-center" open-type="navigate"
-                               url="../order-detail/order-detail?resId={{item.resId}}&consumerId={{item.consumerId}}&tableCode={{item.tableCode}}&status={{item.consumerStatus}}">
+                    <view class="flexBox-item fb-5 azm-center">
                         <view class="h3 text-overflow">{{item.resName}}</view>
                         <view class="azm-time text-overflow">{{item.consumerTime}}</view>
                         <view class="azm-money text-overflow">
                             <text>实付：</text>
                             <text class="text-red" decode> ¥{{item.amount}}</text>
                         </view>
-                    </navigator>
+                    </view>
                     <view class="flexBox-item fb-3 azm-right">
                         <view class="azm-status text-overflow">状态：{{statusStr[item.consumerStatus]}}</view>
                         <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:key="*this" wx:for-item="val">
@@ -42,7 +42,7 @@
         <view class="weui-loadmore__tips">正在加载</view>
     </view>
     <view class="weui-loadmore weui-loadmore_line" wx:if="{{!hasMoreData && isShow}}">
-        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无数据</view>
+        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">我是有底线的</view>
     </view>
 </view>
 

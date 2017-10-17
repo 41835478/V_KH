@@ -3,7 +3,7 @@ const app = getApp(),
     util = require('../../../utils/util'),
     utilCommon = require('../../../utils/utilCommon'),
     apiService = require('../../../utils/ApiService'),
-    utilPage = require('../../../utils/utilPage');
+    utilPage = app.utilPage;
 const appPage = {
     data: {
         text: "Page order",
@@ -12,6 +12,7 @@ const appPage = {
         isDeliveryAmount: false,//是否达到配送金额
         imageServer: app.globalData.serverAddressImg,//图片服务器地址
         orderType: 0,//0：堂食  1：外卖,
+        isOrderType: 0,//0：堂食 1：自助取餐 2：外卖 3餐后付款
         orderList: ['hall', 'takeaway'],//hall：堂食  takeaway：外卖,
         shopInfo: {},//餐厅详情
         memberCardDto: {},//会员卡信息
@@ -28,12 +29,15 @@ const appPage = {
         otherList: [],//购物车其他费用列表
         otherPrice: {},//其他费用
         shopCartModule: '',//购物车模态框class
-        ShopOneData: {},//临时购物信息
+        ShopOneData: {},//规格弹框临时信息
+        PackageData: {},//套餐弹框临时信息
         deliveryAmount: 0,//起送金额
         deliveryAmountDifference: 0,//起送金额差
         isPlusFood: true,
         foodListScrollTop: 0,//当前菜品列表滚动位置
         isScrollFoodList: false,//是否菜品列表滚动
+        foodListTab: [],//菜品tab数量图标
+        isConsumerId: 0,//是否有订单
     },
     /**
      * 页面初始化
@@ -60,7 +64,7 @@ const appPage = {
             status: status
         };
         apiService.token = token;
-        _this.setData({openId, token, resId, orderType});
+        _this.setData({openId, token, resId, orderType, isConsumerId: status});
         _this.getResDetail();//获取店铺详情
     },
     /**
@@ -97,10 +101,14 @@ const appPage = {
  * 方法类
  */
 const methods = {
+    /**
+     * 获取规格
+     * @param foodCode
+     * @param cb
+     */
     getFoodRuleList(foodCode, cb) {
         let _this = this,
             memberType = this.data.memberCardDto.memberType;
-        // 获取规格
         apiService.getFoodRuleList(
             {
                 resId: _this.data.resId,
@@ -118,47 +126,49 @@ const methods = {
      * 获取用户订单信息
      */
     getUserOrderInfo() {
-        let _this = this,
-            orderType = this.data.orderType,
-            orderList = this.data.orderList,
-            dinnerType = this.data.shopInfo.restaurantBusinessRules.dinnerType;
-        if (!orderType && !dinnerType) {
-            this.checkHasWaitPayConsumer((rsp) => {
-                if (rsp.returnStatus) {
-                    app.globalData.userOrderInfo = {
-                        consumerId: rsp.value.consumerId,
-                        tableCode: rsp.value.tableCode,
-                        name: rsp.value.title,
-                        fNumber: rsp.value.fNumber,
-                        status: 1
-                    };
-                    wx.showModal({
-                        title: '提示',
-                        content: '您存在未结算订单！！！',
-                        confirmText: '去结算',
-                        cancelText: '去加菜',
-                        cancelColor: '#f74b7b',
-                        success: function (res) {
-                            if (res.confirm) {
-                                wx.navigateTo({
-                                    url: "/pages/order/order-pay/order-pay?resId=" + _this.data.resId + "&consumerId=" + rsp.value.consumerId,
-                                    success: function (res) {
-                                        // console.log('先去支付')
-                                    }
-                                });
-                            } else if (res.cancel) {
-                                console.log('用户点击取消')
+        let _this = this;
+        this.setOrderType(this.data.shopInfo.restaurantBusinessRules);
+        if (this.data.isOrderType == 0) {
+            apiService.checkHasWaitPayConsumer(
+                {
+                    resId: this.data.resId,
+                    openId: app.globalData.openId
+                }, (rsp) => {
+                    if (rsp.returnStatus) {
+                        app.globalData.userOrderInfo = {
+                            consumerId: rsp.value.consumerId,
+                            tableCode: rsp.value.tableCode,
+                            name: rsp.value.title,
+                            fNumber: rsp.value.fNumber,
+                            status: 1
+                        };
+                        wx.showModal({
+                            title: '提示',
+                            content: '您存在未结算订单！！！',
+                            confirmText: '去结算',
+                            cancelText: '去加菜',
+                            cancelColor: '#f74b7b',
+                            success: function (res) {
+                                if (res.confirm) {
+                                    wx.navigateTo({
+                                        url: "/pages/order/order-pay/order-pay?resId=" + _this.data.resId + "&consumerId=" + rsp.value.consumerId,
+                                        success: function (res) {
+                                            // console.log('先去支付')
+                                        }
+                                    });
+                                } else if (res.cancel) {
+                                    console.log('用户点击取消')
+                                }
                             }
-                        }
-                    });
-                } else {
-                    if (app.globalData.userOrderInfo && app.globalData.userOrderInfo.status === 2) {
-
+                        });
                     } else {
-                        app.globalData.userOrderInfo = null;
+                        if (app.globalData.userOrderInfo && app.globalData.userOrderInfo.status === 2) {
+
+                        } else {
+                            app.globalData.userOrderInfo = null;
+                        }
                     }
-                }
-            });
+                });
         }
     },
     /**
@@ -171,20 +181,16 @@ const methods = {
         apiService.getResDetail({resId}, (res) => {
             let shopInfo = res.value;
             app.globalData.resDetailData = shopInfo;
-            _this.setData({shopInfo});
-            if (orderType == 1) {
-                _this.setNavigationBarTitle('外卖 - ' + res.value.resName);
-            } else {
-                _this.setNavigationBarTitle('堂食 - ' + res.value.resName);
-                _this.setShopCartsStorage();
-            }
+            _this.setData({shopInfo, text: res.value.resName});
             _this.getShopCart();//获取购物车
             _this.getUserOrderInfo();//获取用户订单信息
             _this.getOneMemberCardList(resId);//获取会员卡信息
             _this.getFoodList();//获取菜品列表
         });
     },
-    //获取菜品列表
+    /**
+     * 获取菜品列表
+     */
     getFoodList() {
         let _this = this,
             data = {isEatin: 1};//堂食菜品
@@ -206,8 +212,12 @@ const methods = {
     },
     getShopCart() {
         let orderList = this.data.orderList, orderType = this.data.orderType,
-            shopCarts = app.globalData.shopCarts[this.data.resId][orderList[orderType] + 'Carts'],
-            shopCart = Object.assign(shopCarts.list) || [],
+            shopCarts = {};
+        if (!app.globalData.shopCarts[this.data.resId]) {
+            this.setShopCartsStorage();
+        }
+        shopCarts = app.globalData.shopCarts[this.data.resId][orderList[orderType] + 'Carts'];
+        let shopCart = Object.assign(shopCarts.list) || [],
             shopCartToFoodList = {},
             deliveryAmount = Number(shopCarts.info.deliveryAmount) || 0,
             counts = shopCarts.counts,
@@ -232,16 +242,9 @@ const methods = {
         app.setShopCartsStorage();
     },
     /**
-     * 获取是否未结算订单
+     * 菜品列表滚动联动tab
+     * @param e
      */
-    checkHasWaitPayConsumer(cb) {
-        apiService.checkHasWaitPayConsumer({
-            resId: this.data.resId,
-            openId: app.globalData.openId
-        }, function (rsp) {
-            cb && cb(rsp)
-        })
-    },
     scroll(e) {
         let width = null;
         wx.getSystemInfo({
@@ -316,15 +319,13 @@ const methods = {
         if (!this.data.isPlusFood) {
             return;
         }
-        let _this = this, resData = {},
+        let _this = this,
             shopCart = this.data.shopCart,
             foodList = this.data.foodList,
             shopCartToFoodList = this.data.shopCartToFoodList,
             index = e.currentTarget.dataset.index.split(','),
             datasetValue = e.currentTarget.dataset.value,
             value = util.extend(true, foodList[index[0]].list[index[1]]),
-            foodListCounts = 0,
-            foodListCountsStr = 'foodList[' + index[0] + '].list[' + index[1] + ']',
             counts = 0,
             memberType = this.data.memberCardDto.memberType,
             price = value.price || 0,
@@ -457,6 +458,11 @@ const methods = {
             _this.updateShopCart();
         }
     },
+    /**
+     * 购物车菜品增减（待开发）
+     * @param num
+     * @param e
+     */
     plusToFood(num, e) {
         let _this = this, resData = {},
             shopCart = this.data.shopCart,
@@ -517,12 +523,12 @@ const methods = {
             shopCartToFoodList = this.data.shopCartToFoodList,
             str = 'foodList[' + index[0] + '].list[' + index[1] + '].info',
             currentFoodIndex = _this.getShopCartIndex(value);
+        if (memberType && memberType.length > 0) {
+            value.rule.foodRuleMemberPrice && value.rule.foodRuleMemberPrice.length === 1 && (value.rule.memberPrice = value.rule.foodRuleMemberPrice[0].memberPrice || 0);
+        }
         if (currentFoodIndex === -1) {
             value.info.counts = 1;//数量
             value.price = Number(value.rule.memberPrice) || Number(value.price) || 0;
-            if (memberType && memberType.length > 0) {
-                value.rule.foodRuleMemberPrice && value.rule.foodRuleMemberPrice.length === 1 && (value.rule.memberPrice = value.rule.foodRuleMemberPrice[0].memberPrice || 0);
-            }
             value.info.totalPrice = util.money(value.price * (Number(value.info.counts) || 0));//单品总价
             value.info.index = index;
             shopCart.push(util.extend(true, value));
@@ -623,7 +629,7 @@ const methods = {
     getShopCartIndex(value) {
         return this.data.shopCart.findIndex((n) => {
             if (value.foodCode === n.foodCode) {
-                let flag = [0, 0];
+                let flag = [0, 0, 0];
                 if (value.ruleCode) {
                     flag[0] = value.ruleCode === n.ruleCode ? 1 : 0;
                 } else {
@@ -634,7 +640,12 @@ const methods = {
                 } else {
                     flag[1] = 1;
                 }
-                if (flag[0] + flag[1] === 2) {
+                if (value.foodPackages) {
+                    flag[2] = utilCommon.isEqualToString(value.foodPackages, n.foodPackages) ? 1 : 0;
+                } else {
+                    flag[2] = 1;
+                }
+                if (flag[0] + flag[1] + flag[2] === 3) {
                     return true;
                 }
             }
@@ -718,11 +729,11 @@ const methods = {
         function getFoodPracticesList(data) {
             //口味
             obj.data.info.practicesList = data;
-            obj.data.info.practicesLenght = 0;
+            obj.data.info.practicesLength = 0;
             if (data && data.length > 0) {
                 for (let i = 0, len = data.length; i < len; i++) {
                     if (data[i].foodPracticesList && data[i].foodPracticesList.length > 0) {
-                        obj.data.info.practicesLenght++;
+                        obj.data.info.practicesLength++;
                         obj.data.practicesList[i] = data[i].foodPracticesList[0];
                         obj.data.practicesList[i].practicesCheckedId = data[i].foodPracticesList[0].id;
                         obj.data.practices[i] = data[i].foodPracticesList[0].practicesCode;
@@ -752,7 +763,7 @@ const methods = {
      * @param e
      * @param text
      */
-    setShopOneDate(e, text) {
+    setShopOneData(e, text) {
         let that = this,
             index = null,
             ShopOneData = that.data.ShopOneData,
@@ -785,6 +796,209 @@ const methods = {
         });
     },
     /**
+     * 套餐添加购物车
+     * @param num
+     * @param e
+     */
+    packageToCarts(e) {
+        let _this = this, resData = {},
+            shopCart = this.data.shopCart,
+            foodList = this.data.foodList,
+            value = e.currentTarget.dataset.value,
+            index = value.info.index,
+            counts = foodList[index[0]].list[index[1]].info.counts || 0,
+            price = value.price || 0,
+            memberType = this.data.memberCardDto.memberType,
+            shopCartToFoodList = this.data.shopCartToFoodList,
+            currentFoodIndex = _this.getShopCartIndex(value);
+        if (memberType && memberType.length > 0) {
+            value.rule.foodRuleMemberPrice && value.rule.foodRuleMemberPrice.length === 1 && (value.rule.memberPrice = value.rule.foodRuleMemberPrice[0].memberPrice || 0);
+        }
+        if (currentFoodIndex === -1) {
+            value.info.counts = 1;//数量
+            value.info.totalPrice = util.money(value.price * (Number(value.info.counts) || 0));//单品总价
+            value.info.index = index;
+            shopCart.push(util.extend(true, value));
+            _this.setData({
+                ['shopCart[' + (shopCart.length - 1) + ']']: util.extend(true, value)
+            });
+        } else {
+            let data = shopCart[currentFoodIndex],
+                dataCounts = Number(data.info.counts) || 0,
+                dataPrice = Number(data.price) || 0;
+            shopCart[currentFoodIndex] = util.extend(true, value);
+            dataCounts++;
+            shopCart[currentFoodIndex].info.counts = dataCounts;
+            shopCart[currentFoodIndex].info.totalPrice = util.money(dataCounts * dataPrice);//单品总价
+            _this.setData({
+                ['shopCart[' + currentFoodIndex + ']']: shopCart[currentFoodIndex]
+            });
+            //更新规格菜的数量
+            value.info.counts++;
+        }
+        let ruleCounts = 0;
+        if (!shopCartToFoodList[value.foodCode] || util.isEmptyObject(shopCartToFoodList[value.foodCode])) {
+            value.info = {
+                counts: 1,
+                totalPrice: 0,
+                amount: 1,
+                index: [index[0], index[1]]
+            };
+            ruleCounts = 1;
+            shopCartToFoodList[value.foodCode] = util.extend(true, value);
+        } else {
+            if (shopCartToFoodList[value.foodCode].info) {
+                ruleCounts = shopCartToFoodList[value.foodCode].info.amount || 0;
+            }
+            ruleCounts++;
+            shopCartToFoodList[value.foodCode] = util.extend(true, value);
+        }
+        _this.setData({
+            ['shopCartToFoodList.' + value.foodCode + '.info.amount']: ruleCounts
+        });
+        _this.updateShopCart();
+    },
+    /**
+     * 打开套餐弹框事件
+     * @param e
+     */
+    openPackageBtn(e) {
+        let that = this,
+            index = e.currentTarget.dataset.index.split(','),
+            flagArr = [false, false],
+            flagArr2 = [false, false],
+            value = e.currentTarget.dataset.value,
+            price = value.price || 0,
+            counts = 0,
+            foodList = this.data.foodList,
+            foodListToValue = foodList[index[0]].list[index[1]],
+            obj = {
+                isLoading: false,
+                title: value.name,
+                data: value,
+                footer: ['确定'],
+                tableContent: 'table-package',
+            };
+        if (value.info) {
+            counts = value.info.counts || 0;
+        }
+        obj.data.rule = {};//规格
+        obj.data.ruleCode = '';//规格
+        obj.data.foodPackages = [];//套餐子菜
+        obj.data.foodPackagesList = [];//套餐子菜
+        obj.data.info = {
+            totalPrice: util.money(counts * price),//总价
+            foodPackagesList: [],//套餐子菜
+            ruleList: [],//规格
+            counts: counts,
+            index: index
+        };
+        this.setData({
+            PackageData: obj
+        });
+        if (foodListToValue.info) {
+            if (foodListToValue.info.foodPackagesList && foodListToValue.info.foodPackagesList.length > 0) {
+                getFoodPackagesList(foodListToValue.info.foodPackagesList);
+                flagArr2[0] = true;
+            }
+            if (foodListToValue.info.ruleList && foodListToValue.info.ruleList.length > 0) {
+                getFoodRuleList(foodListToValue.info.ruleList);
+                flagArr2[1] = true;
+            }
+        }
+        this.openModule('modulePackage');
+        if (flagArr2[0] && flagArr2[1]) {
+            return;
+        }
+
+        that.getFoodRuleList(value.foodCode, (res) => {
+            getFoodRuleList(res);
+        });
+
+        function getFoodRuleList(data) {
+            obj.data.info.ruleList = data;
+            if (data && data.length > 0) {
+                obj.data.rule = data[0];
+                obj.data.ruleCode = data[0].ruleCode;
+            }
+            flagArr[0] = true;
+            setData();
+        }
+
+
+        // 获取子菜
+        apiService.findFoodPackage(
+            {
+                resId: that.data.resId,
+                parentCode: value.foodCode
+            },
+            (rsp) => {
+                getFoodPackagesList(rsp.value);
+            });
+
+        /**
+         * 套餐子菜
+         * @param data
+         */
+        function getFoodPackagesList(data) {
+            obj.data.info.foodPackagesList = data;
+            obj.data.info.foodPackagesLength = 0;
+            if (data && data.length > 0) {
+                for (let i = 0, len = data.length; i < len; i++) {
+                    if (data[i].value && data[i].value.length > 0) {
+                        obj.data.info.foodPackagesLength++;
+                        obj.data.foodPackagesList[i] = data[i].value[0];
+                        obj.data.foodPackagesList[i].checkedId = data[i].value[0].ruleCode + data[i].value[0].foodCode;
+                        obj.data.foodPackages[i] = {
+                            "foodCode": data[i].value[0].foodCode,
+                            "ruleCode": data[i].value[0].ruleCode,
+                            "foodCount": data[i].value[0].foodCount
+                        };
+                    } else {
+                        obj.data.foodPackagesList[i] = {};
+                        obj.data.foodPackages[i] = '';
+                    }
+                }
+            }
+            flagArr[1] = true;
+            setData();
+        }
+
+        function setData() {
+            if (flagArr[0] && flagArr[1]) {
+                let data = {},
+                    str = 'foodList[' + index[0] + '].list[' + index[1] + ']';
+                obj.isLoading = true;
+                data[str] = obj.data;
+                data.PackageData = obj;
+                that.setData(data);
+            }
+        }
+    },
+    /**
+     * 设置套餐子菜
+     * @param e
+     * @param text
+     */
+    setPackageData(e) {
+        let that = this,
+            index = null,
+            PackageData = that.data.PackageData,
+            value = e.currentTarget.dataset.value,
+            flag = true;
+        index = e.currentTarget.dataset.index.split(',');
+        let list = PackageData.data.info.foodPackagesList[index[0]].value;
+        that.setData({
+            ['PackageData.data.foodPackagesList[' + index[0] + ']']: value,
+            ['PackageData.data.foodPackagesList[' + index[0] + '].checkedId']: value.ruleCode + value.foodCode,
+            ['PackageData.data.foodPackages[' + index[0] + ']']: {
+                "foodCode": value.foodCode,
+                "ruleCode": value.ruleCode,
+                "foodCount": value.foodCount
+            }
+        });
+    },
+    /**
      * 更新价钱并保存本地购物车
      * @param bol
      */
@@ -800,10 +1014,12 @@ const methods = {
             totalPrice = 0,
             offerTotalPrice = 0,
             discountTotalPrice = 0,
-            updateData = [];
-        // for (let j = 0; j < foodList.length; j++) {
-        //     foodList[j].counts = 0;
-        // }
+            updateData = [],
+            foodListTab = [];//菜品tab数量图标
+        for (let j = 0; j < foodList.length; j++) {
+            foodList[j].counts = 0;
+            foodListTab[j] = 0;
+        }
         for (let i = 0; i < len; i++) {
             // shopCartToFoodList[shopCart[i].foodCode] = util.extend(true, shopCart[i]);
             let item = shopCart[i],
@@ -815,25 +1031,25 @@ const methods = {
                 offerPrice = 0,
                 foodListItem = foodList[info.index[0]].list[info.index[1]],
                 price = Number(info.totalPrice) || 0;
-            totalPrice += price;
-            shopCart[i].info.amount = shopCartToFoodList[item.foodCode].info.amount;
+            totalPrice += price;//总价计算
+            shopCart[i].info.amount = shopCartToFoodList[item.foodCode].info.amount;//购物车单菜数量
             if (!bol) {
                 if (shopCart[i].info.ruleList && shopCart[i].info.ruleList.length > 1) {
-                    shopCart[i].isdiscount = shopCart[i].rule.status;
+                    shopCart[i].isdiscount = shopCart[i].rule.status;//根据规格中状态转化会员等级
                 }
                 memberCardDto && memberCardDto.memberTypeDiscount && (discount = Number(memberCardDto.memberTypeDiscount / 100) || 1);
 
-                if (discount && discount > 0 && Number(shopCart[i].isdiscount) === 1) {
+                if (discount && discount > 0 && Number(shopCart[i].isdiscount) === 1) {//会员折扣
                     discountPrice = price * discount;
                     offerPrice = price - discountPrice;
                     info.discountPrice = util.money(discountPrice);
                     info.offerPrice = offerPrice >= 0 ? util.money(offerPrice) : '0.00';
-                } else if (Number(shopCart[i].isdiscount) === 2) {
+                } else if (Number(shopCart[i].isdiscount) === 2) {//会员等级
                     discountPrice = Number(item.rule.memberPrice * info.counts);
                     offerPrice = price - discountPrice;
                     info.discountPrice = util.money(discountPrice);
                     info.offerPrice = offerPrice >= 0 ? util.money(offerPrice) : '0.00';
-                } else {
+                } else {//无会员
                     info.discountPrice = util.money(price);
                     info.offerPrice = util.money(0);
                 }
@@ -844,12 +1060,10 @@ const methods = {
             //计算购物车分类下子菜的数量
             foodList[info.index[0]].counts += info.counts;
         }
-        // for (let j = 0; j < foodList.length; j++) {
-        //     _this.setData({
-        //         ['foodList[' + j + '].counts']: foodList[j].counts
-        //     })
-        // }
-
+        for (let j = 0; j < foodList.length; j++) {
+            foodList[j].counts = foodList[j].counts;
+            foodListTab[j] = foodList[j].counts;
+        }
         this.data.offerPrice = util.money(offerTotalPrice);
         this.data.discountTotalPrice = util.money(discountTotalPrice);
         let otherListPrice = 0,
@@ -870,10 +1084,15 @@ const methods = {
         totalPrice = util.money(totalPrice);
 
         // shopCartToFoodList
-        this.setData({totalPrice, isDeliveryAmount, deliveryAmountDifference, counts: shopCart.length});
+        if (shopCart.length === 0) {
+            _this.closeModule('shopCartModule');//关闭购物车
+        }
+        this.setData({totalPrice, isDeliveryAmount, deliveryAmountDifference, counts: shopCart.length, foodListTab});
         this.setShopCart();
     },
-    // 清除购物车
+    /**
+     * 清除购物车
+     */
     clearShopCart() {
         if (this.data.shopCart.length === 0) {
             return;
@@ -906,7 +1125,9 @@ const methods = {
             }
         });
     },
-    // 提交订单
+    /**
+     * 提交订单
+     */
     submit() {
         let shopCart = this.data.shopCart,
             orderType = this.data.orderType,
@@ -932,7 +1153,12 @@ const methods = {
             // if (orderType == 1) {
             //     url = '/pages/waimai/order/order';
             // }
+            let typeText = null;
+            if (_this.data.isConsumerId === 1) {
+                typeText = 'blank';
+            }
             util.go(url, {
+                type: typeText,
                 data: {
                     resId: _this.data.resId,
                     orderType
@@ -959,29 +1185,67 @@ const events = {
         let _this = this;
         _this.clearShopCart();
     },
+    /**
+     * 设置口味做法btn事件
+     * @param e
+     */
     bindAzmPopupPracticesBtn(e) {
         let _this = this;
-        _this.setShopOneDate(e, 'practices');
+        _this.setShopOneData(e, 'practices');
     },
+    /**
+     * 设置规格btn事件
+     * @param e
+     */
     bindAzmPopupRuleBtn(e) {
         let _this = this;
-        _this.setShopOneDate(e, 'rule');
+        _this.setShopOneData(e, 'rule');
     },
-    bindAzmModulePopupSubmit(e) {
-        // 弹窗提交
+    /**
+     * 设置套餐btn事件
+     * @param e
+     */
+    bindAzmPopupPackageBtn(e) {
         let _this = this;
-        console.log(e, 'moduleActiveMe');
-        _this.ruleToCarts(e);
-        _this.closeModule('moduleActiveMe');
+        _this.setPackageData(e);
     },
+    /**
+     * 弹窗提交
+     * @param e
+     */
+    bindAzmModulePopupSubmit(e) {
+        let _this = this,
+            data = e.currentTarget.dataset.value;
+        if (data.foodType == 2) {
+            _this.packageToCarts(e);
+        } else {
+            _this.ruleToCarts(e);
+        }
+        _this.bindAzmCloseMask();
+    },
+    /**
+     * 打开选套餐菜弹框
+     * @param e
+     */
+    bindOpenPackageBtn(e) {
+        let _this = this;
+        _this.openPackageBtn(e);
+    },
+    /**
+     * 打开选规格菜弹框
+     * @param e
+     */
     bindOpenRuleBtn(e) {
         let _this = this;
         _this.OpenRuleBtn(e);
     },
+    /**
+     * 关闭所有弹窗
+     */
     bindAzmCloseMask() {
-        // 关闭弹窗
         let _this = this;
-        _this.closeModule('moduleActiveMe');//规格弹框
+        _this.closeModule('moduleActiveMe');//关闭规格弹框
+        _this.closeModule('modulePackage');//关闭套餐弹框
         _this.closeModule('shopCartModule');//关闭购物车
     },
     bindAzmShopCartBtn() {

@@ -30,7 +30,7 @@
                     </view>
                     <view class="entry">
                         <text class="p cus-width-3 me">电话</text>
-                        <input name="phone_number" placeholder="请填写收货手机号" value="{{phone_number}}" maxlength="11"/>
+                        <input name="phone_number" type="number" placeholder="请填写收货手机号" value="{{phone_number}}" maxlength="11"/>
                         <view class="mes" wx:if="{{phone}}">*您的手机号码格式输入有误，请重新输入</view>
                     </view>
                     <view class="entry">

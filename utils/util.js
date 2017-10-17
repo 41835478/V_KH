@@ -492,6 +492,26 @@ function extend() {
 module.exports.extend = extend;
 
 /**
+ * 对象与数组的复制 第一个值为Boolean并为true时为深度复制
+ * @returns {*|{}}
+ */
+function clone(arr, obj) {
+    var target = {};
+    if (utilCommon.isString(arr)) {
+        target[arr] = obj[arr]
+    } else if (utilCommon.isArray(arr)) {
+        let length = arr.length;
+        for (let i = 0; i < length; i++) {
+            target[arr[i]] = obj[arr[i]]
+        }
+    }
+    // 返回修改的目标对象
+    return target;
+}
+
+module.exports.clone = clone;
+
+/**
  * 当前页面路径
  * @returns {*}
  */
@@ -516,7 +536,16 @@ function go(a, options) {
     if (utilCommon.isNumberOfNaN(a)) {
         if (a < 0) {
             wx.navigateBack({
-                delta: -a
+                delta: -a,
+                success() {
+                    options.success && options.success()
+                },
+                fail() {
+                    options.fail && options.fail()
+                },
+                complete() {
+                    options.complete && options.complete()
+                }
             })
         }
     } else if (utilCommon.isString(a) && regExpUtil.isPath(a)) {
@@ -528,19 +557,55 @@ function go(a, options) {
         let url = a + stringify;
         if (options.type === 'blank') {
             wx.redirectTo({
-                url: url
+                url: url,
+                success() {
+                    options.success && options.success()
+                },
+                fail() {
+                    options.fail && options.fail()
+                },
+                complete() {
+                    options.complete && options.complete()
+                }
             })
         } else if (options.type === 'tab') {
             wx.switchTab({
-                url: url
+                url: url,
+                success() {
+                    options.success && options.success()
+                },
+                fail() {
+                    options.fail && options.fail()
+                },
+                complete() {
+                    options.complete && options.complete()
+                }
             })
         } else if (options.type === 'blankAll') {
             wx.reLaunch({
-                url: url
+                url: url,
+                success() {
+                    options.success && options.success()
+                },
+                fail() {
+                    options.fail && options.fail()
+                },
+                complete() {
+                    options.complete && options.complete()
+                }
             })
         } else {
             wx.navigateTo({
-                url: url
+                url: url,
+                success() {
+                    options.success && options.success()
+                },
+                fail() {
+                    options.fail && options.fail()
+                },
+                complete() {
+                    options.complete && options.complete()
+                }
             })
         }
     }

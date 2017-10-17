@@ -1,14 +1,9 @@
 <form bindsubmit="formSubmit" bindreset="formReset">
     <view class="new-class">
         <!--外卖-->
-        <block wx:if="{{isOrderType == 2}}">
+        <block wx:if="{{isOrderType == 1}}">
             <view class="azm-waimai header">
                 <block wx:if="{{DefaultAddress}}">
-                    <navigator open-type="navigate" url="/pages/vkahui/address-edit/address-edit?isWaimai=true">
-                        <button plain="true" class="btn btn-red-default">+请添加收货地址</button>
-                    </navigator>
-                </block>
-                <block wx:else>
                     <navigator open-type="navigate" url="/pages/vkahui/address/address?isWaimai=true">
                         <view class="azm-address flexBox flexBox-center">
                             <view class="flexBox-item image fb-2">
@@ -22,6 +17,12 @@
                         </view>
                     </navigator>
                 </block>
+                <block wx:else>
+                    <navigator open-type="navigate" url="/pages/vkahui/address-edit/address-edit?isWaimai=true">
+                        <button plain="true" class="btn btn-red-default">+请添加收货地址</button>
+                    </navigator>
+                </block>
+
             </view>
         </block>
     </view>
@@ -29,7 +30,7 @@
         <view class="wrapper has-nav">
             <view class="ct bg-color-gray overflow-h">
                 <!--自助取餐-->
-                <block wx:if="{{isOrderType == 1}}">
+                <block wx:if="{{isOrderType == 2}}">
                     <view class="arrow-list-ctn mg-top-middle azm-tanshi">
                         <view class="list">
                             <view class="entry" style="padding-bottom:0.5rem;padding-top:0.5rem;">
@@ -39,7 +40,7 @@
                     </view>
                 </block>
                 <!--桌台取餐-->
-                <block wx:elif="{{isOrderType == 0}}">
+                <block wx:elif="{{isOrderType == 0 || isOrderType == 3}}">
                     <view class="arrow-list-ctn mg-top-middle azm-tanshi">
                         <view class="list">
                             <view class="entry flexBox flexBox-start">
@@ -110,9 +111,9 @@
                                 <view class="flexBox-item text-overflow fb-4">{{item.name}}</view>
                                 <view class="flexBox-item text-red text-right fb-4">¥ {{item.price}}</view>
                             </view>
-                            <view wx:else class="list flexBox flexBox-between" style="padding-bottom:0">
-                                <view class="flexBox-item fb-all text-red text-right">免{{item.name}}</view>
-                            </view>
+                            <!--<view wx:else class="list flexBox flexBox-between" style="padding-bottom:0">-->
+                            <!--<view class="flexBox-item fb-all text-red text-right">免{{item.name}}</view>-->
+                            <!--</view>-->
                         </block>
                         <view class="list flexBox flexBox-between" style="padding-bottom:0"
                               wx:if="{{otherFees.totalPrice > 0}}">
@@ -128,10 +129,10 @@
                                 <text>¥{{ otherFees.totalPrice}}</text>
                             </view>
                         </view>
-                        <view wx:elif="{{otherFees.name}}" class="list flexBox flexBox-between"
-                              style="padding-bottom:0">
-                            <view class="flexBox-item fb-all text-red text-right">{{otherFees.name}}</view>
-                        </view>
+                        <!--<view wx:elif="{{otherFees.name}}" class="list flexBox flexBox-between"-->
+                        <!--style="padding-bottom:0">-->
+                        <!--<view class="flexBox-item fb-all text-red text-right">{{otherFees.name}}</view>-->
+                        <!--</view>-->
                         <view class="list" style="padding-bottom:0.3rem;">
                             <view class="entry">
                                 <view class="inner">

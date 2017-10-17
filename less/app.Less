@@ -130,7 +130,7 @@ page {
   }
 
   .text-red {
-    color: @color-f74b7b;
+    color: @color-f74b7b !important;
   }
   .block {
     display: block;
@@ -195,6 +195,23 @@ page {
       background-color: @color-f74b7b;
       color: #fff;
       border-radius: 100px;
+      border-color: @color-f74b7b;
+      &.button-hover {
+        background-color: @color-f74b7b;
+        color: #d8dbe4;
+        border-color: @color-f74b7b;
+      }
+    }
+    &.btn-white {
+      background-color: #fff;
+      color: #000;
+      border-radius: 100px;
+      border-color: #d8dbe4;
+      &.button-hover {
+        background-color: #fff;
+        color: #d8dbe4;
+        border-color: #d8dbe4;
+      }
     }
 
     &.btn-red.long {
@@ -361,7 +378,13 @@ page {
         flex: 0 3 auto;
       }
     }
-
+    .box {
+      margin: 0 22*2rpx;
+      padding: 0;
+      border: none;
+      width: inherit;
+      .clearFix();
+    }
     .row {
       margin: 0;
       padding: 0;

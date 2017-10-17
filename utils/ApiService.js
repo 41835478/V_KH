@@ -59,6 +59,13 @@ module.exports = {
             query: {}
         },
         /**
+         * 获取套餐子菜列表
+         */
+        findFoodPackage: {
+            path: '/foodPackage/findFoodPackage',
+            query: {}
+        },
+        /**
          * 获取口味列表
          */
         getFoodPracticesList: {
@@ -311,6 +318,21 @@ module.exports = {
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 获取套餐子菜列表
+     */
+    findFoodPackage(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.findFoodPackage.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            if(res.value){
+                res.value = JSON.parse(res.value);
+            }
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;

@@ -1,5 +1,6 @@
 const appUtil = require('../../../utils/appUtil.js'),
     util = require('../../../utils/util.js'),
+    utilCommon = require('../../../utils/utilCommon'),
     ApiService = require('../../../utils/ApiService'),
     app = getApp();
 Page({
@@ -15,6 +16,7 @@ Page({
         hasMoreData: true,
         pageNum: 1,
         pageSize: 10,
+        shopInfoList: {},//店铺信息列表
         statusStr: {
             3: '待支付',
             5: '已支付',
@@ -103,7 +105,23 @@ Page({
             orderList.forEach(function (val, key) {
                 val.amount = val.amount.toFixed(2);
                 val.resLogo = app.globalData.serverAddressImg + val.resLogo;
+                that.data.shopInfoList[val.resId] = {
+                    orderType: val.consumerType,
+                    resId: val.resId
+                }
             });
+            let item = that.data.shopInfoList;
+            for (let k in item) {
+                if (item[k].flag) {
+                    getOrderType(item[k]);
+                } else {
+                    ApiService.getResDetail({resId: item[k].resId}, (res) => {
+                        that.data.shopInfoList[res.value.resId] = res.value;
+                        that.data.shopInfoList[res.value.resId].flag = true;
+                        getOrderType(item[k]);
+                    })
+                }
+            }
             if (that.data.pageNum == 1) {
                 that.setData({orderList: orderList});
             } else {
@@ -111,6 +129,17 @@ Page({
             }
             cb && cb();
         }, cb);
+
+        function getOrderType(val) {
+            if (val.orderType == 2) {
+                that.data.shopInfoList[val.resId].isOrderType = 1
+            } else {
+                that.data.shopInfoList[val.resId].isOrderType = app.utilPage.getOrderType(that.data.shopInfoList[val.resId].restaurantBusinessRules).isOrderType;
+            }
+            that.setData({
+                ['shopInfoList.' + val.resId]: that.data.shopInfoList[val.resId]
+            });
+        }
     },
     jumpBtn(e) {
         var type = e.currentTarget.dataset.type;
@@ -139,8 +168,24 @@ Page({
                 orderType,
                 consumerId: value.consumerId,
                 tableCode: value.tableCode,
-                tableName: value.tableName
+                tableName: value.Title,
+                fNumber: value.fNumber
             }
         });
+    },
+    /**
+     * 跳转订单详情
+     * @param e
+     */
+    goOrderDetail(e) {
+        let value = e.currentTarget.dataset.value;
+        util.go('/pages/order/order-detail/order-detail', {
+            data: {
+                resId: value.resId,
+                consumerId: value.consumerId,
+                tableCode: value.tableCode,
+                tableName: value.tableName
+            }
+        })
     }
 });

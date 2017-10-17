@@ -60,6 +60,7 @@
                     <block wx:for="{{shopList}}" wx:key="*this">
                         <view class="shopInfo-list-item flexBox-item fb-{{shopList.length>4?3:12/shopList.length}}"
                               data-url="{{orderUrl + '?resId=' + item.resId + '&orderType=' + item.orderType}}"
+                              data-value="{{item}}"
                               data-type="{{item.orderType}}" catch:tap="bindAzmScanCode" hover-stay-time="100"
                               wx:if="{{item.status===1}}">
                             <image src="{{item.img}}"></image>

@@ -60,7 +60,7 @@ class HttpRequest {
                 confirmText: '请重试',
                 success: function (res) {
                     if (res.confirm) {
-                        setRequest();
+                        // setRequest();
                     } else if (res.cancel) {
 
                     }
