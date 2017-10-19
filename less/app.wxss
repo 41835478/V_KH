@@ -73,49 +73,97 @@ page .flexBox .flexBox-item.fb-1 {
   flex-basis: 8.33333333%;
   width: 8.33333333%;
 }
+page .flexBox .flexBox-item.fb-1_5 {
+  flex-basis: 12.5%;
+  width: 12.5%;
+}
 page .flexBox .flexBox-item.fb-2 {
   flex-basis: 16.66666667%;
   width: 16.66666667%;
+}
+page .flexBox .flexBox-item.fb-2_5 {
+  flex-basis: 20.83333333%;
+  width: 20.83333333%;
 }
 page .flexBox .flexBox-item.fb-3 {
   flex-basis: 25%;
   width: 25%;
 }
+page .flexBox .flexBox-item.fb-3_5 {
+  flex-basis: 29.16666667%;
+  width: 29.16666667%;
+}
 page .flexBox .flexBox-item.fb-4 {
   flex-basis: 33.33333333%;
   width: 33.33333333%;
+}
+page .flexBox .flexBox-item.fb-4_5 {
+  flex-basis: 37.5%;
+  width: 37.5%;
 }
 page .flexBox .flexBox-item.fb-5 {
   flex-basis: 41.66666667%;
   width: 41.66666667%;
 }
+page .flexBox .flexBox-item.fb-5_5 {
+  flex-basis: 45.83333333%;
+  width: 45.83333333%;
+}
 page .flexBox .flexBox-item.fb-6 {
   flex-basis: 50%;
   width: 50%;
+}
+page .flexBox .flexBox-item.fb-6_5 {
+  flex-basis: 54.16666667%;
+  width: 54.16666667%;
 }
 page .flexBox .flexBox-item.fb-7 {
   flex-basis: 58.33333333%;
   width: 58.33333333%;
 }
+page .flexBox .flexBox-item.fb-7_5 {
+  flex-basis: 62.5%;
+  width: 62.5%;
+}
 page .flexBox .flexBox-item.fb-8 {
   flex-basis: 66.66666667%;
   width: 66.66666667%;
+}
+page .flexBox .flexBox-item.fb-8_5 {
+  flex-basis: 70.83333333%;
+  width: 70.83333333%;
 }
 page .flexBox .flexBox-item.fb-9 {
   flex-basis: 75%;
   width: 75%;
 }
+page .flexBox .flexBox-item.fb-9_5 {
+  flex-basis: 79.16666667%;
+  width: 79.16666667%;
+}
 page .flexBox .flexBox-item.fb-10 {
   flex-basis: 83.33333333%;
   width: 83.33333333%;
+}
+page .flexBox .flexBox-item.fb-10_5 {
+  flex-basis: 87.5%;
+  width: 87.5%;
 }
 page .flexBox .flexBox-item.fb-11 {
   flex-basis: 91.66666667%;
   width: 91.66666667%;
 }
+page .flexBox .flexBox-item.fb-11_5 {
+  flex-basis: 95.83333333%;
+  width: 95.83333333%;
+}
 page .flexBox .flexBox-item.fb-12 {
   flex-basis: 100%;
   width: 100%;
+}
+page .flexBox .flexBox-item.fb-12_5 {
+  flex-basis: 104.16666667%;
+  width: 104.16666667%;
 }
 page .hide {
   display: none;
@@ -187,6 +235,16 @@ page button.btn-gray {
 page button.btn-green {
   background-color: #4dd2bd;
   color: #fff;
+}
+page button.azm-btn-red {
+  background-color: #f74b7b;
+  color: #fff;
+  border-color: #f74b7b;
+}
+page button.azm-btn-red.button-hover {
+  background-color: #f74b7b;
+  color: #d8dbe4;
+  border-color: #f74b7b;
 }
 page button.btn-red {
   background-color: #f74b7b;

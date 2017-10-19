@@ -9,8 +9,8 @@ class HttpRequest {
     }
 
     request(params, resolve) {
-
-        let flag = false,
+        let page = getCurrentPages(),
+            retryNum = 0,
             data = {},
             url = params.url,
             isLoading = false,
@@ -47,35 +47,62 @@ class HttpRequest {
         }
 
         function failCallback(res) {
+            retryNum++;
             let text = '网络连接失败，或服务器错误' + '{' + res.errMsg + '}';
             if (res.statusCode === 404) {
                 text = '请求失败'
             } else if (res.statusCode === 500) {
                 text = '服务器错误'
             }
+            let confirmText = '请重试';
+            // debugger
+            if (retryNum >= 3) {
+                text += '（已重试' + retryNum + '次,超过重试次数，请检查网络状态并重新打开小程序）';
+                confirmText = "请重启"
+            } else {
+                text += '（已重试' + retryNum + '次）';
+            }
             wx.showModal({
                 title: '提示',
                 content: text,
                 showCancel: false,
-                confirmText: '请重试',
-                success: function (res) {
-                    if (res.confirm) {
-                        // setRequest();
-                    } else if (res.cancel) {
+                confirmText: confirmText,
+                success: function (rsp) {
+                    if (rsp.confirm) {
+                        if (retryNum < 3) {
+                            setRequest();
+                        } else {
+                            // failCallback(res);
+                        }
+                    } else if (rsp.cancel) {
 
                     }
                 }
             });
         }
 
-        function setRequest() {
-            promise = null;
-            if (isLoading) {
-                wx.showLoading({
-                    title: '加载中',
-                    mask: true
-                });
+        let showToast = (message, cb) => {
+            if (page.showToast) {
+                page.showToast(message);
+            } else {
+                util.showToast(message);
             }
+        };
+        if (isLoading) {
+            wx.showLoading({
+                title: '加载中',
+                mask: true,
+                success() {
+                    setRequest();
+                }
+            });
+        } else {
+            setRequest();
+        }
+
+        function setRequest() {
+            let flag = false;
+            promise = null;
             wx.showNavigationBarLoading();
             console.log('请求数据_____________________', url, params.data);
             wx.request({
@@ -85,40 +112,36 @@ class HttpRequest {
                 method: params.method || 'GET',
                 success(res) {
                     let returnStatus = res.data.returnStatus;
-                    if (res.statusCode !== 200) {
-                        // failCallback(res);
-                    }
-                    if (!returnStatus && !isReturnStatus) {
-                        util.showToast(res.data.message);
-                    }
                     if (isReturnStatus) {
                         returnStatus = true;
                     }
-                    if (res.statusCode === 200) {
-                        if (returnStatus) {
-                            flag = true;
-                            data = res.data;
-                        } else {
-                            reject && reject(res.data);
-                        }
+                    if (res.statusCode === 200 && returnStatus) {
+                        flag = true;
                     }
                 },
                 fail(res) {
-                    // failCallback(res);
-                    console.log("网络连接失败，或服务器错误", res, url);
+
                 },
                 complete(res) {
                     wx.hideNavigationBarLoading();
                     wx.hideToast();
                     console.log('获取数据________________________', url, res);
-                    if (flag) {
-                        resolve && resolve(res.data);
+                    if (!res.statusCode || res.statusCode !== 200) {
+                        failCallback(res);
+                    } else {
+                        if (!flag && !isReturnStatus) {
+                            showToast(res.data.message)
+                        }
+                        if (flag) {
+                            resolve && resolve(res.data);
+                        } else {
+                            reject && reject(res.data);
+                        }
                     }
+
                 }
             })
         }
-
-        setRequest();
     };
 
     post(url, options, resolve, isReturnStatus, reject) {

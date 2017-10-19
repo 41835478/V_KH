@@ -1,5 +1,4 @@
 @import "../less/index";
-
 //遮罩
 .mask::after {
   content: '';
@@ -31,15 +30,59 @@
 }
 
 .spinner2 {
-  margin: 100px auto;
-  width: 20px;
-  height: 20px;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .azm-loading {
+    text-align: center;
+    .px2rpx(width, 60.5);
+    .px2rpx(height, 60.5);
+    .px2rpx(line-height, 65);
+    .azm-icon {
+      color: @color-f74b7b;
+      .px2rpx(font-size, 40);
+    }
+    -webkit-animation: circle 1.2s infinite linear;
+    animation: circle 1.2s infinite linear;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+
+  @-webkit-keyframes circle {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes circle {
+    0% {
+      transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+    }
+  }
+}
+
+.spinner3 {
+  .px2rpx(width, 30);
+  .px2rpx(height, 30);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   .container1 > view, .container2 > view, .container3 > view {
-    width: 6px;
-    height: 6px;
-    background-color: #333;
+    .px2rpx(width, 8);
+    .px2rpx(height, 8);
+    background-color: @color-f74b7b;
 
     border-radius: 100%;
     position: absolute;
@@ -162,7 +205,7 @@
 }
 
 .spinner {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

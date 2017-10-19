@@ -9,7 +9,7 @@ module.exports = {
     setShopCartsStorage() {
         let app = getApp();
         let resId = this.data.resId,
-            shopCartsStorage = wx.getStorageSync('shopCarts'),
+            shopCartsStorage = app.globalData.shopCarts,
             shopInfo = this.data.shopInfo,
             orderType = this.data.orderType,
             shopCarts = {
@@ -31,6 +31,7 @@ module.exports = {
                     info: {}
                 }
             };
+        console.log(shopCartsStorage, 'shopCartsStorage');
         if (!shopInfo) {
             this.getResDetail(function (res) {
                 shopInfo = res.value;
@@ -61,7 +62,7 @@ module.exports = {
                     counts: 1
                 })
             }
-            if (!!shopCartsStorage) {
+            if (!!shopCartsStorage && utilCommon.isString(shopCartsStorage)) {
                 shopCartsStorage = JSON.parse(shopCartsStorage);
             }
             if (!shopCartsStorage || !shopCartsStorage[resId]) {

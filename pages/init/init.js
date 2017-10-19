@@ -1,20 +1,21 @@
-const appUtil = require('../../utils/appUtil.js'),
+const app = getApp(),
+    appUtil = require('../../utils/appUtil.js'),
     util = require('../../utils/util.js'),
     apiService = require('../../utils/ApiService'),
     queryString = require('../../utils/queryString'),
-    utilPage = require('../../utils/utilPage'),
-    app = getApp(),
-    // shopUrl = '/pages/canteen/index/index';
     shopUrl = '/pages/shop/order/order';
 Page({
     data: {
+        hasMoreData: false,
+        isShow: false,
         module: '',
         shouye: false,
         dingdan: false,
         wo: false,
-        vkahuiData: null
+        vkahuiData: []
     },
     onLoad: function (options) {
+        new app.ToastPannel();//初始自定义toast
         let _this = this;
         /**
          * 登入
@@ -40,56 +41,43 @@ Page({
         console.log('离开界面');
         this.setData({hasHide: true});
     },
+    onReady: function () {
+        // 页面渲染完成
+        this.setData({
+            isShow: true
+        })
+    },
+    /**
+     * 页面相关事件处理函数--监听用户下拉动作
+     */
+    onPullDownRefresh: function () {
+        this.loadCardList(function () {
+            wx.stopPullDownRefresh();
+        });
+    },
     /**
      * 分享页面
      */
     onShareAppMessage: function () {
+        let _this = this;
         return {
             title: 'V卡汇',
             path: '/pages/init/init',
             success: function (res) {
-                wx.showToast({
-                    title: '分享成功',
-                    icon: 'success',
-                    duration: 2000
-                })
+                _this.showToast('分享成功');
             },
             fail: function (res) {
-                wx.showToast({
-                    title: '分享失败',
-                    icon: 'success',
-                    duration: 2000
-                })
+                _this.showToast('分享失败');
             }
         }
     },
-    uploadWechatUser: function (options) {
-        var that = this;
-        var url = app.globalData.serverAddress + "microcode/bindMemberCard";
-        var data = {
-            openId: app.globalData.openId,
-            resId: options.resId,
-            type: 0
-        };
-        appUtil.httpRequest(url, data, function (rsp) {
-            // console.log(rsp);
-            if (rsp.returnStatus) {
-
-            }
-        });
-    },
     login(options) {
-        // //var openId = "oEewJ0Ug0Wfd0CCC1iL1mRq6_2kg";
-        // app.globalData.openId = openId;
-        // app.globalData.token = token;
         let _this = this,
             rid = options.q,
             flag = false,
             openId = app.globalData.openId;
         console.log(rid, "----------------rid", options);
         if (rid && rid.length > 0) {
-            // let src = decodeURIComponent(options.q);
-            // rid = src.match(/id=(\S*)/)[1];
             flag = true;
         } else if (options && !util.isEmptyObject(options)) {
             app.globalData.tableCode = options.tableCode;
@@ -98,16 +86,13 @@ Page({
         }
         if (!openId || openId.length === 0) {
             console.log('登入未完成');
-            app.requestLogin(login);
+            app.requestLogin().then(login);
         } else {
             login();
         }
 
         function login() {
-            const globalData = app.globalData,
-                openId = globalData.openId,
-                token = globalData.token;
-            // 获取用户信息
+            // 获取微信用户信息
             if (app.globalData.userInfo && util.isEmptyObject(app.globalData.userInfo)) {
                 app.getUserInfo(setUserInfo);
             } else {
@@ -116,7 +101,8 @@ Page({
         }
 
         function setUserInfo() {
-            let QRcodeTable = utilPage.getQRcodeTable(rid, true);
+            let _this = this,
+                QRcodeTable = app.utilPage.getQRcodeTable(rid, true);
             if (!flag) {
                 return;
             }
@@ -124,10 +110,10 @@ Page({
                 if (res.status) {
                     _this.initiaLogin(res.value);
                 } else {
-                    util.showToast(res.message);
+                    _this.showToast(res.message);
                 }
             }, (rsp) => {
-                util.showToast(rsp.message);
+                _this.showToast(rsp.message);
             })
         }
     },
@@ -188,7 +174,8 @@ Page({
      * 加载会员拉列表
      */
     loadCardList: function (cb) {
-        var that = this;
+        let that = this;
+
         function setMemberCardList(value) {
             var vkahuiData = value;
             //折扣百分比转化
@@ -230,11 +217,19 @@ Page({
                     app.globalData.memberCardDtoObj[rsp.value[i][that.data.resId]] = memberCardDto;
                 }
                 setMemberCardList(rsp.value);
+                cb && cb();
+                that.setData({
+                    hasMoreData: true
+                })
             },
             () => {
                 that.setData({
                     vkahuiData: []
                 });
+                cb && cb();
+                that.setData({
+                    hasMoreData: true
+                })
             })
     },
     tab: function (e) {
@@ -260,7 +255,10 @@ Page({
             });
         }
     },
-    //提示绑定手机部分
+    /**
+     * 提示绑定手机部分
+     * @param res
+     */
     module: function (res) {
         var that = this;
         // console.log(res);

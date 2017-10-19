@@ -7,6 +7,7 @@ const app = getApp(),
 const appPage = {
     data: {
         text: "Page order",
+        hasMoreData: false,
         isShow: false,//进入初始是否刷新数据
         isShareCurrentPage: false,//是否分享首页
         isDeliveryAmount: false,//是否达到配送金额
@@ -44,6 +45,9 @@ const appPage = {
      * @param options 为页面跳转所带来的参数
      */
     onLoad: function (options) {
+        this.setData({
+            hasMoreData: false
+        });
         let _this = this,
             openId = app.globalData.openId,
             token = app.globalData.token,
@@ -199,23 +203,26 @@ const methods = {
         }
         data.resId = this.data.resId;
         apiService.getFoodList(data, (res) => {
-            let foodList = res.value, data = {};
+            let foodList = res.value;
             for (let i = 0; i < foodList.length; i++) {
                 foodList[i].scrollRange = [];
                 foodList[i].scrollRange[0] = i > 0 ? foodList[i - 1].scrollRange[1] : 0;
                 foodList[i].scrollRange[1] = foodList[i].list.length * 97 + 31 + (i > 0 ? foodList[i - 1].scrollRange[1] : 0);
                 foodList[i].counts = 0;
             }
-            _this.setData({foodList});
+            _this.setData({foodList, hasMoreData: true});
             this.updateShopCart();
+
         });
     },
     getShopCart() {
-        let orderList = this.data.orderList, orderType = this.data.orderType,
+        let orderList = this.data.orderList,
+            orderType = this.data.orderType,
             shopCarts = {};
         if (!app.globalData.shopCarts[this.data.resId]) {
             this.setShopCartsStorage();
         }
+        console.log(app.globalData.shopCarts, 'pages/shop/order/order', '购物车');
         shopCarts = app.globalData.shopCarts[this.data.resId][orderList[orderType] + 'Carts'];
         let shopCart = Object.assign(shopCarts.list) || [],
             shopCartToFoodList = {},
@@ -285,9 +292,8 @@ const methods = {
     dishesTab(e) {
         this.data.isScrollFoodList = false;
         let _this = this,
-            active = e.target.dataset.active,
-            index = e.target.dataset.index;
-        if (active === 'dishesTab') {
+            index = e.currentTarget.dataset.index;
+        if ('dishesTab' + index !== _this.data.dishesTabIndex) {
             _this.setData({
                 dishesTabIndex: 'dishesTab' + index,
                 dishesTabListIndex: 'dishesTabList' + index

@@ -187,6 +187,8 @@ function isFalse(arg) {
         return false;
     } else if (arg === 'undefined') {
         return undefined;
+    } else if (arg === 'true') {
+        return true;
     } else if (arg === 'null') {
         return null;
     } else if (arg === 'NaN') {

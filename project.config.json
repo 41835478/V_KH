@@ -7,12 +7,12 @@
 		"minified": true
 	},
 	"compileType": "weapp",
-	"libVersion": "1.4.4",
+	"libVersion": "1.5.0",
 	"appid": "wxdaecf7a9dfaac8ff",
 	"projectname": "V_KH%EF%BC%88%E5%BC%80%E5%8F%91%EF%BC%89",
 	"condition": {
 		"weapp": {
-			"current": -1,
+			"current": 0,
 			"list": [
 				{
 					"id": 0,
@@ -60,6 +60,13 @@
 					"name": "本地一号桌台",
 					"pathName": "pages/shop/home/home",
 					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D50f1b9e6219c4f448c446b15f3f6e2e7",
+					"scene": "1011"
+				},
+				{
+					"id": 7,
+					"name": "收货地址",
+					"pathName": "pages/vkahui/address-edit/address-edit",
+					"query": "",
 					"scene": "1011"
 				}
 			]

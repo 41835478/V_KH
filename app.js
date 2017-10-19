@@ -4,37 +4,38 @@ const httpConfig = require('./utils/httpConfig');
 const utilPage = require('./utils/utilPage');
 import {ToastPannel} from './template/toast/toast';
 
+const GlobaData = {
+    rid: null,
+    resId: null,
+    openId: null,
+    token: null,
+    userVerification: {},
+    userInfo: {},
+    userOrderInfo: {},//用户订单信息
+    session_key: '',
+    memberCardDto: null,//会员卡信息
+    memberCardDtoObj: {},//会员卡信息
+    resDetailData: null,//店铺详情
+    takeawayCarts: [],//外卖购物车
+    takeawayAmount: 0,  //外卖菜品总价
+    takeawayCount: 0,//外卖菜品总量
+    hallCarts: [],//堂食购物车
+    hallAmount: 0,//堂食菜品总价
+    hallCount: 0, //堂食菜品总量
+    loginRequestPromise: null,//登入请求
+    shopCarts: {},
+    serverAddress: httpConfig.api + '/',
+    serverAddressImg: 'http://f.zhenler.com',
+};
+
 App({
-    globalData: {
-        rid: null,
-        resId: null,
-        openId: null,
-        token: null,
-        userVerification: {},
-        userInfo: {},
-        userOrderInfo: {},//用户订单信息
-        session_key: '',
-        memberCardDto: null,//会员卡信息
-        memberCardDtoObj: {},//会员卡信息
-        resDetailData: null,//店铺详情
-        takeawayCarts: [],//外卖购物车
-        takeawayAmount: 0,  //外卖菜品总价
-        takeawayCount: 0,//外卖菜品总量
-        hallCarts: [],//堂食购物车
-        hallAmount: 0,//堂食菜品总价
-        hallCount: 0, //堂食菜品总量
-        loginRequestPromise: null,//登入请求
-        shopCarts: {},
-        // baseUrl:"https://b.zhenler.com",
-        // baseUrl:"http://192.168.134.169/zhenler-server",
-        serverAddress: httpConfig.api + '/',
-        serverAddressImg: 'http://f.zhenler.com',
-    },
+    globalData: {},
     /**
      * 生命周期函数--监听小程序初始化
      * @param options
      */
     onLaunch: function (options) {
+        util.extend(true, this.globalData, GlobaData);
         let _this = this;
         _this.dateformater = require('./utils/formateDate');
         /**
@@ -55,6 +56,8 @@ App({
      * @param options
      */
     onShow: function (options) {
+        this.globalData.shopCarts = {};
+        wx.setStorageSync('shopCarts', JSON.stringify(this.globalData.shopCarts));
         // console.log('监听小程序显示', options);
     },
     /**
@@ -72,10 +75,12 @@ App({
         // console.log('错误监听函数', msg);
     },
     getShopCartsStorage() {
-        let _this = this, shopCartsStorage = wx.getStorageSync('shopCarts'),
+        let _this = this,
+            shopCartsStorage = wx.getStorageSync('shopCarts'),
             serverAddress = wx.getStorageSync('serverAddress'),
             time = wx.getStorageSync('shopCartsTimeStamp'),
             flag = shopCartsStorage && serverAddress && serverAddress === httpConfig.api;
+        _this.globalData.shopCarts = {};
         flag = false;
         if (flag) {
             _this.globalData.shopCarts = JSON.parse(shopCartsStorage);
@@ -85,8 +90,9 @@ App({
         }
     },
     setShopCartsStorage() {
+        let _this = this;
         wx.setStorageSync('shopCartsTimeStamp', new Date().getTime());
-        wx.setStorageSync('shopCarts', JSON.stringify(this.globalData.shopCarts));
+        wx.setStorageSync('shopCarts', JSON.stringify(_this.globalData.shopCarts));
     },
     /**
      * 获取用户信息
@@ -103,7 +109,7 @@ App({
             fail: function (res) {
                 //登录态过期
                 console.log('登录态过期', res);
-                _this.requestLogin(getUserInfo);
+                _this.requestLogin().then(getUserInfo);
             }
         });
 
@@ -135,32 +141,40 @@ App({
         let _this = this,
             openId = wx.getStorageSync('openId'),
             token = wx.getStorageSync('token');
-        wx.login({
-            success: function (res) {
-                console.log('保存code', res);
-                const apiService = require('./utils/ApiService');
-                wx.setStorageSync('code', res.code);
-
-                apiService.getOpenId(
-                    {
-                        jsCode: res.code,
-                        openId,
-                        token
-                    },
-                    (rsp) => {
-                        _this.globalData.openId = rsp.value.openId;
-                        _this.globalData.token = rsp.value.token;
-                        wx.setStorageSync('openId', rsp.value.openId);
-                        wx.setStorageSync('token', rsp.value.token);
-                        cb && cb(rsp);
-                    });
-            }
+        return new Promise(function (resolve, reject) {
+            wx.login({
+                success(res) {
+                    console.log('保存code', res);
+                    const apiService = require('./utils/ApiService');
+                    wx.setStorageSync('code', res.code);
+                    apiService.getOpenId(
+                        {
+                            jsCode: res.code,
+                            openId,
+                            token
+                        },
+                        (rsp) => {
+                            _this.globalData.openId = rsp.value.openId;
+                            _this.globalData.token = rsp.value.token;
+                            wx.setStorageSync('openId', rsp.value.openId);
+                            wx.setStorageSync('token', rsp.value.token);
+                            resolve(rsp);
+                        },
+                        () => {
+                            reject()
+                        });
+                },
+                fail() {
+                    reject();
+                }
+            });
         });
+
     },
     setLoginRequestPromise() {
         let _this = this;
         let loginRequestPromise = new Promise(function (resolve, reject) {
-            _this.requestLogin(function (res) {
+            _this.requestLogin().then((res) => {
                 if (res.returnStatus) {
                     let flag = true;
                     /**
@@ -181,8 +195,10 @@ App({
                     // }
                     resolve(res)
                 } else {
-                    reject(res)
+                    reject()
                 }
+            }, () => {
+                reject()
             });
         });
         this.globalData.loginRequestPromise = loginRequestPromise;
@@ -202,20 +218,22 @@ App({
     /**
      * 获取用户点餐ID
      */
-    getResId(cb) {
+    getResId(resolve, reject) {
         let apiService = require('./utils/ApiService'),
             _this = this;
         if (_this.globalData.rid && _this.globalData.rid.length > 0) {
             apiService.getQRcodeTable({id: _this.globalData.rid}, function (res) {
                 if (!res.value || util.isEmptyObject(res.value)) {
                     util.showToast('无效的二维码');
+                    reject && reject();
                     _this.globalData.rid = null;
                     return;
                 }
                 let resId = res.value.resId;
                 if (!resId && resId.length === 0) {
                     _this.globalData.rid = null;
-                    util.showToast('扫描会员卡二维码不正确');
+                    util.showToast('扫描二维码不正确');
+                    reject && reject();
                     return;
                 }
                 _this.globalData.resId = resId;
@@ -227,7 +245,7 @@ App({
                 };
                 _this.globalData.tableCode = res.value.tableCode || '';
                 _this.globalData.tableName = res.value.tableName || '';
-                cb && cb(res)
+                resolve && resolve(res)
             })
         }
     },

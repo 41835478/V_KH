@@ -13,7 +13,7 @@ Page({
         shouye: true,
         dingdan: true,
         wo: false,
-        hasMoreData: true,
+        hasMoreData: false,
         pageNum: 1,
         pageSize: 10,
         shopInfoList: {},//店铺信息列表
@@ -77,13 +77,12 @@ Page({
             wx.stopPullDownRefresh();
         });
     },
-
     /**
      * 页面上拉触底事件的处理函数
      */
     onReachBottom: function () {
         var that = this;
-        if (that.data.hasMoreData) {
+        if (!that.data.hasMoreData) {
             that.data.pageNum++;
             that.loadData();
         }
@@ -96,9 +95,9 @@ Page({
             "pageSize": that.data.pageSize
         }, function (rsp) {
             if (rsp.value.length < that.data.pageSize) {
-                that.setData({hasMoreData: false})
-            } else {
                 that.setData({hasMoreData: true})
+            } else {
+                that.setData({hasMoreData: false})
             }
             var orderList = rsp.value;
             var consumerStatus;

@@ -32,6 +32,7 @@ const SHOP_PAGES = {
 const appPage = {
     data: {
         text: "Page home",
+        hasMoreData: false,
         isShow: false,//进入初始是否刷新数据
         isShareCurrentPage: false,//是否分享首页
         isTableCode: false,//是否带桌台号
@@ -68,7 +69,7 @@ const appPage = {
             token = app.globalData.token,
             resId = options.resId;
         console.log('店铺首页获取openId_______________________________', openId);
-        if (!utilCommon.isFalse(openId)) {
+        if (!utilCommon.isFalse(openId) || options.q) {
             if (!options.resId) {
                 app.setLoginRequestPromise();
             }
@@ -88,6 +89,12 @@ const appPage = {
                             _this.data.isTableCode = true;
                         }
                         getUserInfo();//分享模式
+                    }, () => {
+                        setTimeout(function () {
+                            util.go('/pages/init/init', {
+                                type: 'tab'
+                            })
+                        }, 2000);
                     })
                 } else {
                     util.go('/pages/init/init', {
@@ -123,6 +130,9 @@ const appPage = {
             resId = options.resId;
             _this.setData({openId, token, resId});
             _this.getMainInfo(() => {
+                _this.setData({
+                    hasMoreData: true
+                });
                 let isOrderType = _this.getOrderType(_this.data.shopInfo.restaurantBusinessRules).isOrderType;
                 if (_this.data.isTableCode) {
                     if (isOrderType == 0) {

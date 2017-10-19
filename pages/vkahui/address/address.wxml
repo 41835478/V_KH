@@ -16,7 +16,7 @@
                             <text class="inline-text gray-1">{{defaultAddress.address}}</text>
                         </view>
                     </view>
-                    <view class="edit" bindtap="modify" data-modify="{{defaultAddress}}">
+                    <view class="edit" catch:tap="modify" data-modify="{{defaultAddress}}">
                         <image src="/images/icon/edit.png"></image>
                     </view>
                 </view>
@@ -67,7 +67,7 @@
                             <text class="inline-text gray-1">{{defaultAddress.address}}</text>
                         </view>
                     </view>
-                    <view class="edit" bindtap="modify" data-modify="{{defaultAddress}}">
+                    <view class="edit" catch:tap="modify" data-modify="{{defaultAddress}}">
                         <image src="/images/icon/edit.png"></image>
                     </view>
                 </view>

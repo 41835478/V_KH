@@ -20,7 +20,7 @@
                     <text class="font-weight-bold text-red">￥{{data.rule.price||0}}</text>
                 </view>
                 <view wx:else class="height-all">
-                    <text class="font-weight-bold text-red">￥{{data.price||0}}</text>
+                    <text class="font-weight-bold text-red">￥{{data.price||0}}元/份</text>
                 </view>
             </view>
             <view class="module-footer-right flexBox-item fb-6 height-all">
@@ -38,7 +38,8 @@
         <view class="module-left">规格</view>
         <view class="module-right">
             <button plain="true" wx:for="{{data.info.ruleList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                    class="btn btn-red-default {{data.rule.id === v.id?'active':''}}" data-index="{{i}}"
+                    class="module-btn btn-red-default text-overflow {{data.rule.id === v.id?'active':''}}"
+                    data-index="{{i}}"
                     data-value="{{v}}" catch:tap="bindAzmPopupRuleBtn">{{v.name}}
             </button>
         </view>
@@ -48,7 +49,7 @@
         <view class="module-left">{{item.practicesTypeName}}</view>
         <view class="module-right module-right-item">
             <button plain="true" wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                    class="btn btn-red-default {{(v.id === data.practicesList[index].practicesCheckedId)?'active':''}}"
+                    class="module-btn btn-red-default text-overflow {{(v.id === data.practicesList[index].practicesCheckedId)?'active':''}}"
                     data-index="{{index+','+i}}"
                     data-value="{{v}}" catch:tap="bindAzmPopupPracticesBtn">{{v.practicesName}}
             </button>
@@ -63,7 +64,7 @@
         <view class="module-right module-right-item">
             <block wx:for="{{item.value}}" wx:for-item="v" wx:for-index="i" wx:key="*this">
                 <button plain="true"
-                        class="btn btn-red-default text-overflow {{(v.ruleCode+v.foodCode === data.foodPackagesList[index].checkedId)?'active':''}}"
+                        class="module-btn btn-red-default text-overflow {{(v.ruleCode+v.foodCode === data.foodPackagesList[index].checkedId)?'active':''}}"
                         data-index="{{index+','+i}}"
                         data-value="{{v}}" catch:tap="bindAzmPopupPackageBtn">
                     <text>{{v.foodName}}({{v.ruleName}})</text>
@@ -78,7 +79,7 @@
         <view class="module-left flexBox-item fb-2">选择</view>
         <view class="module-right flexBox-item fb-10">
             <button plain="true" wx:for="{{data.list}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
-                    class="btn btn-red-default {{v.checked?'active':''}}"
+                    class="btn-red-default text-overflow {{v.checked?'active':''}}"
                     catch:tap="bindAzmPopupSubareaBtn" data-index="{{i}}" data-value="{{v}}">{{v.subareaName}}
             </button>
         </view>

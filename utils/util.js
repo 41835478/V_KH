@@ -393,7 +393,7 @@ function showToast(option) {
         title: option,
         icon: 'success',
         mask: true,
-        duration: 2000
+        duration: 4000
     };
     if (utilCommon.isObject(option)) {
         data.title = option.title;
@@ -404,12 +404,45 @@ function showToast(option) {
         data.success = option.success;
         data.fail = option.fail;
         data.complete = option.complete;
+    } else {
+        if (arguments[1] && utilCommon.isFunction(arguments[1])) {
+            data.complete = arguments[1];
+        }
     }
     wx.hideLoading();
     wx.showToast(data);
 }
 
 module.exports.showToast = showToast;
+
+
+function failToast(option) {
+    let data = {
+        title: option,
+        icon: 'success',
+        image: 'success',
+        mask: true,
+        duration: 4000
+    };
+    if (utilCommon.isObject(option)) {
+        data.title = option.title;
+        data.icon = option.icon || 'success';
+        data.image = option.image;
+        data.mask = option.mask || true;
+        data.duration = option.duration || 2000;
+        data.success = option.success;
+        data.fail = option.fail;
+        data.complete = option.complete;
+    } else {
+        if (arguments[1] && utilCommon.isFunction(arguments[1])) {
+            data.complete = arguments[1];
+        }
+    }
+    wx.hideLoading();
+    wx.showToast(data);
+}
+
+module.exports.failToast = failToast;
 
 /**
  * 判断是否为非空对象
@@ -561,7 +594,7 @@ function go(a, options) {
                 success() {
                     options.success && options.success()
                 },
-                fail() {
+                fail(res) {
                     options.fail && options.fail()
                 },
                 complete() {
@@ -574,7 +607,7 @@ function go(a, options) {
                 success() {
                     options.success && options.success()
                 },
-                fail() {
+                fail(res) {
                     options.fail && options.fail()
                 },
                 complete() {
@@ -587,7 +620,7 @@ function go(a, options) {
                 success() {
                     options.success && options.success()
                 },
-                fail() {
+                fail(res) {
                     options.fail && options.fail()
                 },
                 complete() {
@@ -600,7 +633,7 @@ function go(a, options) {
                 success() {
                     options.success && options.success()
                 },
-                fail() {
+                fail(res) {
                     options.fail && options.fail()
                 },
                 complete() {
@@ -613,6 +646,23 @@ function go(a, options) {
 
 module.exports.go = go;
 
+function chooseLocation() {
+    return new Promise(function (resolve, reject) {
+        wx.chooseLocation({
+            type: 'gcj02', //返回可以用于wx.openLocation的经纬度
+            success: function (res) {
+                var latitude = res.latitude
+                var longitude = res.longitude
+                resolve(res);
+            },
+            cancel(res) {
+                reject(res);
+            }
+        })
+    })
+}
+
+module.exports.chooseLocation = chooseLocation;
 
 // 时间格式化输出，如3:25:19 86。每10ms都会调用一次
 function dateformat(micro_second, type) {

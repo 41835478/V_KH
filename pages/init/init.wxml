@@ -2,7 +2,6 @@
     <view class="pr">
         <view class="wrapper title height-all pr">
             <block class="pr" wx:for="{{vkahuiData}}" wx:if="{{item.resId}}">
-                <!--/pages/canteen/index/index?resId={{item.resId}}&tableCode={{item.tableCode}}&tableName={{item.tableName}}-->
                 <navigator class="ct pr" open-type="navigate"
                            url="/pages/shop/home/home?resId={{item.resId}}">
                     <view class="pr box-sizing home overflow-h">
@@ -56,3 +55,26 @@
         </view>
     </view>
 </view>
+
+
+<view class="weui-loadmore" wx:if="{{!hasMoreData && !isShow}}">
+    <view class="weui-loading"></view>
+    <view class="weui-loadmore__tips">正在加载</view>
+</view>
+<view class="weui-loadmore weui-loadmore_line" wx:elif="{{hasMoreData && isShow}}">
+    <block wx:if="{{vkahuiData.length>0}}">
+        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">我是有底线的</view>
+    </block>
+    <block wx:else>
+        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+    </block>
+</view>
+
+<!--自定义Toast-->
+<import src="../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
+
+
+<!--自定义loading-->
+<import src="../../template/loading.wxml"/>
+<template is="loading2" data="{{isLoading:hasMoreData}}"></template>

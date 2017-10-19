@@ -1,6 +1,12 @@
 page {
   background: #f1f3f4;
 }
+page .weui-loadmore__tips_in-line {
+  background-color: #f1f3f4;
+}
+page .init-box {
+  height: 200rpx;
+}
 page view.old-class {
   /*.tab-ctn .active-1 .tab:nth-child(1) { background: #f74b7b; }
     .tab-ctn .active-1 .tab:nth-child(1) .p { color: #fff; }
@@ -241,7 +247,4 @@ page view.old-class .moduleActive {
   z-index: 10;
   display: block;
   opacity: 0.95;
-}
-page .init-box {
-  height: 200rpx;
 }

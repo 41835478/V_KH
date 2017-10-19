@@ -152,3 +152,8 @@
         </view>
     </view>
 </view>
+
+
+<!--自定义loading-->
+<import src="../../../template/loading.wxml"/>
+<template is="loading2" data="{{isLoading:hasMoreData}}"></template>

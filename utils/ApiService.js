@@ -183,6 +183,27 @@ module.exports = {
         wxPayForH5: {
             path: '/wxpay/wxPayForH5',
             query: {}
+        },
+        /**
+         * 修改收货地址
+         */
+        updateConsigneeAddress: {
+            path: '/consigneeAddress/updateConsigneeAddress',
+            query: {}
+        },
+        /**
+         * 新增地址
+         */
+        addAddress: {
+            path: '/microcode/addAddress',
+            query: {}
+        },
+        /**
+         * 设置默认地址
+         */
+        setDefaultAddress: {
+            path: '/microcode/setDefaultAddress',
+            query: {}
         }
     },
     getToken() {
@@ -330,7 +351,7 @@ module.exports = {
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             // console.log('checkIsFirstUse接口调用成功', data.token, url);
-            if(res.value){
+            if (res.value) {
                 res.value = JSON.parse(res.value);
             }
             cb && cb(res);
@@ -516,5 +537,41 @@ module.exports = {
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
-    }
+    },
+    /**
+     * 修改收货地址
+     */
+    updateConsigneeAddress(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.updateConsigneeAddress.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 新增地址
+     */
+    addAddress(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.addAddress.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 设置默认地址
+     */
+    setDefaultAddress(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.setDefaultAddress.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
 };

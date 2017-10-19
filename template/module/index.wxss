@@ -67,6 +67,25 @@
   padding-top: 20rpx;
   font-size: 28rpx;
 }
+.module-popup .module-content scroll-view .module-radio-list .module-right button,
+.module-popup .module-content scroll-view .module-radio-list .module-left button {
+  padding: 0;
+  max-width: 580rpx;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  line-height: 60rpx;
+  font-size: 24rpx;
+  display: inline-block;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+}
+.module-popup .module-content scroll-view .module-radio-list .module-right button.active,
+.module-popup .module-content scroll-view .module-radio-list .module-left button.active {
+  background: #f74b7b;
+  color: #fff;
+}
 .module-popup .module-content scroll-view .module-radio-list .module-left {
   text-align: left;
   height: 52rpx;
@@ -76,20 +95,6 @@
 }
 .module-popup .module-content scroll-view .module-radio-list .module-right {
   text-align: left;
-}
-.module-popup .module-content scroll-view .module-radio-list .module-right button {
-  max-width: 520rpx;
-  padding: 0rpx 20rpx 0rpx 20rpx;
-  height: 60rpx;
-  line-height: 50rpx;
-  font-size: 24rpx;
-  display: inline-block;
-  margin-left: 20rpx;
-  margin-bottom: 20rpx;
-}
-.module-popup .module-content scroll-view .module-radio-list .module-right button.active {
-  background: #f74b7b;
-  color: #fff;
 }
 .module-popup .module-footer {
   position: absolute;

@@ -5,6 +5,14 @@ const apiService = require('../../../utils/ApiService'),
     utilCommon = require('../../../utils/utilCommon'),
     app = getApp();
 
+const ORDER_JSON = {
+    "orderFoodList": [],
+    "orderCreateTime": "",
+    "name": "",
+    "orderStatus": "",
+    "id": ""
+};
+
 const appPage = {
     data: {
         module: '',
@@ -73,15 +81,32 @@ const methods = {
     loadData(cb) {
         var that = this;
         apiService.getOrderDetail({resId: that.data.resId, consumerId: that.data.consumerId}, function (rsp) {
-            let orderDetailData = rsp.value;
+            let orderDetailData = rsp.value, orderList = [];
             // orderDetailData.status = that.data.status || orderDetailData.status;
             orderDetailData.mealNumber = orderDetailData.consumerNo.substring(orderDetailData.consumerNo.length - 5);
             orderDetailData.totalPrice = util.money(orderDetailData.totalPrice);//总价
             orderDetailData.discountPrice = util.money(orderDetailData.discountPrice);//折扣
             orderDetailData.actualPrice = util.money(orderDetailData.actualPrice);//实付
-            if (orderDetailData.orderJson) {
+            if (orderDetailData.orderJson && utilCommon.isString(orderDetailData.orderJson)) {
                 orderDetailData.orderJson = JSON.parse(orderDetailData.orderJson);
+                if (!orderDetailData.orderJson.id) {
+                    setOrderJson();
+                }
+            } else {
+                setOrderJson();
             }
+
+            function setOrderJson() {
+                let orderJson = {};
+                util.extend(true, orderJson, ORDER_JSON);
+                orderJson.createTime = orderDetailData.createTime;
+                orderJson.orderStatus = orderDetailData.status;
+                orderJson.name = '系统';
+                orderJson.orderFoodList = orderDetailData.orderFoodDtoList;
+                orderDetailData.orderJson = [];
+                orderDetailData.orderJson.push(orderJson);
+            }
+
             that.setProgressBar(orderDetailData);
             that.setData({orderDetailData, status: orderDetailData.status});
             cb && cb();

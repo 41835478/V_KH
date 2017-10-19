@@ -84,12 +84,6 @@ page {
             .px2rpx(top, 0);
             .px2rpx(right, 0);
           }
-          text {
-            display: inline-block;
-            width: 100%;
-            height: 100%;
-          }
-          .text-overflow();
           &.selected {
             background-color: #fff;
             color: @color-f74b7b;
@@ -307,14 +301,13 @@ page {
           background-size: 12*2rpx 12.5*2rpx;
         }
       }
-
     }
     .ul {
       padding: 0;
-      overflow-y: scroll;
-      .px2rpx(margin-left, 20);
-      .px2rpx(margin-right, 15);
+      .px2rpx(padding-left, 20);
+      .px2rpx(padding-right, 15);
       .px2rpx(max-height, 250);
+      box-sizing: border-box;
       .li {
         overflow: hidden;
         &::after {

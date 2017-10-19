@@ -76,15 +76,20 @@ Page({
         });
     },
     modify: function (e) {
-        // console.log(e);
         var that = this;
         var address = e.currentTarget.dataset.modify;
-        wx.navigateTo({
-            url: '/pages/vkahui/address-edit/address-edit?address=' + address.address + "&mobile=" + address.mobile + "&name=" + address.name + "&id=" + address.id + "&sex=" + address.sex + "&gaiAddress=true" + "&id=" + address.id + "&isWaimai=" + that.data.isWaimai,
-            success: function () {
-                // console.log('外卖地址变化成功')
+        util.go('/pages/vkahui/address-edit/address-edit', {
+            type: 'blank',
+            data: {
+                address: address.address,
+                name: address.name,
+                mobile: address.mobile,
+                id: address.id,
+                sex: address.sex,
+                gaiAddress: 1,
+                isWaimai: that.data.isWaimai
             }
-        })
+        });
     },
     toWaimai: function (e) {
         var that = this;

@@ -61,6 +61,25 @@
         text-align: center;
         .px2rpx(padding-top, 10);
         .px2rpx(font-size, 14);
+        .module-right, .module-left {
+          button {
+            padding: 0;
+            .px2rpx(max-width, 290);
+            .px2rpx(padding-left, 10);
+            .px2rpx(padding-right, 10);
+            .px2rpx(line-height, 30);
+            .px2rpx(font-size, 12);
+            display: inline-block;
+            .px2rpx(margin-left, 5);
+            .px2rpx(margin-right, 5);
+            .px2rpx(margin-top, 5);
+            .px2rpx(margin-bottom, 5);
+            &.active {
+              background: @color-f74b7b;
+              color: #fff;
+            }
+          }
+        }
         .module-left {
           //.px2rpx(width, 60);
           //width: 20%;
@@ -73,19 +92,6 @@
         .module-right {
           //width: 80%;
           text-align: left;
-          button {
-            .px2rpx(max-width, 260);
-            .px2rpx-two(padding, 0, 10, 0, 10);
-            .btn-height-align(30);
-            .px2rpx(font-size, 12);
-            display: inline-block;
-            .px2rpx(margin-left, 10);
-            .px2rpx(margin-bottom, 10);
-            &.active {
-              background: @color-f74b7b;
-              color: #fff;
-            }
-          }
         }
       }
     }

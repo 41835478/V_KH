@@ -23,12 +23,12 @@
                          scroll-into-view="{{dishesTabIndex}}" scroll-top="{{100}}" enable-back-to-top="true">
                 <block wx:for="{{foodList}}">
                     <view id="dishesTab{{index}}"
-                          class="dishes-tab-item {{('dishesTab'+index) === dishesTabIndex?'selected':''}}"
-                          bindtap="dishesTab">
+                          class="dishes-tab-item text-overflow {{('dishesTab'+index) === dishesTabIndex?'selected':''}}"
+                          catch:tap="dishesTab" data-index="{{index}}">
                         <view class="weui-badge" wx:if="{{foodListTab[index]>0}}">
                             <text>{{foodListTab[index]}}</text>
                         </view>
-                        <text data-active="dishesTab" data-index="{{index}}">{{item.catalogName}}</text>
+                        <text>{{item.catalogName}}</text>
                     </view>
                 </block>
             </scroll-view>
@@ -147,7 +147,7 @@
                 <button type="default" size="mini" plain="true" catch:tap="bindAzmClearShopCart">清空</button>
             </view>
         </view>
-        <view class="ul">
+        <scroll-view scroll-y scroll-into-view="" class="ul">
             <block wx:for="{{shopCart}}">
                 <view class="li flexBox">
                     <view class="flexBox-item fb-6 azm-left">
@@ -199,7 +199,7 @@
                     </view>
                 </view>
             </block>
-        </view>
+        </scroll-view>
     </view>
 
 </view>
@@ -240,5 +240,9 @@
         </view>
     </view>
 </template>
+
+<!--自定义loading-->
+<import src="../../../template/loading.wxml"/>
+<template is="loading2" data="{{isLoading:hasMoreData}}"></template>
 
 
