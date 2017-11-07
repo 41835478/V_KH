@@ -7,6 +7,7 @@ Page({
     data: {
         isShow: false,
         module: '',
+        serverAddressImg: app.globalData.serverAddressImg,
         isFirst: true,
         isHide: false,
         orderList: [],
@@ -20,18 +21,19 @@ Page({
         statusStr: {
             3: '待支付',
             5: '已支付',
+            4: '待支付',
             8: '已取消',
             11: '已接单',
             12: '已拒单'
         },
         statusBtn: {
             3: [
-                {
-                    class: 'azm-btn-red',
-                    name: '去支付',
-                    jumpType: 'pay',
-                    type: 100
-                },
+                // {
+                //     class: 'azm-btn-red',
+                //     name: '去支付',
+                //     jumpType: 'pay',
+                //     type: 100
+                // },
                 {
                     class: '',
                     name: '去加菜',
@@ -103,24 +105,24 @@ Page({
             var consumerStatus;
             orderList.forEach(function (val, key) {
                 val.amount = val.amount.toFixed(2);
-                val.resLogo = app.globalData.serverAddressImg + val.resLogo;
                 that.data.shopInfoList[val.resId] = {
                     orderType: val.consumerType,
                     resId: val.resId
                 }
             });
-            let item = that.data.shopInfoList;
-            for (let k in item) {
-                if (item[k].flag) {
-                    getOrderType(item[k]);
-                } else {
-                    ApiService.getResDetail({resId: item[k].resId}, (res) => {
-                        that.data.shopInfoList[res.value.resId] = res.value;
-                        that.data.shopInfoList[res.value.resId].flag = true;
-                        getOrderType(item[k]);
-                    })
-                }
-            }
+            // 循环获取订单列表中店铺信息
+            // let item = that.data.shopInfoList;
+            // for (let k in item) {
+            //     if (item[k].flag) {
+            //         getOrderType(item[k]);
+            //     } else {
+            //         ApiService.getResDetail({resId: item[k].resId}, (res) => {
+            //             that.data.shopInfoList[res.value.resId] = res.value;
+            //             that.data.shopInfoList[res.value.resId].flag = true;
+            //             getOrderType(item[k]);
+            //         })
+            //     }
+            // }
             if (that.data.pageNum == 1) {
                 that.setData({orderList: orderList});
             } else {
@@ -129,6 +131,10 @@ Page({
             cb && cb();
         }, cb);
 
+        /**
+         * 设置店铺就餐模式
+         * @param val
+         */
         function getOrderType(val) {
             if (val.orderType == 2) {
                 that.data.shopInfoList[val.resId].isOrderType = 1

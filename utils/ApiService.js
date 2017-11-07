@@ -1,5 +1,6 @@
 let $http = require('./httpRequest'),
     httpConfig = require('./httpConfig'),
+    util = require('./util'),
     serverAddress = httpConfig.api;
 module.exports = {
     url: serverAddress,
@@ -136,14 +137,14 @@ module.exports = {
             query: {}
         },
         /**
-         *
+         * 验证会员卡支付验证码
          */
         checkSmsCodeByOpenId: {
             path: '/sms/checkSmsCodeByOpenId',
             query: {}
         },
         /**
-         *
+         * 会员卡支付
          */
         memberCardPay: {
             path: '/microcode/memberCardPay',
@@ -204,7 +205,24 @@ module.exports = {
         setDefaultAddress: {
             path: '/microcode/setDefaultAddress',
             query: {}
-        }
+        },
+        /**
+         * 买单叫号
+         */
+        callAttendant: {
+            path: '/microcode/callAttendant',
+            query: {}
+        },
+        /**
+         * 消息模板通知
+         */
+        sendMiniWxTemplateMsg: {
+            path: '/wechatTemplateMsg/sendTemplateMsgForMini',
+            query: {},
+            templateIds: {
+                OrderPaySuccess: 'TF3BoYwKtKDEuwhNt5tkcRmRs9DcdM5-8mIu72xYvUc'
+            }
+        },
     },
     getToken() {
         const app = getApp();
@@ -224,9 +242,11 @@ module.exports = {
         var isReturnStatus = true;
         const url = this.url + this.api.checkIsFirstUse.path;
         data.token = this.getToken();
+        data.sex = data.sex || 0;
+        data.nikeName = data.nikeName || '微信用戶';
         // console.log('checkIsFirstUse接口调用', data, url);
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -236,7 +256,7 @@ module.exports = {
         const url = this.url + this.api.checkBindMobile.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -246,7 +266,7 @@ module.exports = {
         const url = this.url + this.api.checkMemberBindMobile.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -259,20 +279,20 @@ module.exports = {
         const url = this.url + this.api.checkHasWaitPayConsumer.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
     },
     /**
-     *
+     * 验证会员卡支付验证码
      */
     checkSmsCodeByOpenId(data, cb, reject) {
         var isReturnStatus = true;
         const url = this.url + this.api.checkSmsCodeByOpenId.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -326,7 +346,7 @@ module.exports = {
         const url = this.url + this.api.getFoodList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -338,7 +358,7 @@ module.exports = {
         const url = this.url + this.api.getFoodRuleList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -350,7 +370,7 @@ module.exports = {
         const url = this.url + this.api.findFoodPackage.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             if (res.value) {
                 res.value = JSON.parse(res.value);
             }
@@ -365,7 +385,7 @@ module.exports = {
         const url = this.url + this.api.getFoodPracticesList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -377,7 +397,7 @@ module.exports = {
         const url = this.url + this.api.getResDetail.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -389,7 +409,7 @@ module.exports = {
         const url = this.url + this.api.bindWechatUser.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -401,7 +421,7 @@ module.exports = {
         const url = this.url + this.api.loadDefaultAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -413,7 +433,7 @@ module.exports = {
         const url = this.url + this.api.getMainInfo.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -425,7 +445,7 @@ module.exports = {
         const url = this.url + this.api.getCommonBannerList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -437,7 +457,7 @@ module.exports = {
         const url = this.url + this.api.findTableDtoList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -449,7 +469,7 @@ module.exports = {
         const url = this.url + this.api.commitOrder.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -461,19 +481,19 @@ module.exports = {
         const url = this.url + this.api.getOrderDetail.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
     },
     /**
-     *
+     * 会员卡支付
      */
     memberCardPay(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.memberCardPay.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -485,7 +505,7 @@ module.exports = {
         const url = this.url + this.api.getSmsCode.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -497,7 +517,7 @@ module.exports = {
         const url = this.url + this.api.getSmsCodeByConn.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -509,7 +529,7 @@ module.exports = {
         const url = this.url + this.api.getOrderList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -521,7 +541,7 @@ module.exports = {
         const url = this.url + this.api.finishPay.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -533,7 +553,7 @@ module.exports = {
         const url = this.url + this.api.wxPayForH5.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -545,7 +565,7 @@ module.exports = {
         const url = this.url + this.api.updateConsigneeAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -557,7 +577,7 @@ module.exports = {
         const url = this.url + this.api.addAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -569,7 +589,30 @@ module.exports = {
         const url = this.url + this.api.setDefaultAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            // console.log('checkIsFirstUse接口调用成功', data.token, url);
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 买单叫号
+     */
+    callAttendant(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.callAttendant.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 消息模板通知
+     */
+    sendMiniWxTemplateMsg(data, cb, reject) {
+        let isReturnStatus = true;
+        const url = this.url + this.api.sendMiniWxTemplateMsg.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;

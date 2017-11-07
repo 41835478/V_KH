@@ -1,6 +1,7 @@
 const app = getApp(),
     appUtil = require('../../utils/appUtil.js'),
     util = require('../../utils/util.js'),
+    utilCommon = require('../../utils/utilCommon'),
     apiService = require('../../utils/ApiService'),
     queryString = require('../../utils/queryString'),
     shopUrl = '/pages/shop/order/order';
@@ -17,14 +18,8 @@ Page({
     onLoad: function (options) {
         new app.ToastPannel();//初始自定义toast
         let _this = this;
-        /**
-         * 登入
-         */
-        app.globalData.loginRequestPromise.then((res) => {
-            console.log('init登入', res);
-            _this.login(options);
-            _this.loadCardList();//加载会员卡列表
-        });
+        _this.setData(options);
+        _this.login();
     },
     onShow: function (options) {
         console.log('进入init界面');
@@ -35,10 +30,10 @@ Page({
                 module: 'module'
             });
         }
-        this.loadCardList();
+        this.login();
     },
     onHide: function () {
-        console.log('离开界面');
+        console.log('离开init界面');
         this.setData({hasHide: true});
     },
     onReady: function () {
@@ -71,41 +66,38 @@ Page({
             }
         }
     },
-    login(options) {
+    login() {
         let _this = this,
-            rid = options.q,
-            flag = false,
-            openId = app.globalData.openId;
-        console.log(rid, "----------------rid", options);
+            rid = _this.data.q,
+            flag = false;
         if (rid && rid.length > 0) {
             flag = true;
-        } else if (options && !util.isEmptyObject(options)) {
-            app.globalData.tableCode = options.tableCode;
-            app.globalData.tableName = options.tableName;
-            _this.setData(options);
-        }
-        if (!openId || openId.length === 0) {
-            console.log('登入未完成');
-            app.requestLogin().then(login);
-        } else {
-            login();
         }
 
-        function login() {
-            // 获取微信用户信息
-            if (app.globalData.userInfo && util.isEmptyObject(app.globalData.userInfo)) {
-                app.getUserInfo(setUserInfo);
+        /**
+         * 登入
+         */
+        app.getLoginRequestPromise().then((res) => {
+            let openId = app.globalData.openId;
+            if (!openId) {
+                console.log('init登入openId', openId);
+                app.requestLogin().then(function () {
+                    setUserInfo();
+                }, function () {
+                    console.log('code', res);
+                });
             } else {
                 setUserInfo();
             }
-        }
+        });
 
         function setUserInfo() {
-            let _this = this,
-                QRcodeTable = app.utilPage.getQRcodeTable(rid, true);
+            _this.loadCardList();//加载会员卡列表
+            let QRcodeTable = app.utilPage.getQRcodeTable(rid, true);
             if (!flag) {
                 return;
             }
+            _this.data.q = null;
             QRcodeTable.then((res) => {
                 if (res.status) {
                     _this.initiaLogin(res.value);
@@ -121,11 +113,16 @@ Page({
         let _this = this,
             data = {
                 openId: app.globalData.openId,
+                resId: options.resId
+            };
+        let userInfo = app.globalData.userInfo;
+        if (userInfo && !utilCommon.isEmptyObject(userInfo)) {
+            Object.assign(data, {
                 nikeName: app.globalData.userInfo.nickName,
                 sex: app.globalData.userInfo.gender,
                 headImgUrl: app.globalData.userInfo.avatarUrl,
-                resId: options.resId
-            };
+            })
+        }
         if (!options.resId || options.resId.length === 0) return;
         app.checkIsFirstUse(data, function (rsp) {
             if (rsp.code == 2000 || rsp.code == 4003) {

@@ -59,7 +59,9 @@ function isNumber(arg) {
 module.exports.isNumber = isNumber;
 
 function isNumberOfNaN(arg) {
-    arg = Number(arg);
+    if (arg) {
+        arg = Number(arg);
+    }
     return typeof arg === 'number' && !isNaN(arg);
 }
 

@@ -3,8 +3,6 @@ var app = getApp();
 //微信请求
 function httpRequest(url, params, callBack) {
   if (!url) return;
-  // console.log(url);
-  // console.log(params);
   var init = util.initPay(params);
   var url = url + "?" + init;
   wx.request({
@@ -13,8 +11,6 @@ function httpRequest(url, params, callBack) {
     method: 'POST',
     success: function (res) {
       callBack(res.data);
-      // console.log('测试');
-      // console.log(res);
     },
     fail: function () {
       console.log("网络连接失败，或服务器错误");
@@ -24,8 +20,6 @@ function httpRequest(url, params, callBack) {
 
 function httpGet(url, params, callBack) {
   if (!url) return;
-  // console.log(url);
-  // console.log(params);
   var init = util.initPay(params);
   var url = url + "?" + init;
   wx.request({
@@ -34,8 +28,6 @@ function httpGet(url, params, callBack) {
     method: 'GET',
     success: function (res) {
       callBack(res.data);
-      // console.log('测试');
-      // console.log(res);
     },
     fail: function () {
       console.log("网络连接失败，或服务器错误");

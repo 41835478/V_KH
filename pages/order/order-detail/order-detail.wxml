@@ -4,7 +4,7 @@
     <view class="azm-section azm-progressBar">
         <view class="azm-top flexBox">
             <view class="flexBox-item fb-4">
-                <text class="azm-icon text-red iconfont {{orderStatus.iconName}}"></text>
+                <text class="azm-icon text-red iconfont-2 {{orderStatus.iconName}}"></text>
                 <text decode="true" class="text-red azm-starts">&nbsp;&nbsp;{{orderStatus.name}}</text>
             </view>
             <view class="flexBox-item fb-8 orderTime text-right">
@@ -47,7 +47,7 @@
                     <text>{{res.resName}}</text>
                 </view>
                 <view class="flexBox-item fb-2">
-                    <text class="azm-text iconfont icon-right"></text>
+                    <text class="azm-text iconfont-2 icon-right"></text>
                 </view>
             </view>
         </navigator>
@@ -173,7 +173,7 @@
         </view>
         <view class="azm-order-footer text-right box">
             <text>实付：</text>
-            <text class="text-red">¥{{orderDetailData.actualPrice}}</text>
+            <text class="text-red">¥{{orderDetailData.consumption}}</text>
         </view>
     </view>
     <!--就餐信息-->
@@ -232,8 +232,8 @@
                         <text>自取</text>
                     </view>
                 </view>
-                <view class="pa azm-open-module" catch:tap="openModuleMeal">
-                    <text class="azm-icon iconfont icon-right"></text>
+                <view class="pa azm-open-module" catchtap="openModuleMeal">
+                    <text class="azm-icon iconfont-2 icon-right"></text>
                 </view>
             </block>
             <!--外卖-->
@@ -277,7 +277,7 @@
     <view class="azm-footer flexBox">
         <block wx:for="{{foodBtnList}}">
             <view class="flexBox-item fb-{{12/foodBtnList.length}}">
-                <button plain="true" type="mini" class="btn-{{item.color}}" data-type="{{item.type}}" catch:tap="goPay">
+                <button plain="true" type="mini" class="btn-{{item.color}}" data-type="{{item.type}}" catchtap="goPay">
                     {{item.name}}
                 </button>
             </view>
@@ -285,7 +285,7 @@
     </view>
 </view>
 
-<view class="pa hide {{moduleMeal}}" catch:tap="closeModuleMeal">
+<view class="pa hide {{moduleMeal}}" catchtap="closeModuleMeal">
     <view class="box">
         <view class="azm-title">
             <text>取餐号</text>

@@ -1,4 +1,4 @@
-<form bindsubmit="formSubmit" bindreset="formReset">
+<form bindsubmit="submitOrder" bindreset="formReset" report-submit>
     <view class="new-class">
         <!--外卖-->
         <block wx:if="{{isOrderType == 1}}">
@@ -50,17 +50,17 @@
                                 <view class="flexBox-item fb-9 food-btn-plus">
                                     <view class="row flexBox flexBox-start">
                                         <view class="left flexBox-item" wx:if="{{!hasConsumerId}}"
-                                              catch:tap="numberAdd"
+                                              catchtap="numberAdd"
                                               data-number="-1">
-                                            <text class="azm-icon iconfont icon-jianhao"></text>
+                                            <text class="azm-icon iconfont-2 icon-jianhao"></text>
                                         </view>
                                         <view class="center flexBox-item {{hasConsumerId?'text-left':''}}">
                                             <text>{{diningNumber}}</text>
                                         </view>
-                                        <view class="right flexBox-item" catch:tap="numberAdd"
+                                        <view class="right flexBox-item" catchtap="numberAdd"
                                               wx:if="{{!hasConsumerId}}"
                                               data-number="1">
-                                            <text class="azm-icon iconfont icon-jiahao2"></text>
+                                            <text class="azm-icon iconfont-2 icon-jiahao2"></text>
                                         </view>
                                     </view>
                                 </view>
@@ -70,7 +70,7 @@
                                     <view class="flexBox-item fb-3">
                                         <text class="cus-width-8 fontSize">餐桌号：</text>
                                     </view>
-                                    <view class="flexBox-item fb-9" catch:tap="tableBox">
+                                    <view class="flexBox-item fb-9" catchtap="tableBox">
                                         <text>{{userOrderInfo.name}}</text>
                                     </view>
                                 </view>
@@ -84,7 +84,7 @@
                         <text class="h6">商品列表:</text>
                     </view>
                     <view class="cur-page bg-color-white">
-                        <block wx:for="{{consumerData}}" wx:key="*this">
+                        <block wx:for="{{consumerData}}">
                             <view class="list" style="padding-bottom:0">
                                 <view class="entry text-overflow">
                                     <text class="p  fontSize">{{item.name}}</text>
@@ -106,7 +106,7 @@
                         </block>
                     </view>
                     <view class="cur-page bg-color-white">
-                        <block wx:if="{{otherList.length>0}}" wx:for="{{otherList}}" wx:key="this">
+                        <block wx:if="{{otherList.length>0}}" wx:for="{{otherList}}">
                             <view class="list flexBox flexBox-between" style="padding-bottom:0" wx:if="{{item.price}}">
                                 <view class="flexBox-item text-overflow fb-4">{{item.name}}</view>
                                 <view class="flexBox-item text-red text-right fb-4">¥ {{item.price}}</view>
@@ -146,13 +146,13 @@
                     </view>
                     <view class="remark bg-color-white" style="padding-bottom:0.4rem;padding-top:0.5rem;">
                         <text class="p cus-width-4  fontSize">备注</text>
-                        <input name="remark" placeholder="请填写..." bindchange="bindChange" class="fontSize"/>
+                        <input name="note" placeholder="请填写..." bindchange="bindChange" class="fontSize"/>
                     </view>
                 </view>
             </view>
 
             <!--餐后支付-->
-            <block wx:if="{{payType==1}}">
+            <block wx:if="{{isOrderType==3}}">
                 <view class="count" style="bottom:0;background:#ffffff;height:3rem;">
                     <view class="entry text-center" style="width:66.66%">
                         <view class="p" style="bottom:0;color:#000000;">
@@ -160,7 +160,7 @@
                         </view>
                     </view>
                     <view class="entry text-right">
-                        <button plain="true" bindtap="submitOrder" class="btn btn-red width-all"
+                        <button plain="true" form-type="submit" class="btn btn-red width-all"
                                 style="line-height:3rem">确定点餐
                         </button>
                     </view>
@@ -179,7 +179,7 @@
                         </text>
                     </view>
                     <view class="entry text-right width-30">
-                        <button plain="true" bindtap="submitOrder" class="btn btn-red width-all"
+                        <button plain="true" form-type="submit" class="btn btn-red width-all"
                                 style="line-height:3rem">确认订单
                         </button>
                     </view>

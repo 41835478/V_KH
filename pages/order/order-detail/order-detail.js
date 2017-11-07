@@ -32,17 +32,11 @@ const appPage = {
             name: '待支付',
             iconName: 'icon-time'
         },
-        foodBtnList: [
-            {
-                name: '再来一单',
-                color: 'red',
-                type: 2
-            }
-        ]
+        foodBtnList: [],
+        countdownTime: null
     },
     onLoad: function (options) {
         var that = this;
-        console.log('options.status__________________', options.status);
         options.status = 1;
         that.setData(options);
         if (options.resId && options.resId.length > 0) {
@@ -89,11 +83,11 @@ const methods = {
             orderDetailData.actualPrice = util.money(orderDetailData.actualPrice);//实付
             if (orderDetailData.orderJson && utilCommon.isString(orderDetailData.orderJson)) {
                 orderDetailData.orderJson = JSON.parse(orderDetailData.orderJson);
-                if (!orderDetailData.orderJson.id) {
-                    setOrderJson();
-                }
+                // if (!orderDetailData.orderJson.id) {
+                //     setOrderJson();
+                // }
             } else {
-                setOrderJson();
+                // setOrderJson();
             }
 
             function setOrderJson() {
@@ -119,9 +113,24 @@ const methods = {
         if (!utilCommon.isNumberOfNaN(data.status)) {
             return;
         }
-        let foodBtnList = this.data.foodBtnList,
+        let foodBtnList = [
+                {
+                    name: '再来一单',
+                    color: 'red',
+                    type: 2
+                }
+            ],
             res = this.data.res,
             isOrderType = 0;
+        if (data.consumerType == 2) {
+            isOrderType = 1;
+        } else {
+            isOrderType = app.utilPage.getOrderType(res.restaurantBusinessRules).isOrderType;
+        }
+
+        if (isOrderType === 3) {
+            foodBtnList = [];
+        }
 
         let progressBar = this.data.progressBar, orderStatus = this.data.orderStatus;
         switch (data.status) {
@@ -130,13 +139,20 @@ const methods = {
                     name: '待支付',
                     iconName: 'icon-time'
                 };
-                foodBtnList = [
-                    {
+                foodBtnList = [];
+                if (isOrderType == 3) {
+                    foodBtnList.push({
+                        name: '买单',
+                        color: 'red',
+                        type: 3
+                    });
+                } else {
+                    foodBtnList.push({
                         name: '去支付',
                         color: 'red',
                         type: 0
-                    }
-                ];
+                    });
+                }
                 if (data.consumerType == 0 && !data.dinnerType) {
                     foodBtnList.push({
                         name: '加菜',
@@ -160,13 +176,20 @@ const methods = {
                     name: '待支付',
                     iconName: 'icon-time'
                 };
-                foodBtnList = [
-                    {
-                        name: '去支付',
+                foodBtnList = [];
+                if (isOrderType == 3) {
+                    foodBtnList.push({
+                        name: '买单',
+                        color: 'red',
+                        type: 3
+                    });
+                } else {
+                    foodBtnList.push({
+                        name: '买单',
                         color: 'red',
                         type: 0
-                    }
-                ];
+                    });
+                }
                 if (data.consumerType == 0 && !data.dinnerType) {
                     foodBtnList.push({
                         name: '加菜',
@@ -220,6 +243,23 @@ const methods = {
                     }
                 ];
                 break;
+            case 5:
+                foodBtnList = [];
+                orderStatus = {
+                    name: '待支付',
+                    iconName: 'icon-roundclose'
+                };
+                progressBar = [
+                    {
+                        name: '待支付',
+                        status: true
+                    },
+                    {
+                        name: '订单完成',
+                        status: true
+                    }
+                ];
+                break;
             case 11:
                 orderStatus = {
                     name: '已接单',
@@ -255,12 +295,6 @@ const methods = {
                 break;
         }
 
-        if (data.consumerType == 2) {
-            isOrderType = 1;
-        } else {
-            isOrderType = app.utilPage.getOrderType(res.restaurantBusinessRules).isOrderType;
-        }
-
         if (isOrderType === 3) {
             progressBar[0].name = '用餐中';
         }
@@ -283,6 +317,7 @@ const methods = {
                 });
                 break;
             case 1:
+                that.data.countdownTime && that.data.countdownTime.clear();
                 util.go('/pages/shop/order/order', {
                     type: 'blank',
                     data: {
@@ -306,6 +341,57 @@ const methods = {
                     }
                 });
                 break;
+            case 3://买单
+                if (!!that.data.clock) {
+                    wx.showModal({
+                        title: '温馨提示',
+                        content: '呼叫买单服务已成功,请' + that.data.clock + '后重试',
+                        showCancel: false,
+                        confirmText: '知道了',
+                        success: function (rsp) {
+
+                        }
+                    });
+                    return;
+                }
+                that.data.countdownTime && that.data.countdownTime.clear();
+                let total_micro_second = 5 * 60 * 1000;
+                that.data.countdownTime = new util.Countdown(total_micro_second, 'mm:ss');
+                that.data.countdownTime.countdown(that, 'clock');
+                apiService.callAttendant({
+                    consumerId: orderDetailData.consumerId,
+                    resId: that.data.resId
+                }, function (res) {
+                    if (res.code === '2000') {
+                        wx.showModal({
+                            title: '温馨提示',
+                            content: '呼叫买单服务成功',
+                            showCancel: false,
+                            confirmText: '知道了',
+                            success: function (rsp) {
+
+                            }
+                        });
+                    } else {
+                        failShowModal();
+                    }
+                }, failShowModal);
+
+            function failShowModal() {
+                that.data.countdownTime && that.data.countdownTime.clear();
+                that.setData({
+                    clock: null
+                });
+                wx.showModal({
+                    title: '温馨提示',
+                    content: '呼叫买单服务失败',
+                    showCancel: false,
+                    confirmText: '知道了',
+                    success: function (rsp) {
+
+                    }
+                });
+            }
         }
     },
     openModuleMeal: function () {

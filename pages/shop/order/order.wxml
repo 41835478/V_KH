@@ -5,7 +5,12 @@
             <view class="flexBox flexBox-start shopInfo">
                 <view class="flexBox-item fb-3">
                     <view class="image">
-                        <image src="{{imageServer + shopInfo.resLogo}}"></image>
+                        <block wx:if="shopInfo.resLogo.length>0">
+                            <image src="{{imageServer + shopInfo.resLogo}}"></image>
+                        </block>
+                        <block wx:else>
+                            <image src="resLogoDefault"></image>
+                        </block>
                     </view>
                 </view>
                 <view class="flexBox-item fb-9 shopInfo-txt">
@@ -24,7 +29,7 @@
                 <block wx:for="{{foodList}}">
                     <view id="dishesTab{{index}}"
                           class="dishes-tab-item text-overflow {{('dishesTab'+index) === dishesTabIndex?'selected':''}}"
-                          catch:tap="dishesTab" data-index="{{index}}">
+                          catchtap="dishesTab" data-index="{{index}}">
                         <view class="weui-badge" wx:if="{{foodListTab[index]>0}}">
                             <text>{{foodListTab[index]}}</text>
                         </view>
@@ -70,7 +75,7 @@
                                                     <text>{{shopCartToFoodList[val.foodCode].info.amount}}</text>
                                                 </view>
                                                 <button plain="true" type="mini" class="btn-red-default"
-                                                        catch:tap="bindOpenPackageBtn"
+                                                        catchtap="bindOpenPackageBtn"
                                                         data-value="{{val}}"
                                                         data-index="{{index+','+i}}">选套餐
                                                 </button>
@@ -85,7 +90,7 @@
                                                     <text>{{shopCartToFoodList[val.foodCode].info.amount}}</text>
                                                 </view>
                                                 <button plain="true" type="mini" class="btn-red-default"
-                                                        catch:tap="bindOpenRuleBtn"
+                                                        catchtap="bindOpenRuleBtn"
                                                         data-value="{{val}}"
                                                         data-index="{{index+','+i}}">选规格
                                                 </button>
@@ -122,17 +127,19 @@
                         </view>
                     </view>
                     <view class="flexBox-item shopCart-btn">
-                        <image catch:tap="bindAzmShopCartBtn" src="../../../images/icon/shopping-car.png"></image>
+                        <image catchtap="bindAzmShopCartBtn" src="../../../images/icon/shopping-car.png"></image>
                         <text>{{counts}}</text>
                     </view>
                 </view>
             </view>
-            <view class="flexBox-item fb-4 right azm-submit-gray" wx:if="{{!isDeliveryAmount}}"
-                  catch:tap="bindAzmSubmit">
-                <text>{{deliveryAmount!=deliveryAmountDifference?'还差':''}}￥{{deliveryAmountDifference}}起送</text>
-            </view>
-            <view class="flexBox-item fb-4 right" wx:else>
-                <text catch:tap="bindAzmSubmit">选好了</text>
+            <view class="flexBox-item fb-4 right {{!isDeliveryAmount?'azm-submit-gray':''}}"
+                  catchtap="bindAzmSubmit">
+                <block wx:if="{{!isDeliveryAmount}}">
+                    <text>{{deliveryAmount!=deliveryAmountDifference?'还差':''}}￥{{deliveryAmountDifference}}起送</text>
+                </block>
+                <block wx:else>
+                    <text>选好了</text>
+                </block>
             </view>
         </view>
     </view>
@@ -144,7 +151,7 @@
                 <view class="h2">购物车</view>
             </view>
             <view class="right flexBox-item fb-5">
-                <button type="default" size="mini" plain="true" catch:tap="bindAzmClearShopCart">清空</button>
+                <button type="default" size="mini" plain="true" catchtap="bindAzmClearShopCart">清空</button>
             </view>
         </view>
         <scroll-view scroll-y scroll-into-view="" class="ul">
@@ -219,8 +226,8 @@
     <view class="row flexBox flexBox-between">
         <block wx:if="{{replaceData&&replaceData[data.foodCode]}}">
             <view class="left flexBox-item {{replaceData[data.foodCode].info.counts?'':'food-btn-plus-default'}}"
-                  catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
-                <text class="azm-icon iconfont icon-jianhao"></text>
+                  catchtap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
+                <text class="azm-icon iconfont-2 icon-jianhao"></text>
             </view>
             <view class="center flexBox-item {{replaceData[data.foodCode].info.counts? '':'food-btn-plus-default'}}">
                 <text>{{replaceData[data.foodCode].info.counts}}</text>
@@ -228,15 +235,15 @@
         </block>
         <block wx:else>
             <view class="left flexBox-item {{data.info.counts?'':'food-btn-plus-default'}}"
-                  catch:tap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
-                <text class="azm-icon iconfont icon-jianhao"></text>
+                  catchtap="bindAzmLessFood" data-active="lessFood" data-value="{{data}}" data-index="{{index}}">
+                <text class="azm-icon iconfont-2 icon-jianhao"></text>
             </view>
             <view class="center flexBox-item {{data.info.counts? '':'food-btn-plus-default'}}">
                 <text>{{data.info.counts}}</text>
             </view>
         </block>
-        <view class="right flexBox-item" catch:tap="bindAzmAddFood" data-value="{{data}}" data-index="{{index}}">
-            <text class="azm-icon iconfont icon-jiahao2"></text>
+        <view class="right flexBox-item" catchtap="bindAzmAddFood" data-value="{{data}}" data-index="{{index}}">
+            <text class="azm-icon iconfont-2 icon-jiahao2"></text>
         </view>
     </view>
 </template>

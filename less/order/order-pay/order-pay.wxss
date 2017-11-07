@@ -237,12 +237,31 @@ page view.old-class .topMe {
   margin-top: 1.375rem;
   border-radius: 2px;
 }
+page view.old-class .topMe .flexBox-item {
+  height: 84rpx;
+  line-height: 84rpx;
+  box-sizing: border-box;
+  padding-left: 20rpx;
+}
+page view.old-class .topMe .flexBox-item:nth-of-type(1) {
+  padding-right: 20rpx;
+}
+page view.old-class .topMe .flexBox-item .azm-btn {
+  background-color: #f74b7b;
+  line-height: 84rpx;
+  color: #fff;
+  border-radius: 0;
+  width: 100%;
+}
+page view.old-class .topMe .flexBox-item .azm-btn-time {
+  background-color: #aab0cb;
+  color: #fff;
+}
 page view.old-class .inputText {
   vertical-align: middle;
-  padding: 4rpx 20rpx 4rpx 20rpx;
   color: #000;
-  height: 72rpx;
-  line-height: 64rpx;
+  height: 84rpx;
+  min-height: 84rpx;
 }
 page view.old-class .tipMe {
   font-size: 0.8125rem;

@@ -4,7 +4,9 @@ const app = getApp(),
     regExpUtil = require('../../../utils/RegExpUtil'),
     utilCommon = require('../../../utils/utilCommon'),
     apiService = require('../../../utils/ApiService'),
-    utilPage = app.utilPage;
+    utilPage = app.utilPage,
+    authorize = app.authorize,
+    Amap = app.Amap;
 // {imageUrl: '/images/shop/brooke-lark-203839.png'},
 // {imageUrl: '/images/shop/brooke-lark-331977.png'},
 // {imageUrl: '/images/shop/brooke-lark-203830.png'}
@@ -37,7 +39,9 @@ const appPage = {
         isShareCurrentPage: false,//是否分享首页
         isTableCode: false,//是否带桌台号
         imageServer: app.globalData.serverAddressImg,
+        qrcodeInfo: {},
         orderUrl: '/pages/shop/order/order',
+        resLogoDefault: '../../../images/logo.jpg',
         topImages: [],//banner图片列表
         shopInfo: {
             lat: 0,
@@ -65,114 +69,10 @@ const appPage = {
         // 页面初始化 options为页面跳转所带来的参数
         console.log('初始化店铺首页_______________________________', options);
         let _this = this;
-        let openId = app.globalData.openId,
-            token = app.globalData.token,
-            resId = options.resId;
-        console.log('店铺首页获取openId_______________________________', openId);
-        if (!utilCommon.isFalse(openId) || options.q) {
-            if (!options.resId) {
-                app.setLoginRequestPromise();
-            }
-            app.globalData.loginRequestPromise.then((res) => {
-                console.log('店铺首页重新获取openId_______________________________', res);
-                openId = app.globalData.openId;
-                token = app.globalData.token;
-                if (options.resId) {
-                    getUserInfo();//分享模式
-                } else if (options.q) {//扫码模式
-                    app.getQrcodeRid(options);
-                    app.getResId((res) => {
-                        options.resId = res.value.resId;
-                        if (res.value.tableCode && res.value.tableCode.length > 0) {
-                            options.tableCode = res.value.tableCode;
-                            options.tableName = res.value.tableName;
-                            _this.data.isTableCode = true;
-                        }
-                        getUserInfo();//分享模式
-                    }, () => {
-                        setTimeout(function () {
-                            util.go('/pages/init/init', {
-                                type: 'tab'
-                            })
-                        }, 2000);
-                    })
-                } else {
-                    util.go('/pages/init/init', {
-                        type: 'tab'
-                    })
-                }
-
-            })
-        } else {
-            load();
+        if (options && options.resId) {
+            _this.data.resId = utilCommon.isFalse(options.resId);
         }
-
-        function getUserInfo() {
-            wx.getUserInfo({
-                success: function (res) {
-                    let userInfo = res.userInfo;
-                    app.globalData.userInfo = userInfo;
-                    typeof cb == "function" && cb(app.globalData.userInfo);
-                    let data = {
-                        openId: app.globalData.openId,
-                        nikeName: userInfo.nickName,
-                        sex: userInfo.gender,
-                        headImgUrl: userInfo.avatarUrl,
-                        resId: options.resId
-                    };
-                    app.checkIsFirstUse(data, load);
-                }
-            });
-        }
-
-        function load() {
-            apiService.token = token;
-            resId = options.resId;
-            _this.setData({openId, token, resId});
-            _this.getMainInfo(() => {
-                _this.setData({
-                    hasMoreData: true
-                });
-                let isOrderType = _this.getOrderType(_this.data.shopInfo.restaurantBusinessRules).isOrderType;
-                if (_this.data.isTableCode) {
-                    if (isOrderType == 0) {
-                        goOrderPage();
-                    } else if (isOrderType == 3) {
-                        apiService.checkHasWaitPayConsumer({
-                            openId: app.globalData.openId,
-                            tableCode: options.tableCode,
-                            resId: resId,
-                        }, (rsp) => {
-                            if (rsp.code === '2000') {
-                                util.go('/pages/order/order-detail/order-detail', {
-                                    data: {
-                                        tableCode: options.tableCode,
-                                        resId: _this.data.resId,
-                                        consumerId: rsp.value.consumerId
-                                    }
-                                });
-                            } else if (rsp.code === '2001') {
-                                goOrderPage();
-                            } else {
-                                util.showToast(rsp.message);
-                            }
-                        });
-                    }
-                }
-            });
-            _this.getCommonBannerList();
-        }
-
-        function goOrderPage() {
-            util.go('/pages/shop/order/order', {
-                data: {
-                    orderType: 0,
-                    resId: _this.data.resId,
-                    tableCode: options.tableCode,
-                    tableName: options.tableName
-                }
-            })
-        }
+        this.login(options);
     },
     onReady: function () {
         // 页面渲染完成
@@ -180,8 +80,7 @@ const appPage = {
     },
     onShow: function () {
         // 页面显示
-        console.log('店铺首页显示_________________________________________', this.data.isShow);
-        if (this.data.isShow) {
+        if (this.data.isShow && this.data.resId) {
             this.getMainInfo();
             this.getCommonBannerList();
         }
@@ -198,6 +97,133 @@ const appPage = {
  * 方法类
  */
 const methods = {
+    login(options) {
+        let _this = this,
+            openId = app.globalData.openId,
+            token = app.globalData.token;
+        console.log('店铺首页获取openId_______________________________', openId);
+        // wx.chooseAddress({
+        //     success: function (res) {
+        //         console.log(res,'微信通讯地址')
+        //     }
+        // });
+        // let key = '4e2be20f430ba143f9e898a37956febb';
+        // var myAmapFun = new amapFile.AMapWX({key: key});
+        // myAmapFun.getRidingRoute({
+        //     origin: '114.03763,22.67649',
+        //     destination: '114.05787,22.5431',
+        //     success: function (data) {
+        //         //成功回调
+        //         console.log(data, '骑行路线数据');
+        //     },
+        //     fail: function (info) {
+        //         //失败回调
+        //         console.log(info)
+        //     }
+        // });
+        app.getLoginRequestPromise().then((res) => {
+            openId = app.globalData.openId;
+            if (!openId)
+                app.requestLogin().then(function () {
+                    setUserInfo();
+                });
+            else
+                setUserInfo();
+        });
+
+        function setUserInfo() {
+            openId = app.globalData.openId;
+            token = app.globalData.token;
+            _this.setData({openId, token});
+            if (_this.data.resId) {//分享模式
+                _this.data.isShow = false;
+                getUserInfo();
+            } else if (options && options.q) {//扫码模式
+                _this.data.isShow = false;
+                app.getQrcodeRid(options);
+                app.getResId((res) => {
+                    _this.data.qrcodeInfo = res.value;
+                    _this.data.resId = res.value.resId;
+                    if (res.value.tableCode && res.value.tableCode.length > 0) {
+                        _this.data.isTableCode = true;
+                    }
+                    getUserInfo();
+                }, () => {
+                    setTimeout(function () {
+                        util.go('/pages/init/init', {
+                            type: 'tab'
+                        })
+                    }, 2000);
+                })
+            } else {
+                util.go('/pages/init/init', {
+                    type: 'tab'
+                })
+            }
+        }
+
+        function getUserInfo() {
+            let userInfo = app.globalData.userInfo;
+            let data = {
+                openId: app.globalData.openId,
+                resId: _this.data.resId
+            };
+            if (userInfo && !utilCommon.isEmptyObject(userInfo)) {
+                Object.assign(data, {
+                    nikeName: userInfo.nickName,
+                    sex: userInfo.gender,
+                    headImgUrl: userInfo.avatarUrl,
+                })
+            }
+            app.checkIsFirstUse(data, load);
+        }
+
+        function load() {
+            apiService.token = token;
+            let resId = _this.data.resId;
+            _this.getMainInfo(() => {
+                let isOrderType = _this.getOrderType(_this.data.shopInfo.restaurantBusinessRules).isOrderType;
+                if (_this.data.isTableCode) {
+                    if (isOrderType == 0) {
+                        goOrderPage();
+                    } else if (isOrderType == 3) {
+                        apiService.checkHasWaitPayConsumer({
+                            openId: app.globalData.openId,
+                            tableCode: _this.data.qrcodeInfo.tableCode,
+                            resId: resId,
+                        }, (rsp) => {
+                            if (rsp.code === '2000') {
+                                util.go('/pages/order/order-detail/order-detail', {
+                                    data: {
+                                        tableCode: _this.data.qrcodeInfo.tableCode,
+                                        resId: resId,
+                                        consumerId: rsp.value.consumerId
+                                    }
+                                });
+                            } else if (rsp.code === '2001') {
+                                goOrderPage();
+                            } else {
+                                util.showToast(rsp.message);
+                            }
+                        });
+                    }
+                }
+            });
+            _this.getCommonBannerList();
+            _this.data.isShow = true;
+        }
+
+        function goOrderPage() {
+            util.go('/pages/shop/order/order', {
+                data: {
+                    orderType: 0,
+                    resId: _this.data.resId,
+                    tableCode: _this.data.qrcodeInfo.tableCode,
+                    tableName: _this.data.qrcodeInfo.tableName
+                }
+            })
+        }
+    },
     /**
      * 获取店铺信息
      */
@@ -218,6 +244,8 @@ const methods = {
             if (res.value.resDetailDto.notice) {
                 topInfoList = [];
                 topInfoList.push(shopInfo.notice);
+            } else {
+                topInfoList.push('欢迎使用微信小程序点餐！！！');
             }
             _this.setData({
                 shopInfo,//店铺信息
@@ -227,6 +255,9 @@ const methods = {
                 topInfoList
             });
             _this.setShopCartsStorage();
+            _this.setData({
+                hasMoreData: true
+            });
             cb && cb();
         });
     },
@@ -268,6 +299,21 @@ const events = {
         } else {
             util.go(url);
         }
+    },
+    bindOpenMap() {
+        let that = this,
+            shopInfo = that.data.shopInfo,
+            latitude = shopInfo.lat,
+            longitude = shopInfo.lng,
+            address = shopInfo.resAddress,
+            name = shopInfo.resName;
+        wx.openLocation({
+            latitude,
+            longitude,
+            scale: 18,
+            address,
+            name
+        })
     }
 };
 Object.assign(appPage, methods, events);

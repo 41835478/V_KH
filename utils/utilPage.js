@@ -31,7 +31,7 @@ module.exports = {
                     info: {}
                 }
             };
-        console.log(shopCartsStorage, 'shopCartsStorage');
+        // console.log(shopCartsStorage, 'shopCartsStorage');
         if (!shopInfo) {
             this.getResDetail(function (res) {
                 shopInfo = res.value;
@@ -250,6 +250,10 @@ module.exports = {
                             };
                             data.status = true;
                             data.message = '扫码成功';
+                            if (!res.value.resId) {
+                                data.status = false;
+                                data.message = '无效的二维码';
+                            }
                             if (resId) {
                                 if (resId !== res.value.resId) {
                                     data.status = false;
@@ -257,7 +261,7 @@ module.exports = {
                                 }
                             }
                             if (!bol) {
-                                if (0 !== Number(res.value.type)) {
+                                if (0 !== Number(res.value.type) && res.value.resId) {
                                     data.status = false;
                                     data.message = '非店铺二维码';
                                     if (!res.value.tableCode) {
@@ -287,7 +291,6 @@ module.exports = {
             isOrderType: 0,
             text: '堂食'
         };
-
         if (this.data.orderType == 1) {
             data.isOrderType = 1;//外卖
             data.text = '外卖';
@@ -295,7 +298,7 @@ module.exports = {
             data = this.getOrderType(info)
         }
         this.setNavigationBarTitle(data.text + ' - ' + this.data.text);
-        this.setData(data);
+        this.setData({isOrderType: data.isOrderType});
     },
     getOrderType(info) {
         let data = {

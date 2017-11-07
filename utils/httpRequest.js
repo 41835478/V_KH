@@ -25,6 +25,7 @@ class HttpRequest {
                 reject = arguments[i];
             }
         }
+        console.log('__________请求数据______________', params);
         if (params.data.config && params.data.config.isLoading) {
             isLoading = params.data.config.isLoading;
             delete params.data.config;
@@ -41,6 +42,7 @@ class HttpRequest {
             params.data = null;
         }
         for (let k in params.data) {
+            params.data[k] = utilCommon.isFalse(params.data[k]);
             if (!params.data[k] && !utilCommon.isNumberOfNaN(params.data[k])) {
                 params.data[k] = '';
             }
@@ -50,18 +52,17 @@ class HttpRequest {
             retryNum++;
             let text = '网络连接失败，或服务器错误' + '{' + res.errMsg + '}';
             if (res.statusCode === 404) {
-                text = '请求失败'
+                text = '网络连接失败'
             } else if (res.statusCode === 500) {
                 text = '服务器错误'
             }
-            let confirmText = '请重试';
+            let confirmText = '知道了';
             // debugger
-            if (retryNum >= 3) {
-                text += '（已重试' + retryNum + '次,超过重试次数，请检查网络状态并重新打开小程序）';
-                confirmText = "请重启"
-            } else {
-                text += '（已重试' + retryNum + '次）';
-            }
+            // if (retryNum >= 3) {
+            //     text += '（已重试' + retryNum + '次,超过重试次数，请检查网络状态并重新打开小程序）';
+            // } else {
+            //     text += '（已重试' + retryNum + '次）';
+            // }
             wx.showModal({
                 title: '提示',
                 content: text,
@@ -70,7 +71,7 @@ class HttpRequest {
                 success: function (rsp) {
                     if (rsp.confirm) {
                         if (retryNum < 3) {
-                            setRequest();
+                            // setRequest();
                         } else {
                             // failCallback(res);
                         }
@@ -104,7 +105,6 @@ class HttpRequest {
             let flag = false;
             promise = null;
             wx.showNavigationBarLoading();
-            console.log('请求数据_____________________', url, params.data);
             wx.request({
                 url: url || '',
                 data: params.data || {},
@@ -125,7 +125,7 @@ class HttpRequest {
                 complete(res) {
                     wx.hideNavigationBarLoading();
                     wx.hideToast();
-                    console.log('获取数据________________________', url, res);
+                    console.log('__________获取数据______________', url, res);
                     if (!res.statusCode || res.statusCode !== 200) {
                         failCallback(res);
                     } else {

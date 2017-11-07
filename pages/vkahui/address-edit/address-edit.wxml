@@ -49,13 +49,12 @@
                     <view class="p">
                         <input type="text" cursor-spacing="20" placeholder="小区/写字楼/学校等" maxlength="30"
                                confirm-type="next" value="{{location.address}}" name="address"
-                               catch:tap="chooseLocation"
+                               catchtap="chooseLocation"
                                confirm-hold="true" class="inputType text-overflow" disabled/>
                     </view>
                     <view class="row">
                         <textarea cursor-spacing="150" placeholder="详细地址（如门牌号等）" value="{{location.name}}"
-                                  name="addressName" bindconfirm="submit"
-                                  bindchange="bindChange" data-name="location.name"
+                                  name="addressName" bindchange="bindChange" data-name="location.name"
                                   focus="{{focus === 2}}" data-focus="2" class="inputType h-80"/>
                     </view>
                 </view>

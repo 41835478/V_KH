@@ -86,6 +86,8 @@ Page({
                 mobile: address.mobile,
                 id: address.id,
                 sex: address.sex,
+                longitude: address.longitude,
+                latitude: address.latitude,
                 gaiAddress: 1,
                 isWaimai: that.data.isWaimai
             }

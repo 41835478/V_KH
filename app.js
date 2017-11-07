@@ -1,7 +1,9 @@
+const Amap = require('./utils/amap');
 const queryString = require('./utils/queryString');
 const util = require('./utils/util');
 const httpConfig = require('./utils/httpConfig');
 const utilPage = require('./utils/utilPage');
+const authorize = require('./utils/authorize');
 import {ToastPannel} from './template/toast/toast';
 
 const GlobaData = {
@@ -30,6 +32,10 @@ const GlobaData = {
 
 App({
     globalData: {},
+    utilPage,
+    ToastPannel,//toast弹框
+    Amap,//高德地图sdk
+    authorize,//微信小程序权限
     /**
      * 生命周期函数--监听小程序初始化
      * @param options
@@ -41,24 +47,32 @@ App({
         /**
          * 获取rid
          */
-        let rid = _this.getQrcodeRid(options.query);
-        console.log('app.js获取rid', rid);
+        if (options) {
+            let rid = _this.getQrcodeRid(options.query);
+            console.log('app.js获取rid', rid);
+        }
+        console.log('版本号：' + httpConfig.version);
+        // // 打开权限
+        // authorize.open();
         /**
          * 初始化登入并获取openId与token并设置Promise
          */
-        _this.setLoginRequestPromise();
+        // _this.setLoginRequestPromise();
         _this.getShopCartsStorage();
     },
-    utilPage,
-    ToastPannel,//toast弹框
     /**
      * 生命周期函数--监听小程序显示
      * @param options
      */
     onShow: function (options) {
+        console.log(options, '__________________openId________________loginRequestPromise');
+        console.log(this.globalData.openId, '__________________openId________________loginRequestPromise');
+        if (!this.globalData.openId) {
+            console.log(this.globalData.loginRequestPromise, '进入_____________________________________loginRequestPromise');
+            this.setLoginRequestPromise();
+        }
         this.globalData.shopCarts = {};
         wx.setStorageSync('shopCarts', JSON.stringify(this.globalData.shopCarts));
-        // console.log('监听小程序显示', options);
     },
     /**
      * 生命周期函数--监听小程序隐藏
@@ -98,17 +112,14 @@ App({
      * 获取用户信息
      * @param cb
      */
-    getUserInfo: function (cb) {
+    getUserInfo: function (cb, reject) {
         let _this = this;
         wx.checkSession({
             success: function (res) {
-                //session 未过期，并且在本生命周期一直有效
-                console.log('未过期，并且在本生命周期一直有效', res);
                 getUserInfo()
             },
             fail: function (res) {
                 //登录态过期
-                console.log('登录态过期', res);
                 _this.requestLogin().then(getUserInfo);
             }
         });
@@ -128,6 +139,19 @@ App({
                         _this.globalData.meLogo = userInfo.meLogo;//用户头像
                         _this.globalData.nickName = userInfo.nickName;//用户昵称
                         typeof cb == "function" && cb(_this.globalData.userInfo)
+                    },
+                    fail(res) {
+                        authorize.userInfo(true).then(getUserInfo, function () {
+                            wx.showModal({
+                                title: '温馨提示',
+                                content: '请打开微信用户权限，避免获取用户信息失败导致应用操作问题',
+                                showCancel: false,
+                                confirmText: '知道了',
+                                success: function (rsp) {
+                                    typeof cb == "function" && cb()
+                                }
+                            });
+                        });
                     }
                 })
             }
@@ -150,8 +174,7 @@ App({
                     apiService.getOpenId(
                         {
                             jsCode: res.code,
-                            openId,
-                            token
+                            openId
                         },
                         (rsp) => {
                             _this.globalData.openId = rsp.value.openId;
@@ -180,20 +203,9 @@ App({
                     /**
                      * 获取用户信息
                      */
-                    _this.getUserInfo();
-                    // if (rid && rid.length > 0) {
-                    //     _this.getResId(function (rsp) {
-                    //         if (res.value && res.value.resId) {
-                    //             wx.navigateTo({
-                    //                 url: '/pages/shop/home/home?resId=' + rsp.value.resId
-                    //             })
-                    //         }
-                    //         resolve(res)
-                    //     });
-                    // }else {
-                    //
-                    // }
-                    resolve(res)
+                    _this.getUserInfo(function () {
+                        resolve(res)
+                    });
                 } else {
                     reject()
                 }
@@ -202,6 +214,10 @@ App({
             });
         });
         this.globalData.loginRequestPromise = loginRequestPromise;
+        return loginRequestPromise;
+    },
+    getLoginRequestPromise() {
+        return this.globalData.loginRequestPromise;
     },
     /**
      * 获取二维码扫描登入

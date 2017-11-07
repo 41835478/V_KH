@@ -12,8 +12,8 @@
         </view>
         <view class="weui-msg__opr-area">
             <view class="weui-btn-area">
-                <button class="weui-btn home_scanCode_btn" type="primary" catch:tap="bindScanCode">扫一扫</button>
-                <button class="weui-btn" type="default" catch:tap="bindGoBack">返回</button>
+                <button class="weui-btn home_scanCode_btn" type="primary" catchtap="bindScanCode">扫一扫</button>
+                <button class="weui-btn" type="default" catchtap="bindGoBack">返回</button>
             </view>
         </view>
         <view class="weui-msg__extra-area">

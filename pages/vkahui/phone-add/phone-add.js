@@ -1,5 +1,3 @@
-var utilMd5 = require('../../../utils/md5.js');
-var appUtil = require('../../../utils/appUtil.js');
 const apiService = require('../../../utils/ApiService');
 const RegExpUtil = require('../../../utils/RegExpUtil');
 var util = require('../../../utils/util.js');
@@ -7,91 +5,53 @@ var app = getApp();
 Page({
     data: {
         clock: '',
-        isPhone: false,
-        isVerificationCode: false,
-        phone: false,
-        phoneStr: '您的手机号码格式输入有误，请重新输入'
+        phoneStr: '您的手机号码格式输入有误，请重新输入',
+        mobile: '',
+        code: '',
+        isCode: true,
+        isMobile: true,
+        isSubmit: false,
+        focus: false,
+        jumpUrl: null
     },
     onLoad: function (options) {
-        var that = this;
-        options.jumpUrl = decodeURIComponent(options.jumpUrl || '');
-        that.setData(options);
-    },
-    formSubmit: function (e) {
-        var that = this;
-        var mobile = e.detail.value.mobile;
-        let value = e.detail.value;
-        if (mobile) {
-            if (!RegExpUtil.isPhone(mobile)) {
-                this.setData({
-                    phone: true,
-                    isPhone: false,
-                })
-            } else {
-                this.setData({
-                    isPhone: true,
-                    phone: false
-                })
-            }
+        var _this = this;
+        if (options.jumpUrl) {
+            options.jumpUrl = decodeURIComponent(options.jumpUrl);
         }
-        if (!RegExpUtil.isPhone(mobile)) {
-            util.showToast('手机号码格式不正确');
-        } else {
+        let data = {
+            jumpUrl: null,
+            resId: null
+        };
+        Object.assign(data, options);
+        _this.setData({jumpUrl: data.jumpUrl, resId: data.resId});
+    },
+    formSubmit: function () {
+        let _this = this,
+            mobile = this.data.mobile;
+        if (this.data.isMobile) {
             apiService.getSmsCode(
                 {"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"},
-                function (rsp) {
-                    console.log(rsp);
-                    that.setData({cookies: rsp.value});
-                    wx.showToast({
-                        title: '验证码已发送',
-                        icon: 'success',
-                        duration: 2000
-                    });
+                function () {
+                    util.showToast('验证码已发送');
+                    _this.setData({focus: true});
                     let total_micro_second = 60 * 1000;
-                    new util.Countdown(total_micro_second, 'ss').countdown(that, 'clock');
+                    new util.Countdown(total_micro_second, 'ss').countdown(_this, 'clock');
                 });
+        } else {
+            if (!mobile) {
+                util.showToast('手机号码为空');
+            } else if (!RegExpUtil.isPhone(mobile)) {
+                util.showToast('手机号码格式不正确');
+            }
         }
-    },
-    time: function (total_micro_second) {
-        var that = this;
-        // 渲染倒计时时钟
-        that.setData({
-            clock: that.date_format(total_micro_second)
-        });
 
-        if (total_micro_second <= 0) {
-            that.setData({
-                clock: ""
-            });
-            return;
-        }
-        setTimeout(function () {
-            // 放在最后--
-            total_micro_second -= 10;
-            that.time(total_micro_second);
-        }, 10)
-    },
-    date_format: function (micro_second) {
-        var that = this;
-        // 秒数
-        var second = Math.floor(micro_second / 1000);
-        // 小时位
-        var hr = Math.floor(second / 3600);
-        // 分钟位
-        var min = that.zero(Math.floor((second - hr * 3600) / 60));
-        // 秒位
-        var sec = that.zero((second - hr * 3600 - min * 60));//
-
-        return sec;
-    },
-    zero: function (num) {// 位数不足补零
-        return num < 10 ? "0" + num : num
     },
     queSubmit: function (e) {
-        var that = this,
+        let that = this,
             code = e.detail.value.code,
             mobile = e.detail.value.mobile;
-        var data = {
+        let data = {
             openId: app.globalData.openId,
             resId: that.data.resId
         };
@@ -102,7 +62,7 @@ Page({
             util.showToast('验证码位数不足');
             return;
         }
-        if (this.data.isPhone) {
+        if (this.data.isSubmit) {
             let apiName = 'checkBindMobile';
             if (data.resId && data.resId.length > 0) {
                 apiName = 'checkMemberBindMobile';
@@ -110,6 +70,7 @@ Page({
             app[apiName](data, function (rsp) {
                 if (rsp.code == 2000) {//已绑定手机号
                     util.showToast('已绑定手机号');
+                    util.go(-1);
                     return;
                 } else if (rsp.code == 4003) {
                     let data = {
@@ -136,20 +97,29 @@ Page({
             util.showToast('手机号码格式不正确');
         }
     },
-    bindPhoneBlurEvent(e) {
-        let value = e.detail.value;
-        if (value) {
-            if (!RegExpUtil.isPhone(value)) {
-                this.setData({
-                    phone: true,
-                    isPhone: false,
-                })
-            } else {
-                this.setData({
-                    isPhone: true,
-                    phone: false
-                })
-            }
+    bindInput(e) {
+        let value = e.detail.value,
+            type = e.currentTarget.dataset.type;
+        this.data[type] = value;
+        this.setSubmit();
+    },
+    setSubmit() {
+        if (this.data.mobile && RegExpUtil.isPhone(this.data.mobile)) {
+            this.setData({isMobile: true});
+        } else {
+            this.setData({isMobile: false});
+        }
+
+        if (this.data.code && this.data.code.length === 6) {
+            this.setData({isCode: true});
+        } else {
+            this.setData({isCode: false});
+        }
+
+        if (this.data.isCode && this.data.isMobile) {
+            this.setData({isSubmit: true});
+        } else {
+            this.setData({isSubmit: false});
         }
     }
 });

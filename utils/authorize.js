@@ -11,13 +11,33 @@ let scope = {
 
 module.exports = {
     authSetting: null,
+    open(resolve, reject) {
+        let _this = this;
+        this.getSetting().then(() => {
+            let all = {
+                'scope.userLocation': false
+            };
+            if (_this.authSetting) {
+                Object.assign(all, _this.authSetting);
+            }
+            let allFn = [];
+            for (let k in all) {
+                if (!all[k]) {
+                    allFn.push(_this.setPromise(k));
+                }
+            }
+            if (allFn.length > 0) {
+                Promise.all(allFn).then(resolve, reject);
+            }
+        })
+    },
     getSetting() {
         let _this = this;
         return new Promise(function (resolve, reject) {
             let flag = false;
             wx.getSetting({
                 success(res) {
-                    console.log(res.authSetting, 'authSetting');
+                    // console.log(res.authSetting, 'authSetting');
                     _this.authSetting = res.authSetting;
                     flag = true;
                 },
@@ -48,28 +68,27 @@ module.exports = {
             });
         });
     },
-    setPromise(scopeStr) {
+    setPromise(scopeStr, isOpen) {
         let _this = this;
         return new Promise(function (resolve, reject) {
             _this.getSetting().then(function () {
                 if (!_this.authSetting[scopeStr]) {
-                    let flag = false;
                     wx.authorize({
                         scope: scopeStr,
-                        success() {
-                            flag = true;
-                        },
                         complete(res) {
-                            console.log(res);
-                            if (flag) {
-                                resolve();
-                            } else {
-                                _this.openSetting(scopeStr).then(function () {
+                            _this.getSetting().then(() => {
+                                if (_this.authSetting[scopeStr]) {
                                     resolve();
-                                }, function () {
+                                } else if (isOpen) {
+                                    _this.openSetting(scopeStr).then(function () {
+                                        resolve();
+                                    }, function () {
+                                        reject();
+                                    })
+                                } else {
                                     reject();
-                                })
-                            }
+                                }
+                            });
                         }
                     })
                 } else {
@@ -80,32 +99,32 @@ module.exports = {
             });
         });
     },
-    userLocation() {
+    userLocation(isOpen) {
         let scopeStr = scope.userLocation;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    userInfo() {
+    userInfo(isOpen) {
         let scopeStr = scope.userInfo;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    address() {
+    address(isOpen) {
         let scopeStr = scope.address;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    invoiceTitle() {
+    invoiceTitle(isOpen) {
         let scopeStr = scope.invoiceTitle;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    werun() {
+    werun(isOpen) {
         let scopeStr = scope.werun;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    record() {
+    record(isOpen) {
         let scopeStr = scope.record;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     },
-    writePhotosAlbum() {
+    writePhotosAlbum(isOpen) {
         let scopeStr = scope.writePhotosAlbum;
-        return this.setPromise(scopeStr);
+        return this.setPromise(scopeStr, isOpen);
     }
 };

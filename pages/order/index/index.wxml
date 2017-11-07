@@ -11,9 +11,16 @@
             </view>
             <view class="azm-section">
                 <view class="flexBox"
-                      data-value="{{item}}" catch:tap="goOrderDetail">
+                      data-value="{{item}}" catchtap="goOrderDetail">
                     <view class="flexBox-item fb-4 azm-image">
-                        <image src="{{item.resLogo}}"></image>
+                        <block wx:if="{{item.resLogo}}">
+                            <image src="{{serverAddressImg+item.resLogo}}"></image>
+                        </block>
+                        <block wx:else>
+                            <view>
+                                <text class="iconfont icon-jiazaishibai azm-icon"></text>
+                            </view>
+                        </block>
                     </view>
                     <view class="flexBox-item fb-5 azm-center">
                         <view class="h3 text-overflow">{{item.resName}}</view>
@@ -25,12 +32,13 @@
                     </view>
                     <view class="flexBox-item fb-3 azm-right">
                         <view class="azm-status text-overflow">状态：{{statusStr[item.consumerStatus]}}</view>
-                        <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:key="*this" wx:for-item="val">
-                            <button class="azm-btn {{val.class}}" plain type="mini"
-                                    data-value="{{item}}" data-type="{{val.jumpType}}"
-                                    wx:if="{{val.type === 100 || val.type == item.consumerType}}" catch:tap="jumpBtn">
-                                {{val.name}}
-                            </button>
+                        <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:for-item="val">
+                            <block wx:if="{{val.type === 100 || val.type == item.consumerType}}">
+                                <button class="azm-btn {{val.class}}" plain type="mini"
+                                        data-value="{{item}}" data-type="{{val.jumpType}}" catchtap="jumpBtn">
+                                    {{val.name}}
+                                </button>
+                            </block>
                         </block>
                     </view>
                 </view>

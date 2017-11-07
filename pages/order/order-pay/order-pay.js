@@ -21,7 +21,6 @@ Page({
         subMenuHighLight: initSubMenuHighLight,
         animationData: ['', '', ''],
         clock: '',
-
         paymentTime: 15 * 60 * 1000,
         hasMOney: false,
         module: '',
@@ -33,6 +32,10 @@ Page({
         countdown: null,//倒计时实例
         clockCode: '',//60s倒计时时间
         clockCodeCountdown: null,//60s倒计时实例
+
+        isCodeText: true,
+        PaymentStatus: false,//支付状态
+        isAutomaticGetCode: false,//是否自动发送验证码
     },
     onLoad: function (options) {
         var that = this;
@@ -94,7 +97,6 @@ Page({
                 that.setData({menu: "外卖"});
 
                 that.data.endTime = util.formatTime(rsp.value.createTime, {m: 15, spacer: '-'});
-                console.log(that.data.endTime);
 
                 // 设置倒计时
                 let time = util.formatTimeDifference(new Date(), that.data.endTime);
@@ -218,6 +220,9 @@ Page({
         }
     },
     startPay: function () {
+        if (this.data.PaymentStatus) {
+            return;
+        }
         var that = this;
         var payment = that.data.payment;
         if (payment == undefined || payment == "") {
@@ -229,61 +234,72 @@ Page({
             if (payment == 'weixin') {
                 var date = String(util.formatTime1(new Date()));
                 var orderNo = that.data.consumerId;
-                // var orderMoney = parseInt(1);
                 var orderMoney = parseInt(that.data.orderFood.actualPrice * 100);
-                // var subject = resDetailData.resName;// 商品名称
-                // var body = resDetailData.resName + '微信点餐';//
                 var subject = '微信点餐';// 商品名称
                 var body = '微信点餐';//
                 var openid = app.globalData.openId;
                 var resId = that.data.resId;
                 var params = {orderNo, orderMoney, subject, body, openid, resId};
-                //var init = util.initPay(params);
-                // console.log(init);
-                // var url = 'https://vip.zhenler.com/api/wxpay/wxPayForH5?' + init;
-                // var url = 'https://vip.zhenler.com/api/wxpay/wxPayForMini?' + init;
-                // var url ='http://119.23.132.192/zhenler-server/api/wxpay/wxPayForMini?' + init;
-
-                // var url = app.globalData.serverAddress + "wxpay/wxPayForMini?" + init;
-                apiService.wxPayForH5(params, function (rsp) {
-                    if (rsp.returnStatus) {
-                        var value = rsp.value;
-                        var wxPay = value.woi;
-                        wx.requestPayment({
-                            'timeStamp': wxPay.timestamp,
-                            'nonceStr': wxPay.noncestr,
-                            'package': 'prepay_id=' + wxPay.prepayid,//之前的
-                            'signType': 'MD5',
-                            'paySign': value.paySign,
-                            'appid': wxPay.appid,
-                            'total_fee': orderMoney,
-                            'openid': app.globalData.openId,
-                            'success': function (res) {
-                                // console.log(res);
-                                that.finishPay();
-                            },
-                            'fail': function (res) {
-                                console.log(res);
-                                util.go('/pages/order/order-detail/order-detail', {
-                                    type: 'blank',
-                                    data: {
-                                        resId: that.data.resId,
-                                        consumerId: that.data.consumerId,
-                                        tableCode: that.data.tableCode,
-                                        tableName: that.data.tableName,
-                                        status: 3
-                                    }
-                                });
+                if ('000000005c2536d5015c2e169199061f' === resId) {
+                    wx.showModal({
+                        content: '该店铺为演示店铺，请勿使用微信支付',
+                        confirmText: '确认支付',
+                        cancelText: '不支付',
+                        cancelColor: '#f74b7b',
+                        success: function (res) {
+                            if (res.confirm) {
+                                wxPayForH5()
                             }
-                        });
-                    } else {
-                        console.log('微信支付失败');
-                        wx.showToast({
-                            title: "微信支付失败",
-                            duration: 3000
-                        });
-                    }
-                });
+                        }
+                    });
+                } else {
+                    wxPayForH5()
+                }
+
+                function wxPayForH5() {
+                    that.data.PaymentStatus = true;
+                    apiService.wxPayForH5(params, function (rsp) {
+                        if (rsp.returnStatus) {
+                            var value = rsp.value;
+                            var wxPay = value.woi;
+                            wx.requestPayment({
+                                'timeStamp': wxPay.timestamp,
+                                'nonceStr': wxPay.noncestr,
+                                'package': 'prepay_id=' + wxPay.prepayid,//之前的
+                                'signType': 'MD5',
+                                'paySign': value.paySign,
+                                'appid': wxPay.appid,
+                                'total_fee': orderMoney,
+                                'openid': app.globalData.openId,
+                                'success': function (res) {
+                                    that.data.PaymentStatus = false;
+                                    // console.log(res);
+                                    that.finishPay();
+                                },
+                                'fail': function (res) {
+                                    // console.log(res);
+                                    util.go('/pages/order/order-detail/order-detail', {
+                                        type: 'blank',
+                                        data: {
+                                            resId: that.data.resId,
+                                            consumerId: that.data.consumerId,
+                                            tableCode: that.data.tableCode,
+                                            tableName: that.data.tableName,
+                                            status: 3
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            // console.log('微信支付失败');
+                            wx.showToast({
+                                title: "微信支付失败",
+                                duration: 3000
+                            });
+                            that.data.PaymentStatus = false;
+                        }
+                    });
+                }
             } else if (payment == 'huiyuan') {
                 // 会员卡支付
                 // console.log('会员卡支付');
@@ -293,13 +309,14 @@ Page({
                         duration: 2000
                     });
                 } else if (that.data.orderFood.actualPrice <= that.data.memberBalance) {
-                    // console.log('有余额');
-                    // console.log(app.globalData.code);
                     if (app.globalData.bindPhonenumber == false) {
                         that.setData({
                             module: 'moduleActive'
                         });
                     } else {
+                        if (that.data.isAutomaticGetCode) {
+                            that.getCode();
+                        }
                         that.setData({
                             message: 'moduleActiveMe'
                         });
@@ -484,56 +501,55 @@ Page({
                 that.data.clockCodeCountdown.countdown(that, 'clockCode');
             });
     },
-    codeText: function (e) {
+    inputCodeText: function (e) {
         // console.log('输入的验证码');
         this.data.codeText = e.detail.value;
-        return {
-            value: this.data.codeText
-        }
     },
-    confirmCode: function () {
-        var that = this;
-        // console.log(that.data.codeText);
-        if (!that.data.codeText || that.data.codeText.length === 0) {
-            util.showToast('验证码不能为空');
-            return;
-        } else if (that.data.codeText.length < 6) {
-            util.showToast('验证码少于6位');
+    confirmCode: function (e) {
+        if (!this.data.isCodeText) {
             return;
         }
-        var data = {
-            code: that.data.codeText,
+        var that = this,
+            code = e.detail.value.codeText,
+            formId = e.detail.formId;
+        let data = {
+            code: code,
             openId: app.globalData.openId,
             msgTemp: "SMS_XIAOFEICODE_CONTENT"
         };
-        if (!that.data.isCheckSmsCodeByOpenId) return;
-        that.setData({
-            isCheckSmsCodeByOpenId: false
-        });
-
-        function resFlag() {
-            that.setData({
-                isCheckSmsCodeByOpenId: true
-            })
-        }
-
-        apiService.checkSmsCodeByOpenId(data, function (res) {
-            if (res.returnStatus) {
-                var data = {
-                    openId: app.globalData.openId,
-                    amount: that.data.orderFood.actualPrice,
-                    consumerId: that.data.consumerId,
-                    resId: that.data.resId,
-                    code: that.data.codeText
-                };
-                apiService.memberCardPay(data,
-                    function () {
-                        resFlag();
-                        app.globalData.clrCar = true;
-                        util.showToast({
-                            title: "会员卡支付成功",
-                            duration: 6500,
-                            success: function () {
+        if (!code || code.length === 0) {
+            util.showToast('验证码不能为空');
+            return;
+        } else if (code.length < 6) {
+            util.showToast('验证码少于6位');
+            return;
+        } else {
+            that.data.isCodeText = false;
+            apiService.checkSmsCodeByOpenId(data, function (res) {
+                that.data.isCodeText = true;
+                if (res.code == 2000) {
+                    var data = {
+                        openId: app.globalData.openId,
+                        amount: that.data.orderFood.actualPrice,
+                        consumerId: that.data.consumerId,
+                        resId: that.data.resId,
+                        code: code,
+                        formId
+                    };
+                    apiService.memberCardPay(data,
+                        function () {
+                            app.globalData.clrCar = true;
+                            util.showToast("会员卡支付成功");
+                            // 发送模板消息
+                            if (formId && 'the formId is a mock one' !== formId) {
+                                apiService.sendMiniWxTemplateMsg({
+                                    openId: app.globalData.openId,
+                                    resId: that.data.resId,
+                                    formId,
+                                    consumerId: that.data.consumerId
+                                });
+                            }
+                            setTimeout(() => {
                                 util.go('/pages/order/order-detail/order-detail', {
                                     type: 'blank',
                                     data: {
@@ -544,19 +560,18 @@ Page({
                                         status: 5
                                     }
                                 });
-                            }
-                        });
-                    },
-                    function () {
-                        resFlag();
-                        util.showToast('会员卡支付失败');
-                    }
-                );
-            } else {
-                util.showToast(res.message);
-                resFlag();
-            }
-        });
+                            }, 2000)
+                        },
+                        function () {
+                            util.showToast('会员卡支付失败');
+                        }
+                    );
+                } else {
+                    that.setData({codeText: ''});
+                    util.showToast(res.message);
+                }
+            });
+        }
     }
 });
 

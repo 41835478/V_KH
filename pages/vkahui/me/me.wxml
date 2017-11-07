@@ -1,7 +1,12 @@
 <view class="old-class">
     <view class="wrapper has-nav">
         <view class="headline text-center" wx:if="{{true}}">
-            <image class="icon-user-bigger" src="{{wxInfo.avatarUrl}}"></image>
+            <block wx:if="{{wxInfo.avatarUrl}}">
+                <image class="icon-user-bigger" src="{{wxInfo.avatarUrl}}"></image>
+            </block>
+            <block wx:else>
+                <text class="iconfont-2 icon-yonghu" style="font-size: 80rpx"></text>
+            </block>
             <text class="h2-big blk mg-top name">{{wxInfo.nickName}}</text>
         </view>
         <view class="ct arrow-list-ctn relative">
@@ -34,7 +39,7 @@
                     </view>
                 </navigator>
             </view>
-            <view class="list">
+            <view class="list" wx:if="{{memberCardCount>0}}">
                 <navigator url="{{!isBindMobile?'/pages/vkahui/phone-add/phone-add':''}}" open-type="navigate">
                     <view class="entry h5" style="border-bottom:none;margin:0;">
                         <text>绑定手机</text>

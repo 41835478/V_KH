@@ -86,10 +86,11 @@ const appPage = {
         if (isOrderType == 1) {
             _this.setLoadDefaultAddress();
         } else if (isOrderType == 0 || isOrderType == 3) {
-            _this.setNavigationBarTitle('堂食 - ' + _this.data.text);
+            // _this.setNavigationBarTitle('堂食 - ' + _this.data.text);
             //判断有桌子就显示桌子，没桌子就手动填入桌子号
             if (userOrderInfo.tableCode && userOrderInfo.tableCode.length > 0) {
                 let diningNumber = userOrderInfo.fNumber || 1;
+                userOrderInfo.name && userOrderInfo.name.length && (userOrderInfo.name = decodeURIComponent(userOrderInfo.name));
                 _this.setData({
                     userOrderInfo,
                     diningNumber,
@@ -125,7 +126,7 @@ const appPage = {
      * @param options 为页面跳转所带来的参数
      */
     onShow(options) {
-        if (this.data.isShow) {
+        if (this.data.isShow && this.data.orderType == 1) {
             this.setLoadDefaultAddress();
         }
     },
@@ -329,12 +330,13 @@ const methods = {
      * 确认订单
      * @param res
      */
-    submitOrder: function (res) {
+    submitOrder: function (e) {
         if (!this.data.isSubmitOrder) {
             return;
         }
-        this.data.isSubmitOrder = false;
-        var that = this, orderType = that.data.orderType,
+        let that = this,
+            orderType = that.data.orderType,
+            formId = e.detail.formId,
             consumerData = that.data.consumerData,
             consumerDataList = [],
             info = this.data.shopCartsInfo.info,
@@ -377,6 +379,35 @@ const methods = {
             data.fNumber = that.data.diningNumber || 1;
             data.consumerId = that.data.userOrderInfo.consumerId;//消费者ID（可选，存在即为加菜）
             data.tableCode = that.data.userOrderInfo ? (that.data.userOrderInfo.tableCode || '') : '';
+            if (this.data.isOrderType === 3) {
+                apiService.checkHasWaitPayConsumer({
+                    openId: app.globalData.openId,
+                    tableCode: data.tableCode,
+                    resId: that.data.resId,
+                }, (rsp) => {
+                    if (data.consumerId && rsp.code === '2001') {
+                        wx.showModal({
+                            content: '您的订单数据异常，请重新扫码点餐',
+                            showCancel: false,
+                            confirmText: '知道了',
+                            success: function (rsp) {
+                                util.go(-2);
+                            }
+                        });
+                    } else if (rsp.code === '2000' || rsp.code === '2001') {
+                        rsp.code === '2001' && (data.consumerId = '');
+                        rsp.code === '2000' && (data.consumerId = rsp.value.consumerId || '');
+                        commitOrder();
+                    } else {
+                        util.showToast(rsp.message);
+                        setTimeout(function () {
+                            util.go(-2);
+                        }, 2000)
+                    }
+                });
+            } else {
+                commitOrder();
+            }
         } else if (this.data.isOrderType === 1) {
             if (that.data.DefaultAddress) {
                 data.type = 2;
@@ -387,41 +418,60 @@ const methods = {
                 that.openAddressModule();
                 return;
             }
+            commitOrder();
         } else if (this.data.isOrderType === 2) {
             data.type = 0;
             data.consumerId = that.data.userOrderInfo.consumerId;//消费者ID（可选，存在即为加菜）l
+            commitOrder();
         }
-        // 提交数据
-        apiService.commitOrder(data, function (rsp) {
-            that.data.isSubmitOrder = true;
-            let consumerId = rsp.value.id,
-                data = {
-                    consumerId: consumerId,
-                    resId: that.data.resId
-                };
-            that.clearShopCart();
 
-            function redirctToUrl(text) {
-                return "/pages/order/" + text + "/" + text;
-            }
+        function commitOrder() {
+            // 提交数据
+            that.data.isSubmitOrder = false;
+            apiService.commitOrder(data,
+                (rsp) => {
+                    that.data.isSubmitOrder = true;
+                    let consumerId = rsp.value.id,
+                        data = {
+                            consumerId: consumerId,
+                            resId: that.data.resId
+                        };
+                    that.clearShopCart();//清除购物车
+                    // console.log(formId, '_________________________________________formId');
+                    if (formId && 'the formId is a mock one' !== formId && 3 == that.data.isOrderType) {
+                        /**
+                         * 模板消息推送
+                         */
+                        apiService.sendMiniWxTemplateMsg({
+                            resId: that.data.resId,
+                            consumerId,
+                            openId: app.globalData.openId,
+                            formId
+                        });
+                    }
 
-            if (!orderType) {
-                data.tableCode = that.data.tableCode;
-            }
-            if (that.data.isOrderType == 3) {//餐后
-                util.go('/pages/order/order-detail/order-detail', {
-                    type: 'blank',
-                    data
-                });
-            } else {//餐前与外卖支付
-                util.go(redirctToUrl('order-pay'), {
-                    type: 'blank',
-                    data
-                });
-            }
-        }, () => {
-            that.data.isSubmitOrder = true;
-        })
+                    function redirctToUrl(text) {
+                        return "/pages/order/" + text + "/" + text;
+                    }
+
+                    if (!orderType) {
+                        data.tableCode = that.data.tableCode;
+                    }
+                    if (that.data.isOrderType == 3) {//餐后
+                        util.go('/pages/order/order-detail/order-detail', {
+                            type: 'blank',
+                            data
+                        });
+                    } else {//餐前与外卖支付
+                        util.go(redirctToUrl('order-pay'), {
+                            type: 'blank',
+                            data
+                        });
+                    }
+                }, () => {
+                    that.data.isSubmitOrder = true;
+                })
+        }
     },
     /**
      * 设置外卖默认地址

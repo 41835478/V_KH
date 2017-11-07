@@ -3,7 +3,7 @@
 <template name="module-popup">
     <view class="module-popup {{class}}" wx:if="{{class}}">
         <view class="module-title text-overflow">
-            <view class="module-close" catch:tap="bindAzmCloseMask"></view>
+            <view class="module-close" catchtap="bindAzmCloseMask"></view>
             <text>{{isLoading?title:'加载中...'}}</text>
         </view>
         <view class="module-content">
@@ -24,7 +24,7 @@
                 </view>
             </view>
             <view class="module-footer-right flexBox-item fb-6 height-all">
-                <button class="height-all" catch:tap="bindAzmModulePopupSubmit" data-value="{{data}}">{{footer[0]}}
+                <button class="height-all" catchtap="bindAzmModulePopupSubmit" data-value="{{data}}">{{footer[0]}}
                 </button>
             </view>
         </view>
@@ -37,36 +37,36 @@
     <view class="module-radio-list" wx:if="{{data.info.ruleList.length>1}}">
         <view class="module-left">规格</view>
         <view class="module-right">
-            <button plain="true" wx:for="{{data.info.ruleList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+            <button plain="true" wx:for="{{data.info.ruleList}}" wx:for-item="v" wx:for-index="i"
                     class="module-btn btn-red-default text-overflow {{data.rule.id === v.id?'active':''}}"
                     data-index="{{i}}"
-                    data-value="{{v}}" catch:tap="bindAzmPopupRuleBtn">{{v.name}}
+                    data-value="{{v}}" catchtap="bindAzmPopupRuleBtn">{{v.name}}
             </button>
         </view>
     </view>
-    <view class="module-radio-list" wx:for="{{data.info.practicesList}}" wx:key="*this"
+    <view class="module-radio-list" wx:for="{{data.info.practicesList}}"
           wx:if="{{item.foodPracticesList}}">
         <view class="module-left">{{item.practicesTypeName}}</view>
         <view class="module-right module-right-item">
-            <button plain="true" wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+            <button plain="true" wx:for="{{item.foodPracticesList}}" wx:for-item="v" wx:for-index="i"
                     class="module-btn btn-red-default text-overflow {{(v.id === data.practicesList[index].practicesCheckedId)?'active':''}}"
                     data-index="{{index+','+i}}"
-                    data-value="{{v}}" catch:tap="bindAzmPopupPracticesBtn">{{v.practicesName}}
+                    data-value="{{v}}" catchtap="bindAzmPopupPracticesBtn">{{v.practicesName}}
             </button>
         </view>
     </view>
 </template>
 <!--套餐-->
 <template name="table-package">
-    <view class="module-radio-list" wx:for="{{data.info.foodPackagesList}}" wx:key="*this"
+    <view class="module-radio-list" wx:for="{{data.info.foodPackagesList}}"
           wx:if="{{item.value}}">
         <view class="module-left">{{item.name}}</view>
         <view class="module-right module-right-item">
-            <block wx:for="{{item.value}}" wx:for-item="v" wx:for-index="i" wx:key="*this">
+            <block wx:for="{{item.value}}" wx:for-item="v" wx:for-index="i">
                 <button plain="true"
                         class="module-btn btn-red-default text-overflow {{(v.ruleCode+v.foodCode === data.foodPackagesList[index].checkedId)?'active':''}}"
                         data-index="{{index+','+i}}"
-                        data-value="{{v}}" catch:tap="bindAzmPopupPackageBtn">
+                        data-value="{{v}}" catchtap="bindAzmPopupPackageBtn">
                     <text>{{v.foodName}}({{v.ruleName}})</text>
                 </button>
             </block>
@@ -78,18 +78,18 @@
     <view class="module-radio-list flexBox" wx:if="{{data.list.length>0}}">
         <view class="module-left flexBox-item fb-2">选择</view>
         <view class="module-right flexBox-item fb-10">
-            <button plain="true" wx:for="{{data.list}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+            <button plain="true" wx:for="{{data.list}}" wx:for-item="v" wx:for-index="i"
                     class="btn-red-default text-overflow {{v.checked?'active':''}}"
-                    catch:tap="bindAzmPopupSubareaBtn" data-index="{{i}}" data-value="{{v}}">{{v.subareaName}}
+                    catchtap="bindAzmPopupSubareaBtn" data-index="{{i}}" data-value="{{v}}">{{v.subareaName}}
             </button>
         </view>
     </view>
     <view class="module-radio-list flexBox" wx:if="{{data.tableList.length>0}}">
         <view class="module-left flexBox-item fb-2">台号</view>
         <view class="module-right module-right-item flexBox-item fb-10">
-            <button plain="true" wx:for="{{data.tableList}}" wx:for-item="v" wx:for-index="i" wx:key="*this"
+            <button plain="true" wx:for="{{data.tableList}}" wx:for-item="v" wx:for-index="i"
                     class="btn btn-red-default {{(data2.tableCode == v.tableCode)?'active':''}}"
-                    catch:tap="bindAzmPopupSubareaItemBtn"
+                    catchtap="bindAzmPopupSubareaItemBtn"
                     data-index="{{i}}" data-value="{{v}}">{{v.name}}
             </button>
         </view>

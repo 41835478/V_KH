@@ -1,5 +1,6 @@
 var appUtil = require('../../../utils/appUtil.js');
 const apiService = require('../../../utils/ApiService');
+const utilCommon = require('../../../utils/utilCommon');
 var app = getApp();
 Page({
     data: {
@@ -12,10 +13,9 @@ Page({
         isBindMobile: false
     },
     onLoad: function (options) {
-        var that = this;
-        that.setData({
-            wxInfo: app.globalData.userInfo
-        });
+        var that = this,
+            wxInfo = app.globalData.userInfo;
+        that.setData({wxInfo});
     },
     onShow() {
         let that = this;

@@ -59,6 +59,16 @@ page {
   height: 135rpx;
   border-radius: 22rpx;
 }
+.shopFront .section .shopInfo-top .left view {
+  text-align: center;
+  width: 135rpx;
+  height: 135rpx;
+  border-radius: 22rpx;
+}
+.shopFront .section .shopInfo-top .left view .azm-icon {
+  color: #7e8396;
+  font-size: 90rpx;
+}
 .shopFront .section .shopInfo-top .right {
   width: 73.33333333333334%;
   height: 100%;
@@ -73,18 +83,16 @@ page {
   min-height: 32rpx;
   margin-top: 20rpx;
 }
-.shopFront .section .shopInfo-top .right .p .icon {
+.shopFront .section .shopInfo-top .right .p .azm-icon {
   position: absolute;
-  top: -4rpx;
+  top: -6rpx;
   left: 0;
-}
-.shopFront .section .shopInfo-top .right .p .icon image {
-  height: 28rpx;
-  width: 22rpx;
+  color: #98979a;
+  font-size: 32rpx;
 }
 .shopFront .section .shopInfo-top .right .p .text {
   line-height: 34rpx;
-  padding-left: 38rpx;
+  padding-left: 44rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;

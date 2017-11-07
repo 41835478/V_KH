@@ -159,7 +159,7 @@ function formatTimeDifference(start, end, config) {
         }
     }
     time = end.getTime() - start.getTime();
-    console.log(time);
+    // console.log(time);
     if (config) {
         var type = '';
         if (utilCommon.isString(config)) {
@@ -333,6 +333,7 @@ function sign(secretKey, params) {
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         if (key != "token" && key != "signature") {
+            params[key] = utilCommon.isFalse(params[key]);
             if (!params[key] && !utilCommon.isNumberOfNaN(params[key])) {
                 params[key] = '';
             }

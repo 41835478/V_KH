@@ -41,6 +41,16 @@ page .orderIndex .row .azm-section .azm-image image {
   width: 160rpx;
   height: 160rpx;
 }
+page .orderIndex .row .azm-section .azm-image > view {
+  text-align: center;
+  border-radius: 22rpx;
+  width: 160rpx;
+  height: 160rpx;
+}
+page .orderIndex .row .azm-section .azm-image > view .azm-icon {
+  color: #7e8396;
+  font-size: 100rpx;
+}
 page .orderIndex .row .azm-section .azm-center {
   overflow: hidden;
   white-space: nowrap;
