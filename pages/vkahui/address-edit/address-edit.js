@@ -139,32 +139,33 @@ Page({
             _this.showToast('输入的手机号码格式有误，请重新输入');
             return;
         }
-        if (_this.data.gaiAddress) {//修改地址
+        if (_this.data.gaiAddress) {//更新地址
             address.id = _this.data.id;
             address.name = _this.data.nikeName;
-            ApiService.updateConsigneeAddress(address, () => {
-                util.showToast({
-                    title: "修改收获地址成功",
-                    success: function () {
-                        if (_this.data.isWaimai) {
-                            let addressId = _this.data.id;
-                            setDefaultAddress({openId: app.globalData.openId, addressId});
-                        } else {
-                            goAddress();
+            ApiService.updateConsigneeAddress(address,
+                () => {
+                    util.showToast({
+                        title: "更新地址成功",
+                        success: function () {
+                            if (_this.data.isWaimai) {
+                                let addressId = _this.data.id;
+                                setDefaultAddress({openId: app.globalData.openId, addressId});
+                            } else {
+                                goAddress();
+                            }
                         }
-                    }
+                    })
                 })
-            })
         }
         else {//新增地址
             address.openId = app.globalData.openId;
             address.nikeName = _this.data.nikeName;
             ApiService.addAddress(address,
-                () => {
+                (rsp) => {
                     util.showToast({
-                        title: "添加收获地址成功",
-                        success: function (rsp) {
-                            if (_this.data.isWaimai != undefined) {
+                        title: "添加地址成功",
+                        success: function () {
+                            if (_this.data.isWaimai) {
                                 let addressId = rsp.value;
                                 setDefaultAddress({openId: app.globalData.openId, addressId});
                             } else {

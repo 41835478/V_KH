@@ -140,15 +140,25 @@ page {
                   color: rgba(45, 44, 52, 0.8);
                 }
                 .money {
-                  .px2rpx(padding-top, 10);
-                  color: @color-f74b7b;
+                  .px2rpx(padding-top, 7.5);
+                  color: #000;
                   .px2rpx(font-size, 15);
+                }
+                .member-price {
+                  display: inline-block;
+                  //border: 1*2rpx solid @color-f74b7b;
+                  padding-top: 0;
+                  .px2rpx(padding-left, 3);
+                  .px2rpx(padding-right, 3);
+                  //.px2rpx(border-radius, 3);
+                  color: @color-f74b7b;
+                  .px2rpx(font-size, 12);
                 }
               }
             }
             .select {
               right: 0;
-              bottom: 0;
+              .px2rpx(top, 40);
               &.food-btn-rule {
                 button {
                   .px2rpx(font-size, 13);

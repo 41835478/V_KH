@@ -64,8 +64,20 @@
                                         <view class="p sales text-overflow">
                                             <text decode="true">月售&nbsp;&nbsp;{{val.salesCount}}</text>
                                         </view>
-                                        <view class="p money text-overflow">
-                                            <text>¥{{val.price}}</text>
+                                        <view class="p money text-overflow ">
+                                            <text>{{filterMoney.RMB(val.price)}}</text>
+                                        </view>
+                                        <!--{{discountType != 0?'':''}}-->
+                                        <view class="member-price text-overflow" wx:if="{{val.discountType > 0}}">
+                                            <block wx:if="{{val.discountType == 1}}">
+                                                <text class="iconfont icon-zhekou-copy azm-icon"></text>
+                                                <text class="azm-icon">折扣价</text>
+                                            </block>
+                                            <block wx:elif="{{val.discountType == 2}}">
+                                                <text class="iconfont icon-huiyuan azm-icon"></text>
+                                                <text class="azm-icon">会员价</text>
+                                            </block>
+                                            <text> {{filterMoney.RMB(val.memberPrice)}}起</text>
                                         </view>
                                         <block wx:if="{{val.foodType == 2}}">
                                             <!----------------------套餐按钮-->
@@ -252,4 +264,7 @@
 <import src="../../../template/loading.wxml"/>
 <template is="loading2" data="{{isLoading:hasMoreData}}"></template>
 
+
+<!--过滤器-->
+<wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>
 

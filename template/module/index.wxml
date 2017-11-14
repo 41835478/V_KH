@@ -15,15 +15,26 @@
             </scroll-view>
         </view>
         <view class="module-footer flexBox" wx:if="{{footer.length>0}}">
-            <view class="module-footer-left flexBox-item fb-6 height-all">
-                <view wx:if="{{tableContent === 'table-rule'}}" class="height-all">
-                    <text class="font-weight-bold text-red">￥{{data.rule.price||0}}</text>
-                </view>
-                <view wx:else class="height-all">
-                    <text class="font-weight-bold text-red">￥{{data.price||0}}元/份</text>
-                </view>
+            <view class="module-footer-left flexBox-item fb-8_5 height-all text-overflow">
+                <block wx:if="{{tableContent === 'table-rule'}}">
+                    <text decode="true" class="text-bold text-black">{{filterMoney.RMB(data.rule.price)}}&nbsp;</text>
+                    <block wx:if="{{data.rule.status == 1}}">
+                        <text class="iconfont icon-zhekou-copy price-red"></text>
+                        <text class="price-red">折扣价</text>
+                    </block>
+                    <block wx:elif="{{data.rule.status == 2}}">
+                        <text class="iconfont icon-huiyuan price-red"></text>
+                        <text class="price-red">会员价</text>
+                    </block>
+                    <block wx:if="{{data.rule.status > 0}}">
+                        <text class="price-red">{{filterMoney.RMB(data.rule.memberPrice)}}起</text>
+                    </block>
+                </block>
+                <block wx:else>
+                    <text class="font-weight-bold text-red">{{filterMoney.RMB(data.price)}}</text>
+                </block>
             </view>
-            <view class="module-footer-right flexBox-item fb-6 height-all">
+            <view class="module-footer-right flexBox-item fb-3_5 height-all">
                 <button class="height-all" catchtap="bindAzmModulePopupSubmit" data-value="{{data}}">{{footer[0]}}
                 </button>
             </view>
@@ -95,3 +106,7 @@
         </view>
     </view>
 </template>
+
+
+<!--过滤器-->
+<wxs src="../../utils/filter/filter_money.wxs" module="filterMoney"/>

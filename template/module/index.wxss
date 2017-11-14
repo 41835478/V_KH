@@ -113,18 +113,27 @@
   border-radius: 0;
   line-height: 90rpx;
 }
-.module-popup .module-footer .module-footer-left > view {
+.module-popup .module-footer .module-footer-left {
   font-size: 24rpx;
   line-height: 90rpx;
+  height: 90rpx;
   padding-left: 40rpx;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.module-popup .module-footer .module-footer-left > view .text-red {
-  font-size: 40rpx;
+.module-popup .module-footer .module-footer-left .text-red {
+  font-size: 36rpx;
   color: #f74b7b;
 }
-.module-popup .module-footer .module-footer-left > view .font-weight-bold {
+.module-popup .module-footer .module-footer-left .text-black {
+  font-size: 36rpx;
+  color: #000;
+}
+.module-popup .module-footer .module-footer-left .price-red {
+  font-size: 24rpx;
+  color: #f74b7b;
+}
+.module-popup .module-footer .module-footer-left .text-bold {
   font-weight: bold;
 }

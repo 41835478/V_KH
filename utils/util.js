@@ -402,7 +402,11 @@ function showToast(option) {
         data.image = option.image;
         data.mask = option.mask || true;
         data.duration = option.duration || 2000;
-        data.success = option.success;
+        data.success = option.success ? () => {
+            setTimeout(() => {
+                option.success();
+            }, data.duration)
+        } : null;
         data.fail = option.fail;
         data.complete = option.complete;
     } else {

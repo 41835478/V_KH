@@ -150,13 +150,21 @@ page {
   color: rgba(45, 44, 52, 0.8);
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .foodList-item > view.right .money {
-  padding-top: 20rpx;
-  color: #f74b7b;
+  padding-top: 15rpx;
+  color: #000;
   font-size: 30rpx;
+}
+.orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .foodList-item > view.right .member-price {
+  display: inline-block;
+  padding-top: 0;
+  padding-left: 6rpx;
+  padding-right: 6rpx;
+  color: #f74b7b;
+  font-size: 24rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select {
   right: 0;
-  bottom: 0;
+  top: 80rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select.food-btn-rule button {
   font-size: 26rpx;

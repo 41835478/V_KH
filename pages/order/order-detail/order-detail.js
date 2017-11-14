@@ -132,7 +132,8 @@ const methods = {
             foodBtnList = [];
         }
 
-        let progressBar = this.data.progressBar, orderStatus = this.data.orderStatus;
+        let progressBar = this.data.progressBar,
+            orderStatus = this.data.orderStatus;
         switch (data.status) {
             case 1:
                 orderStatus = {
@@ -265,7 +266,6 @@ const methods = {
                     name: '已接单',
                     iconName: 'icon-roundcheck'
                 };
-
                 progressBar = [
                     {
                         name: '已支付',

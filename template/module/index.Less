@@ -113,19 +113,26 @@
       }
     }
     .module-footer-left {
-      > view {
+      .px2rpx(font-size, 12);
+      .px2rpx(line-height, @moduleFooterH);
+      .px2rpx(height, @moduleFooterH);
+      .px2rpx(padding-left, 20);
+      overflow: hidden;
+      .text-overflow();
+      .text-red {
+        .px2rpx(font-size, 18);
+        color: @color-f74b7b;
+      }
+      .text-black {
+        .px2rpx(font-size, 18);
+        color: #000;
+      }
+      .price-red {
         .px2rpx(font-size, 12);
-        .px2rpx(line-height, @moduleFooterH);
-        .px2rpx(padding-left, 20);
-        overflow: hidden;
-        .text-overflow();
-        .text-red {
-          .px2rpx(font-size, 20);
-          color: @color-f74b7b;
-        }
-        .font-weight-bold {
-          font-weight: bold;
-        }
+        color: @color-f74b7b;
+      }
+      .text-bold {
+        font-weight: bold;
       }
     }
   }
