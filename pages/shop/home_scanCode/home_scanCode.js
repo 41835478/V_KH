@@ -1,18 +1,29 @@
 const app = getApp(),
-    queryString = require('../../../utils/queryString'),
     util = require('../../../utils/util'),
-    regExpUtil = require('../../../utils/RegExpUtil'),
     utilCommon = require('../../../utils/utilCommon'),
-    apiService = require('../../../utils/ApiService'),
-    utilPage = util.clone('getQRcodeTable', app.utilPage);
+    ApiService = require('../../../utils/ApiService');
+
 const appPage = {
     data: {
         resId: '',
-        JumpUrl: ''
+        JumpUrl: '',
+        options: {},
+        orderType: 3,
     },
     onLoad: function (options) {
-        this.data.resId = options.resId;
-        new app.ToastPannel();
+        new app.ToastPannel();//初始自定义toast
+        let that = this;
+        try {
+            if (options) {
+                Object.assign(that.data.options, options);
+                console.warn(`初始化${that.data.text}`, options);
+            } else {
+                throw {message: '初始化options为空'};
+            }
+        } catch (e) {
+            console.warn(e, options);
+        }
+        that.loadCb();
     },
     onReady: function () {
         // 页面渲染完成
@@ -28,51 +39,61 @@ const appPage = {
     }
 };
 const methods = {
+    loadCb() {
+        let that = this,
+            options = that.data.options;
+        that.data.resId = options.resId;
+        that.data.orderType = Number(options.orderType) || 3;
+        that.data.objId = app.globalData.objId;
+    },
     /**
      * 扫一扫
      */
     bindScanCode() {
-        let _this = this;
+        let that = this,
+            resId = that.data.resId,
+            orderType = that.data.orderType,
+            objId = that.data.objId;
         wx.scanCode({
             success: (data) => {
-                let QR_codeTable = _this.getQRcodeTable(data.result, this.data.resId);
+                let QR_codeTable = that.utilPage_isQRcode(data.result, resId);
                 QR_codeTable.then(
                     (res) => {
-                        if (res.status) {
-                            apiService.checkHasWaitPayConsumer({
-                                openId: app.globalData.openId,
+                        if (res.status && utilCommon.isEmptyValue(res.value)) {
+                            ApiService.checkHasWaitPayConsumer({
+                                objId,
                                 tableCode: res.value.tableCode,
-                                resId: this.data.resId,
+                                resId
                             }, (rsp) => {
-                                if (rsp.code === '2000') {
+                                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                     util.go('/pages/order/order-detail/order-detail', {
                                         type: 'blank',
                                         data: {
+                                            resId,
                                             tableCode: res.value.tableCode,
-                                            resId: this.data.resId,
                                             consumerId: rsp.value.consumerId
                                         }
                                     });
-                                } else if (rsp.code === '2001') {
+                                } else if (2001 == rsp.code) {
                                     util.go('/pages/shop/order/order', {
                                         type: 'blank',
                                         data: {
-                                            orderType: 0,
-                                            resId: _this.data.resId,
+                                            orderType,
+                                            resId,
                                             tableCode: res.value.tableCode,
-                                            tableName: res.value.tableName
+                                            tableName: res.value.tableName,
                                         }
                                     })
                                 } else {
-                                    util.showToast(rsp.message)
+                                    util.failToast(rsp.message)
                                 }
                             });
                         } else {
-                            _this.showToast(res.message);
+                            that.showToast(res.message);
                         }
                     },
                     (res) => {
-                        _this.showToast(res.message);
+                        that.showToast(res.message);
                     })
             }
         })
@@ -86,4 +107,6 @@ const methods = {
 };
 const events = {};
 Object.assign(appPage, methods, events);
-Page(Object.assign(appPage, utilPage));
+Page(Object.assign(appPage, {
+    utilPage_isQRcode: app.utilPage.utilPage_isQRcode,//获取二维码桌台
+}));

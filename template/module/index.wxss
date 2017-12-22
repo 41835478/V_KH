@@ -2,9 +2,9 @@
   position: absolute;
   margin: 0;
   top: 146rpx;
-  left: 60rpx;
-  right: 60rpx;
-  bottom: 440rpx;
+  left: 80rpx;
+  right: 80rpx;
+  min-height: 374rpx;
   z-index: 700;
   background: #fff;
   border-radius: 12rpx;
@@ -13,6 +13,9 @@
 .module-popup view,
 .module-popup scroll-view {
   box-sizing: border-box;
+}
+.module-popup .spinner2 {
+  position: absolute;
 }
 .module-popup .module-title {
   position: relative;
@@ -29,38 +32,31 @@
   position: absolute;
   top: 0;
   right: 0;
+  background-color: transparent;
+  border: none;
+  color: #fff;
   height: 95rpx;
   line-height: 95rpx;
   width: 95rpx;
 }
-.module-popup .module-title .module-close::after {
-  content: 'X';
-  display: block;
-  position: absolute;
-  height: 95rpx;
-  line-height: 95rpx;
-  width: 95rpx;
-  top: 0;
-  right: 0;
-  color: #FFF;
-  font-size: 36rpx;
-  text-align: center;
-  font-family: Arial, SimSun, sans-serif;
+.module-popup .module-title .module-close::before {
+  border: none;
 }
 .module-popup .module-content {
-  position: absolute;
+  position: relative;
   overflow: hidden;
   margin: auto;
   top: 0;
   left: 0;
-  bottom: 0;
   right: 0;
-  top: 95rpx;
-  bottom: 95rpx;
-  margin: 24rpx 0rpx 0rpx 0rpx;
+  max-height: 600rpx;
+  min-height: 200rpx;
+  margin-bottom: 20rpx;
 }
 .module-popup .module-content scroll-view {
-  padding: 0rpx 24rpx 0rpx 24rpx;
+  max-height: 600rpx;
+  min-height: 200rpx;
+  padding: 0rpx 10rpx 0rpx 24rpx;
 }
 .module-popup .module-content scroll-view .module-radio-list {
   text-align: center;
@@ -96,8 +92,59 @@
 .module-popup .module-content scroll-view .module-radio-list .module-right {
   text-align: left;
 }
-.module-popup .module-footer {
+.module-popup .module-content scroll-view .module-content-nikeName {
+  height: 100%;
+  min-height: 240rpx;
+}
+.module-popup .module-content scroll-view .module-content-nikeName .p {
+  text-align: center;
+  margin-top: 40rpx;
+}
+.module-popup .module-content scroll-view .module-content-nikeName .module-content-nikeName-input {
+  border: 1rpx solid #e2e2e2;
+  padding: 10rpx 40rpx;
+  border-radius: 6rpx;
+}
+.module-popup .module-content scroll-view .module-content-nikeName .module-content-nikeName-input input {
+  height: 52.5rpx !important;
+  min-height: 52.5rpx !important;
+  font-size: 26rpx;
+}
+.module-popup .module-content scroll-view .modulePhone {
+  padding: 40rpx 30rpx;
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code-text,
+.module-popup .module-content scroll-view .modulePhone .modulePhone-phone {
+  position: relative;
+  border: 2rpx solid #C7C7C7;
+  border-radius: 10rpx;
+  padding: 4rpx 10rpx 4rpx 70rpx;
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code-text input,
+.module-popup .module-content scroll-view .modulePhone .modulePhone-phone input {
+  height: 72rpx !important;
+  min-height: 72rpx !important;
+  font-size: 26rpx !important;
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code-text .azm-icon,
+.module-popup .module-content scroll-view .modulePhone .modulePhone-phone .azm-icon {
   position: absolute;
+  top: 50%;
+  left: 20rpx;
+  transform: translateY(-50%);
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code {
+  margin-top: 30rpx;
+  width: 100%;
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code .modulePhone-code-btn {
+  padding-left: 10rpx;
+}
+.module-popup .module-content scroll-view .modulePhone .modulePhone-code .modulePhone-code-btn button {
+  line-height: 80rpx;
+}
+.module-popup .module-footer {
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -116,24 +163,44 @@
 .module-popup .module-footer .module-footer-left {
   font-size: 24rpx;
   line-height: 90rpx;
-  height: 90rpx;
   padding-left: 40rpx;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.module-popup .module-footer .module-footer-left .text-red {
-  font-size: 36rpx;
-  color: #f74b7b;
+.module-popup .module-footer .module-footer-left .font-lg {
+  font-size: 32rpx;
 }
-.module-popup .module-footer .module-footer-left .text-black {
-  font-size: 36rpx;
-  color: #000;
+.module-popup .module-footer .module-footer-left .font-md {
+  font-size: 28rpx;
 }
-.module-popup .module-footer .module-footer-left .price-red {
+.module-popup .module-footer .module-footer-left .font-sm {
   font-size: 24rpx;
-  color: #f74b7b;
 }
-.module-popup .module-footer .module-footer-left .text-bold {
+.module-popup .module-footer .module-footer-left .font-xs {
+  font-size: 20rpx;
+}
+.module-popup .module-footer .module-footer-left .font-bold {
   font-weight: bold;
+}
+.module-popup .module-footer .module-footer-moduleName {
+  text-align: center;
+  position: relative;
+}
+.module-popup .module-footer .module-footer-moduleName button {
+  position: absolute;
+  padding: 0 3em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100rpx;
+  box-shadow: 0 0 10rpx #020203;
+}
+.module-popup .module-footer.modulePhone-footer {
+  background-color: transparent;
+}
+.module-popup .module-footer.modulePhone-footer .modulePhone-submit button {
+  padding: 0 100rpx;
+  line-height: 60rpx;
+  border-radius: 64rpx;
 }

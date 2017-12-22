@@ -2,11 +2,8 @@
 
 page {
   .orderIndex {
-    view, navigator {
+    view, view::after, view::before, navigator, scroll-view {
       box-sizing: border-box;
-    }
-    .weui-loadmore__tips_in-line {
-      background-color: #f1f2f4;
     }
     .row {
       background-color: #fff;
@@ -16,7 +13,6 @@ page {
         .px2rpx(padding-left, 25);
         .px2rpx(height, 40);
         .px2rpx(line-height, 40);
-        border-bottom: @border-1px;
         .h2 {
           display: inline-block;
           .px2rpx(font-size, 15);
@@ -35,7 +31,7 @@ page {
         .px2rpx(padding-top, 10);
         .px2rpx(padding-bottom, 10);
         .azm-image {
-          .px2rpx(padding-left, 25);
+          .px2rpx(padding-left, 5);
           image {
             //border: @border-1px;
             .px2rpx(border-radius, 11);

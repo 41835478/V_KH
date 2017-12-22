@@ -1,8 +1,8 @@
 @import "../../index";
 
 page {
-  background: @color-f1f3f4;
   .moduleMeal {
+    position: fixed;
     background-color: #57565c;
     margin: auto;
     top: 0;
@@ -32,10 +32,15 @@ page {
     }
   }
   view.new-class {
-    view {
-      color: #000;
+    .weui-cells {
+      &::after, &::before {
+        border: none;
+      }
     }
-    .azm-section {
+    .weui-cell::before {
+      border-top-color: @color-f1f3f4;
+    }
+    view.azm-section {
       view {
         box-sizing: border-box;
       }
@@ -44,14 +49,15 @@ page {
     }
     //进度条
     .azm-progressBar {
-      .px2rpx(height, 112.5);
       .px2rpx(padding-left, 22);
       .px2rpx(padding-right, 22);
+      .px2rpx(padding-bottom, 10);
       .azm-top {
         .px2rpx(height, 50);
         .px2rpx(line-height, 50);
         .azm-starts {
-          .px2rpx(font-size, 15);
+          color: rgba(45, 44, 52, .8);
+          .px2rpx(font-size, 12);
         }
         .azm-icon {
           .px2rpx(font-size, 17.5);
@@ -105,9 +111,68 @@ page {
             border-bottom: 4*2rpx solid @color-f74b7b;
           }
         }
-
+      }
+      .azm-progressBar-center {
+        height: 50*2rpx;
+      }
+      .azm-progressBar-payment {
+        .p {
+          margin-top: 10*2rpx;
+          font-size: 12*2rpx;
+          &:nth-child(1) {
+            margin-top: 0;
+            margin-bottom: 20*2rpx;
+          }
+          .azm-icon {
+            font-size: 12*2rpx;
+          }
+          .azm-icon-time {
+            color: #008de6;
+          }
+        }
+        .azm-footer-btn {
+          text-align: center;
+          button {
+            margin: 0 10*2rpx;
+          }
+        }
+        .azm-text {
+          color: @placeholder-color;
+        }
       }
     }
+
+    .azm-topStatus {
+      .azm-topStatus-start {
+        .weui-cell__bd, .azm-icon {
+          font-size: 14*2rpx;
+          line-height: 25*2rpx;
+        }
+        .azm-icon {
+          font-weight: 400;
+        }
+      }
+      .azm-topStatus-time {
+        padding-top: 0;
+        .weui-cell__bd {
+          font-size: 13*2rpx;
+        }
+      }
+      .azm-topStatus-text {
+        padding-top: 0;
+        .weui-cell__bd {
+          font-size: 38*1rpx;
+        }
+      }
+      .azm-topStatus-text-2 {
+        padding-top: 0;
+        .weui-cell__bd {
+          color: @placeholder-color;
+          font-size: 12*2rpx;
+        }
+      }
+    }
+
     //订单详情
     .azm-order {
       .azm-title {
@@ -227,44 +292,160 @@ page {
         }
       }
     }
-    //配送信息
+
+    .azm-height-10px {
+      height: 10*2rpx;
+      width: 100%;
+    }
+    .azm-orderInfo-item, .azm-paymentInfo-item {
+      color: @placeholder-color;
+      padding: 3*2rpx 15*2rpx;
+      &:nth-child(1) {
+        padding-top: 10*2rpx;
+      }
+      &:nth-last-child(1) {
+        padding-bottom: 10*2rpx;
+      }
+    }
+    .azm-cell {
+      .azm-cell__start {
+        width: 65*2rpx;
+      }
+    }
+    //配送信息&就餐信息
     .azm-orderInfo {
-      //标题
+
+    }
+    .azm-shopList {
       .azm-title {
-        padding: 0 22*2rpx;
-        .px2rpx(height, 47.5);
-        .px2rpx(line-height, 47.5);
-        border-bottom: @border-1px;
-        text {
-          .px2rpx(font-size, 15);
+        .flexBox-item {
+          font-size: 14*2rpx;
+          height: 27*2rpx;
+          line-height: 27*2rpx;
         }
       }
-      .box {
-        padding: 5*2rpx 0;
-        position: relative;
-        .azm-li {
-          text {
-            .px2rpx(font-size, 14);
-          }
-          .flexBox-item {
-            .px2rpx(min-height, 26);
-            .px2rpx(line-height, 26);
-          }
-          .text-gray {
-            color: #aab1cb;
+      .azm-shopList-list {
+        overflow: hidden;
+        height: 0;
+      }
+      .animated_t {
+        .transition-all(3);
+      }
+      .azm-resLogo {
+        width: 80*1rpx;
+        .azm-resLogo-img {
+          width: 54*1rpx;
+          height: 54*1rpx;
+          overflow: hidden;
+          border-radius: 3*2rpx;
+        }
+      }
+      .azm-cell {
+        > view, .flexBox-item {
+          font-size: 13*2rpx;
+        }
+        .weui-cell__ft {
+          min-width: 60*2rpx;
+        }
+        &.azm-cell-placeholder-color {
+          color: @placeholder-color;
+        }
+      }
+      .azm-shopList-box {
+        padding-top: 8*2rpx;
+        padding-bottom: 8*2rpx;
+        .azm-cell {
+          padding: 5*2rpx 15*2rpx;
+          &::before {
+            border: none;
           }
         }
-        .azm-open-module {
-          .translateY(50%);
-          right: 0;
-          .px2rpx(height, 80);
-          .px2rpx(line-height, 80);
-          width: 100%;
-          text-align: right;
-          .azm-icon {
-            .px2rpx(font-size, 50);
-            color: #aab1cb;
-          }
+      }
+      .azm-total {
+        padding-bottom: 3*2rpx;
+      }
+      .azm-offersTotal {
+        padding-top: 3*2rpx;
+        padding-bottom: 0;
+      }
+      .azm-handle {
+        margin-top: 7*2rpx;
+      }
+      .azm-member-btn {
+        > view {
+          height: 28*2rpx;
+          line-height: 28*2rpx;
+          overflow: hidden;
+        }
+        button {
+          line-height: 26*2rpx;
+          font-size: 11*2rpx;
+        }
+      }
+      .azm-note {
+        .flexBox-item {
+          height: 28*2rpx;
+          line-height: 28*2rpx;
+          overflow: hidden;
+        }
+        .azm-note__bd {
+          width: 40*2rpx;
+        }
+        input {
+          font-size: 12*2rpx !important;
+          height: 28*2rpx !important;
+          min-height: 28*2rpx !important;
+        }
+      }
+      .azm-offersTotal-item {
+        padding: 3*2rpx 40*2rpx;
+        color: @placeholder-color;
+        .flexBox-item {
+          font-size: 11*2rpx;
+        }
+      }
+    }
+
+    .azm-payment-method {
+      .azm-cell {
+      }
+      .flexBox-item {
+        height: 24*2rpx;
+        line-height: 24*2rpx;
+        overflow: hidden;
+        position: relative;
+        .azm-icon {
+          font-size: 20*2rpx;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .azm-images-box {
+        width: 40*2rpx;
+      }
+      .azm-content {
+        font-size: 14*2rpx;
+      }
+      .azm-member {
+        padding-bottom: 2*2rpx;
+        .azm-icon {
+          color: #e10b29;
+        }
+      }
+      .azm-member-content {
+        color: @placeholder-color;
+        padding-top: 2*2rpx;
+        font-size: 12*2rpx;
+        .azm-content {
+          font-size: 12*2rpx;
+        }
+      }
+      .azm-weChat {
+        padding: 19.5*2rpx 15*2rpx;
+        .azm-icon {
+          color: #0bb20c;
         }
       }
     }
@@ -274,6 +455,32 @@ page {
       button {
         margin: 0 20*2rpx;
         border-radius: 37*2rpx;
+      }
+    }
+
+    .azm-footer-b {
+      height: 50*2rpx;
+      line-height: 50*2rpx;
+      background-color: #fff;
+      bottom: 0;
+      position: fixed;
+      overflow: hidden;
+      .flexBox-item {
+        font-size: 13*2rpx;
+        &:nth-child(1) {
+          padding: 0 15*2rpx;
+        }
+      }
+      .azm-price {
+        color: @primary-color;
+        font-weight: bold;
+      }
+      .azm-discount {
+        font-size: 11*2rpx;
+      }
+      .azm-btn-submit {
+        border-radius: 0;
+        line-height: 48*2rpx;
       }
     }
   }

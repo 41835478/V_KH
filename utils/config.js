@@ -1,23 +1,20 @@
 /**
  * 小程序配置文件
  */
-
-// 此处主机域名是腾讯云解决方案分配的域名
-// 小程序后台服务解决方案：https://www.qcloud.com/solution/la
-
-
-var host = "http://192.168.134.2:8082/api";
-
-// api: 'https://vip.zhenler.com/api',//发布环境
-// api: 'http://192.168.134.2:8082/api',//开发环境
-// api: 'http://119.23.132.192/zhenler-server/api',//测试环境
-// api: 'http://192.168.134.254:8080/zhenler-server/api',
-// api: 'http://192.168.134.111:8080/zhenler-server/api',
-
+var host = "http://192.168.134.254:8080/zhenler-server/api";
+// var host = "http://192.168.134.2:8082/api";
+// var host = 'http://192.168.134.116:8080/zhenler-server/api';
+// var host = 'https://vip.zhenler.com/api';//发布环境
+// var host = 'http://192.168.134.2:8082/api';//开发环境
+// var host = 'http://119.23.132.192/zhenler-server/api';//测试环境
 var config = {
-
     // 下面的地址配合云端 Server 工作
     host,
+
+    version: '',
+
+    // 图片服务器地址
+    imageUrl: `http://f.zhenler.com`,
 
     // 登录地址，用于建立会话
     loginUrl: `https://${host}/login`,
@@ -43,5 +40,9 @@ var config = {
     // 下载示例图片接口
     downloadExampleUrl: `https://${host}/static/weapp.jpg`
 };
-
+wx.getSystemInfo({
+    success: function (res) {
+        console.log(res, '获取系统信息');
+    }
+});
 module.exports = config;

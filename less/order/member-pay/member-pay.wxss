@@ -1,0 +1,58 @@
+page .azm-fixed {
+  top: 0;
+  bottom: 0;
+  background-color: #f8f8f8;
+  z-index: 400;
+}
+page .azm-fixed .memberCode {
+  position: absolute;
+  display: block;
+  width: 600rpx;
+  height: 400rpx;
+  border-radius: 10rpx;
+  top: 35%;
+  left: 50%;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  padding: 20rpx 30rpx;
+}
+page .azm-fixed .memberCode .p {
+  margin-bottom: 40rpx;
+}
+page .azm-fixed .memberCode .azm-text {
+  color: #808080;
+  font-size: 24rpx;
+}
+page .azm-fixed .memberCode .azm-code {
+  box-sizing: border-box;
+  border-radius: 6rpx;
+}
+page .azm-fixed .memberCode .azm-code .flexBox-item {
+  height: 80rpx;
+  min-height: 80rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+page .azm-fixed .memberCode .azm-code .flexBox-item.border-color-1px {
+  border: 1rpx solid #e2e2e2;
+}
+page .azm-fixed .memberCode .azm-code .flexBox-item.border-color-1px:nth-child(1) {
+  border-right: none;
+}
+page .azm-fixed .memberCode .azm-code .azm-codeText {
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 0 20rpx;
+  overflow: hidden;
+}
+page .azm-fixed .memberCode .azm-code input {
+  font-size: 24rpx !important;
+  background-color: #fff;
+  height: 80rpx !important;
+  min-height: 80rpx !important;
+}
+page .azm-fixed .memberCode .azm-code button {
+  border-radius: 0;
+  line-height: 80rpx;
+  border: none;
+}

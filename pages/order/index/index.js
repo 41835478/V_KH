@@ -1,39 +1,34 @@
-const appUtil = require('../../../utils/appUtil.js'),
-    util = require('../../../utils/util.js'),
+const app = getApp(),
+    util = require('../../../utils/util'),
+    config = require('../../../utils/config'),
     utilCommon = require('../../../utils/utilCommon'),
-    ApiService = require('../../../utils/ApiService'),
-    app = getApp();
-Page({
+    ApiService = require('../../../utils/ApiService');
+const appPage = {
     data: {
         isShow: false,
+        options: {},
         module: '',
-        serverAddressImg: app.globalData.serverAddressImg,
+        hasMoreData: false,
+        imageServer: config.imageUrl,//图片服务器地址
         isFirst: true,
         isHide: false,
         orderList: [],
         shouye: true,
         dingdan: true,
         wo: false,
-        hasMoreData: false,
+
         pageNum: 1,
         pageSize: 10,
         shopInfoList: {},//店铺信息列表
-        statusStr: {
-            3: '待支付',
-            5: '已支付',
-            4: '待支付',
-            8: '已取消',
-            11: '已接单',
-            12: '已拒单'
-        },
+        statusStr: app.globalData.statusStr,
         statusBtn: {
             3: [
-                // {
-                //     class: 'azm-btn-red',
-                //     name: '去支付',
-                //     jumpType: 'pay',
-                //     type: 100
-                // },
+                {
+                    class: 'azm-btn-red',
+                    name: '去支付',
+                    jumpType: 'pay',
+                    type: 100
+                },
                 {
                     class: '',
                     name: '去加菜',
@@ -52,13 +47,25 @@ Page({
         }
     },
     onLoad: function (options) {
-        var that = this;
-        that.loadData();
+        new app.ToastPannel();//初始自定义toast
+        let that = this;
+        try {
+            if (options) {
+                Object.assign(that.data.options, options);
+                console.warn(`初始化${that.data.text}`, options);
+            } else {
+                throw {message: '初始化options为空'};
+            }
+        } catch (e) {
+            console.warn(e, options);
+        }
+        that.loadCb();
     },
     onShow: function () {
         var that = this;
-        if (!that.data.isHide) return;
-        that.loadData();
+        if (that.data.isShow) {
+            that.onPullDownRefresh();
+        }
     },
     onReady: function () {
         // 页面渲染完成
@@ -68,7 +75,9 @@ Page({
     },
     onHide: function () {
         var that = this;
-        that.setData({isHide: true});
+        that.setData({
+            isShow: true
+        })
     },
     /**
      * 页面相关事件处理函数--监听用户下拉动作
@@ -84,99 +93,132 @@ Page({
      */
     onReachBottom: function () {
         var that = this;
-        if (!that.data.hasMoreData) {
-            that.data.pageNum++;
-            that.loadData();
-        }
-    },
-    loadData: function (cb) {
-        var that = this;
-        ApiService.getOrderList({
-            "openId": app.globalData.openId,
-            "pageNum": that.data.pageNum,
-            "pageSize": that.data.pageSize
-        }, function (rsp) {
-            if (rsp.value.length < that.data.pageSize) {
-                that.setData({hasMoreData: true})
-            } else {
-                that.setData({hasMoreData: false})
+        if (that.data.hasMoreData) {
+            if (that.data.orderList[that.data.orderList.length - 1].length >= that.data.pageSize) {
+                that.data.pageNum++;
             }
-            var orderList = rsp.value;
-            var consumerStatus;
-            orderList.forEach(function (val, key) {
-                val.amount = val.amount.toFixed(2);
-                that.data.shopInfoList[val.resId] = {
-                    orderType: val.consumerType,
-                    resId: val.resId
+            that.loadData((bol) => {
+                if (!bol) {
+                    that.data.pageNum--;
                 }
             });
-            // 循环获取订单列表中店铺信息
-            // let item = that.data.shopInfoList;
-            // for (let k in item) {
-            //     if (item[k].flag) {
-            //         getOrderType(item[k]);
-            //     } else {
-            //         ApiService.getResDetail({resId: item[k].resId}, (res) => {
-            //             that.data.shopInfoList[res.value.resId] = res.value;
-            //             that.data.shopInfoList[res.value.resId].flag = true;
-            //             getOrderType(item[k]);
-            //         })
-            //     }
-            // }
-            if (that.data.pageNum == 1) {
-                that.setData({orderList: orderList});
-            } else {
-                that.setData({orderList: that.data.orderList.concat(orderList)});
-            }
-            cb && cb();
-        }, cb);
-
-        /**
-         * 设置店铺就餐模式
-         * @param val
-         */
-        function getOrderType(val) {
-            if (val.orderType == 2) {
-                that.data.shopInfoList[val.resId].isOrderType = 1
-            } else {
-                that.data.shopInfoList[val.resId].isOrderType = app.utilPage.getOrderType(that.data.shopInfoList[val.resId].restaurantBusinessRules).isOrderType;
-            }
-            that.setData({
-                ['shopInfoList.' + val.resId]: that.data.shopInfoList[val.resId]
-            });
         }
+    }
+};
+const methods = {
+    loadCb: function () {
+        var that = this;
+        app.getLoginRequestPromise().then(
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    that.data.objId = rsp.value.objId;
+                    that.data.token = rsp.value.token;
+                    ApiService.token = rsp.value.token;
+                    that.loadData();
+                } else {
+                    console.warn('获取objId失败');
+                    util.failToast('用户登录失败');
+                }
+            },
+        );
+    },
+    loadData(cb) {
+        let that = this,
+            objId = that.data.objId,
+            flag = false;
+        ApiService.getOrderList(
+            {
+                objId,
+                "pageNum": that.data.pageNum,
+                "pageSize": that.data.pageSize
+            },
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    let orderList = rsp.value;
+                    if (that.data.pageNum == 1) {
+                        that.setData({[`orderList[0]`]: orderList});
+                    } else {
+                        that.setData({
+                            [`orderList[${that.data.pageNum - 1}]`]: orderList
+                        });
+                    }
+                    flag = true;
+                }
+            },
+            () => {
+                if (that.data.orderList.length < that.data.pageSize) {
+                    that.setData({hasMoreData: true})
+                } else {
+                    that.setData({hasMoreData: false})
+                }
+                cb && cb(flag)
+            }
+        );
     },
     jumpBtn(e) {
         var type = e.currentTarget.dataset.type;
         this[type](e);
     },
-    //去支付
+    /**
+     * 去支付
+     * @param e
+     */
     pay: function (e) {
         var value = e.currentTarget.dataset.value;
-        util.go('/pages/order/order-pay/order-pay', {
+        util.go('/pages/order/order-detail/order-detail', {
             data: {
                 resId: value.resId,
                 consumerId: value.consumerId
             }
         });
     },
-    //加菜
-    addDish: function (e) {
-        var value = e.currentTarget.dataset.value,
-            orderType = 0;
-        if (Number(value.consumerType) === 2) {
-            orderType = 1;
-        }
-        util.go('/pages/shop/order/order', {
-            data: {
-                resId: value.resId,
-                orderType,
-                consumerId: value.consumerId,
-                tableCode: value.tableCode,
-                tableName: value.Title,
-                fNumber: value.fNumber
-            }
-        });
+    /**
+     * 加菜
+     * @param e
+     */
+    addDish(e) {
+        let that = this,
+            value = e.currentTarget.dataset.value,
+            orderType = e.currentTarget.dataset.ordertype,
+            isOrderType = 0,
+            consumerId = value.consumerId;
+
+        ApiService.getResDetail(
+            {resId: value.resId, config: {isLoading: true}},
+            (rsp) => {
+                if (2000 == rsp.code && rsp.value && rsp.value.resId === value.resId) {
+                    let resDetailDto = rsp.value;
+                    if (orderType == 1) {
+                        isOrderType = 1;
+                    } else {
+                        isOrderType = that.utilPage_getOrderType(resDetailDto.restaurantBusinessRules).isOrderType;
+                    }
+                    if (value.consumerStatus == 11 && 3 == isOrderType) {
+                        util.go('/pages/shop/home_scanCode/home_scanCode', {
+                            data: {
+                                resId: value.resId,
+                                orderType: isOrderType
+                            }
+                        });
+                    } else {
+                        if (isOrderType == orderType) {
+                            util.go('/pages/shop/order/order', {
+                                data: {
+                                    resId: value.resId,
+                                    orderType,
+                                    consumerId,
+                                    tableCode: value.tableCode,
+                                    tableName: value.Title,
+                                    fNumber: value.fNumber
+                                }
+                            });
+                        } else {
+                            that.showToast('当前就餐模式已变更，无法加菜。');
+                        }
+                    }
+                }
+            },
+        );
     },
     /**
      * 跳转订单详情
@@ -193,4 +235,7 @@ Page({
             }
         })
     }
-});
+};
+const events = {};
+Object.assign(appPage, methods, events);
+Page(Object.assign(appPage, app.utilPage));

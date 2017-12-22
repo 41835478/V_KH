@@ -1,7 +1,5 @@
-page {
-  background: #f1f3f4;
-}
 page .moduleMeal {
+  position: fixed;
   background-color: #57565c;
   margin: auto;
   top: 0;
@@ -34,27 +32,32 @@ page .moduleMeal .box .h2 {
   line-height: 160rpx;
   text-align: center;
 }
-page view.new-class view {
-  color: #000;
+page view.new-class .weui-cells::after,
+page view.new-class .weui-cells::before {
+  border: none;
 }
-page view.new-class .azm-section {
+page view.new-class .weui-cell::before {
+  border-top-color: #f1f3f4;
+}
+page view.new-class view.azm-section {
   margin-top: 20rpx;
   background-color: #fff;
 }
-page view.new-class .azm-section view {
+page view.new-class view.azm-section view {
   box-sizing: border-box;
 }
 page view.new-class .azm-progressBar {
-  height: 225rpx;
   padding-left: 44rpx;
   padding-right: 44rpx;
+  padding-bottom: 20rpx;
 }
 page view.new-class .azm-progressBar .azm-top {
   height: 100rpx;
   line-height: 100rpx;
 }
 page view.new-class .azm-progressBar .azm-top .azm-starts {
-  font-size: 30rpx;
+  color: rgba(45, 44, 52, 0.8);
+  font-size: 24rpx;
 }
 page view.new-class .azm-progressBar .azm-top .azm-icon {
   font-size: 35rpx;
@@ -110,13 +113,66 @@ page view.new-class .azm-progressBar > .row .active .azm-round {
 page view.new-class .azm-progressBar > .row .active .azm-line {
   border-bottom: 8rpx solid #f74b7b;
 }
+page view.new-class .azm-progressBar .azm-progressBar-center {
+  height: 100rpx;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .p {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .p:nth-child(1) {
+  margin-top: 0;
+  margin-bottom: 40rpx;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .p .azm-icon {
+  font-size: 24rpx;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .p .azm-icon-time {
+  color: #008de6;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .azm-footer-btn {
+  text-align: center;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .azm-footer-btn button {
+  margin: 0 20rpx;
+}
+page view.new-class .azm-progressBar .azm-progressBar-payment .azm-text {
+  color: #808080;
+}
+page view.new-class .azm-topStatus .azm-topStatus-start .weui-cell__bd,
+page view.new-class .azm-topStatus .azm-topStatus-start .azm-icon {
+  font-size: 28rpx;
+  line-height: 50rpx;
+}
+page view.new-class .azm-topStatus .azm-topStatus-start .azm-icon {
+  font-weight: 400;
+}
+page view.new-class .azm-topStatus .azm-topStatus-time {
+  padding-top: 0;
+}
+page view.new-class .azm-topStatus .azm-topStatus-time .weui-cell__bd {
+  font-size: 26rpx;
+}
+page view.new-class .azm-topStatus .azm-topStatus-text {
+  padding-top: 0;
+}
+page view.new-class .azm-topStatus .azm-topStatus-text .weui-cell__bd {
+  font-size: 38rpx;
+}
+page view.new-class .azm-topStatus .azm-topStatus-text-2 {
+  padding-top: 0;
+}
+page view.new-class .azm-topStatus .azm-topStatus-text-2 .weui-cell__bd {
+  color: #808080;
+  font-size: 24rpx;
+}
 page view.new-class .azm-order .azm-title {
   padding-left: 44rpx;
   padding-right: 44rpx;
   text-align: left;
   padding-top: 20rpx;
   padding-bottom: 14rpx;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 page view.new-class .azm-order .azm-title .flexBox-item {
   line-height: 62rpx;
@@ -144,7 +200,7 @@ page view.new-class .azm-order .azm-orderList {
 }
 page view.new-class .azm-order .azm-orderList .azm-orderList-item {
   margin-bottom: 30rpx;
-  border: 2rpx solid #e2e2e2;
+  border: 1rpx solid #e2e2e2;
   border-radius: 6rpx;
 }
 page view.new-class .azm-order .azm-orderList .azm-orderList-item .azm-orderList-title {
@@ -183,7 +239,7 @@ page view.new-class .azm-order .azm-orderList .azm-orderList-item .azm-orderList
 }
 page view.new-class .azm-order .azm-other {
   padding-bottom: 4rpx;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 page view.new-class .azm-order .azm-other text {
   font-size: 28rpx;
@@ -200,7 +256,7 @@ page view.new-class .azm-order .azm-other .azm-center {
 }
 page view.new-class .azm-order .azm-order-price {
   padding: 4rpx 0;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 page view.new-class .azm-order .azm-order-price text {
   color: #f74b7b;
@@ -220,41 +276,144 @@ page view.new-class .azm-order .azm-order-footer {
 page view.new-class .azm-order .azm-order-footer text {
   font-size: 30rpx;
 }
-page view.new-class .azm-orderInfo .azm-title {
-  padding: 0 44rpx;
-  height: 95rpx;
-  line-height: 95rpx;
-  border-bottom: 2rpx solid #e2e2e2;
+page view.new-class .azm-height-10px {
+  height: 20rpx;
+  width: 100%;
 }
-page view.new-class .azm-orderInfo .azm-title text {
-  font-size: 30rpx;
+page view.new-class .azm-orderInfo-item,
+page view.new-class .azm-paymentInfo-item {
+  color: #808080;
+  padding: 6rpx 30rpx;
 }
-page view.new-class .azm-orderInfo .box {
-  padding: 10rpx 0;
+page view.new-class .azm-orderInfo-item:nth-child(1),
+page view.new-class .azm-paymentInfo-item:nth-child(1) {
+  padding-top: 20rpx;
+}
+page view.new-class .azm-orderInfo-item:nth-last-child(1),
+page view.new-class .azm-paymentInfo-item:nth-last-child(1) {
+  padding-bottom: 20rpx;
+}
+page view.new-class .azm-cell .azm-cell__start {
+  width: 130rpx;
+}
+page view.new-class .azm-shopList .azm-title .flexBox-item {
+  font-size: 28rpx;
+  height: 54rpx;
+  line-height: 54rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-list {
+  overflow: hidden;
+  height: 0;
+}
+page view.new-class .azm-shopList .animated_t {
+  transition: all 3s ease-in-out;
+}
+page view.new-class .azm-shopList .azm-resLogo {
+  width: 80rpx;
+}
+page view.new-class .azm-shopList .azm-resLogo .azm-resLogo-img {
+  width: 54rpx;
+  height: 54rpx;
+  overflow: hidden;
+  border-radius: 6rpx;
+}
+page view.new-class .azm-shopList .azm-cell > view,
+page view.new-class .azm-shopList .azm-cell .flexBox-item {
+  font-size: 26rpx;
+}
+page view.new-class .azm-shopList .azm-cell .weui-cell__ft {
+  min-width: 120rpx;
+}
+page view.new-class .azm-shopList .azm-cell.azm-cell-placeholder-color {
+  color: #808080;
+}
+page view.new-class .azm-shopList .azm-shopList-box {
+  padding-top: 16rpx;
+  padding-bottom: 16rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell {
+  padding: 10rpx 30rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell::before {
+  border: none;
+}
+page view.new-class .azm-shopList .azm-total {
+  padding-bottom: 6rpx;
+}
+page view.new-class .azm-shopList .azm-offersTotal {
+  padding-top: 6rpx;
+  padding-bottom: 0;
+}
+page view.new-class .azm-shopList .azm-handle {
+  margin-top: 14rpx;
+}
+page view.new-class .azm-shopList .azm-member-btn > view {
+  height: 56rpx;
+  line-height: 56rpx;
+  overflow: hidden;
+}
+page view.new-class .azm-shopList .azm-member-btn button {
+  line-height: 52rpx;
+  font-size: 22rpx;
+}
+page view.new-class .azm-shopList .azm-note .flexBox-item {
+  height: 56rpx;
+  line-height: 56rpx;
+  overflow: hidden;
+}
+page view.new-class .azm-shopList .azm-note .azm-note__bd {
+  width: 80rpx;
+}
+page view.new-class .azm-shopList .azm-note input {
+  font-size: 24rpx !important;
+  height: 56rpx !important;
+  min-height: 56rpx !important;
+}
+page view.new-class .azm-shopList .azm-offersTotal-item {
+  padding: 6rpx 80rpx;
+  color: #808080;
+}
+page view.new-class .azm-shopList .azm-offersTotal-item .flexBox-item {
+  font-size: 22rpx;
+}
+page view.new-class .azm-payment-method .flexBox-item {
+  height: 48rpx;
+  line-height: 48rpx;
+  overflow: hidden;
   position: relative;
 }
-page view.new-class .azm-orderInfo .box .azm-li text {
+page view.new-class .azm-payment-method .flexBox-item .azm-icon {
+  font-size: 40rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+page view.new-class .azm-payment-method .azm-images-box {
+  width: 80rpx;
+}
+page view.new-class .azm-payment-method .azm-content {
   font-size: 28rpx;
 }
-page view.new-class .azm-orderInfo .box .azm-li .flexBox-item {
-  min-height: 52rpx;
-  line-height: 52rpx;
+page view.new-class .azm-payment-method .azm-member {
+  padding-bottom: 4rpx;
 }
-page view.new-class .azm-orderInfo .box .azm-li .text-gray {
-  color: #aab1cb;
+page view.new-class .azm-payment-method .azm-member .azm-icon {
+  color: #e10b29;
 }
-page view.new-class .azm-orderInfo .box .azm-open-module {
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0;
-  height: 160rpx;
-  line-height: 160rpx;
-  width: 100%;
-  text-align: right;
+page view.new-class .azm-payment-method .azm-member-content {
+  color: #808080;
+  padding-top: 4rpx;
+  font-size: 24rpx;
 }
-page view.new-class .azm-orderInfo .box .azm-open-module .azm-icon {
-  font-size: 100rpx;
-  color: #aab1cb;
+page view.new-class .azm-payment-method .azm-member-content .azm-content {
+  font-size: 24rpx;
+}
+page view.new-class .azm-payment-method .azm-weChat {
+  padding: 39rpx 30rpx;
+}
+page view.new-class .azm-payment-method .azm-weChat .azm-icon {
+  color: #0bb20c;
 }
 page view.new-class .azm-footer {
   padding: 40rpx 30rpx;
@@ -262,4 +421,29 @@ page view.new-class .azm-footer {
 page view.new-class .azm-footer button {
   margin: 0 40rpx;
   border-radius: 74rpx;
+}
+page view.new-class .azm-footer-b {
+  height: 100rpx;
+  line-height: 100rpx;
+  background-color: #fff;
+  bottom: 0;
+  position: fixed;
+  overflow: hidden;
+}
+page view.new-class .azm-footer-b .flexBox-item {
+  font-size: 26rpx;
+}
+page view.new-class .azm-footer-b .flexBox-item:nth-child(1) {
+  padding: 0 30rpx;
+}
+page view.new-class .azm-footer-b .azm-price {
+  color: #f74b7b;
+  font-weight: bold;
+}
+page view.new-class .azm-footer-b .azm-discount {
+  font-size: 22rpx;
+}
+page view.new-class .azm-footer-b .azm-btn-submit {
+  border-radius: 0;
+  line-height: 96rpx;
 }

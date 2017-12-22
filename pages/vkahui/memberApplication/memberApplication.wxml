@@ -1,0 +1,150 @@
+<view class="new-class">
+    <view class="weui-cells weui-cells_after-title">
+        <view class="azm-title azm-cell">
+            <text>店铺信息</text>
+        </view>
+        <view class="azm-cell">
+            <view class="azm-image">
+                <block wx:if="{{resLogo}}">
+                    <image class="triangle" src="{{imageServer+resLogo}}" lazy-load="true"/>
+                </block>
+                <block wx:else>
+                    <text class="iconfont icon-jiazaishibai azm-icon"></text>
+                </block>
+            </view>
+        </view>
+        <view class="azm-resName azm-cell">
+            <text>{{resName}}</text>
+        </view>
+    </view>
+    <!--资料填写-->
+    <block wx:if="{{!isMemberCardDto && isBindMobile}}">
+        <form bindsubmit="formInfoSubmit" report-submit>
+            <view class="weui-cells__title">
+                <text>资料填写</text>
+            </view>
+            <view class="weui-cells weui-cells_after-title">
+                <view class="weui-cell weui-cell_access">
+                    <view class="weui-cell__bd">
+                        <text>姓名</text>
+                    </view>
+                    <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                        <input name="name" class="text-right" placeholder-style="azm-popup-picker-placeholder"
+                               placeholder="请输入姓名"
+                               value="{{memberCardDto.name}}" focus/>
+                    </view>
+                    <view class="weui-cell__ft weui-cell__ft_in-access">
+                        <!--<block wx:if="{{!memberCardDto.name}}">-->
+                        <!--<text class="azm-popup-picker-placeholder">请输入姓名</text>-->
+                        <!--</block>-->
+                    </view>
+                </view>
+                <picker name="birthday" class="azm-cell-border_top" mode="date" value="{{memberCardDto.birthday}}"
+                        bindchange="bindDateChange" end="{{currentDate}}">
+                    <view class="weui-cell weui-cell_access picker">
+                        <view class="weui-cell__bd">
+                            <text>生日</text>
+                        </view>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color">
+                            <block></block>
+                            <text>{{memberCardDto.birthday}}</text>
+                        </view>
+                        <view class="weui-cell__ft weui-cell__ft_in-access">
+                            <block wx:if="{{!memberCardDto.birthday}}">
+                                <text class="azm-popup-picker-placeholder">请选择生日</text>
+                            </block>
+                        </view>
+                    </view>
+                </picker>
+                <picker name="sex" class="azm-cell-border_top" mode="selector" value="{{memberCardDto.sex}}"
+                        range="{{arraySex}}"
+                        range-key="name"
+                        bindchange="bindSexChange">
+                    <view class="weui-cell weui-cell_access picker">
+                        <view class="weui-cell__bd">
+                            <text>性别</text>
+                        </view>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color">
+                            <block wx:if="{{memberCardDto.sex == 1 || memberCardDto.sex == 2}}">
+                                <text>{{arraySex[memberCardDto.sex-1].name}}</text>
+                            </block>
+                        </view>
+                        <view class="weui-cell__ft weui-cell__ft_in-access">
+                            <block wx:if="{{memberCardDto.sex != 1 && memberCardDto.sex != 2}}">
+                                <text class="azm-popup-picker-placeholder">无</text>
+                            </block>
+                        </view>
+                    </view>
+                </picker>
+                <picker name="address" class="azm-cell-border_top" mode="multiSelector" bindchange="bindRegionChange"
+                        value="{{addAddress.value}}"
+                        catchtap="bindRegionTap"
+                        bindcolumnchange="bindRegionColumnChange" range="{{addAddress.range}}" range-key="name">
+                    <view class="weui-cell weui-cell_access">
+                        <view class="weui-cell__bd">
+                            <text>地区</text>
+                        </view>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color">
+                            <block wx:if="{{addAddress.region[0] && addAddress.region[1]}}">
+                                <text space="true" decode="true">{{addAddress.region[0].name}}&nbsp;</text>
+                                <text>{{addAddress.region[1].name}}</text>
+                            </block>
+                        </view>
+                        <view class="weui-cell__ft weui-cell__ft_in-access">
+                            <block wx:if="{{!addAddress.region[0] || !addAddress.region[0]}}">
+                                <text class="azm-popup-picker-placeholder">请选择地区</text>
+                            </block>
+                        </view>
+                    </view>
+                </picker>
+            </view>
+            <view class="weui-cells__title"></view>
+            <view class="weui-footer">
+                <view class="box azm-footer">
+                    <button type="primary" formType="submit">完成</button>
+                </view>
+            </view>
+        </form>
+    </block>
+    <block wx:elif="{{!isBindMobile}}">
+        <view class="weui-cells__title"></view>
+        <view class="weui-cells">
+            <view class="weui-cell">
+                <view class="box width-100">
+                    <view class="txt-box azm-txt">
+                        <text>您暂未绑定手机号，按照商户成为会员请先绑定手机号。</text>
+                    </view>
+                    <view class="azm-button">
+                        <button type="primary" size="mini" catchtap="bindPhoneNumber">绑定手机号</button>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </block>
+    <block wx:else>
+        <view class="weui-cells__title"></view>
+        <view class="weui-cells">
+            <view class="weui-cell">
+                <view class="box width-100">
+                    <view class="txt-box azm-txt">
+                        <text>恭喜您已绑定该店会员卡。</text>
+                    </view>
+                    <view class="azm-button">
+                        <button size="mini" catchtap="bindGoBack">返回</button>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </block>
+</view>
+
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
+
+
+<!--编辑昵称弹窗-->
+<import src="../../../template/module/index.wxml"/>
+<template is="module-popup" data="{{...modulePhoneData,class:modulePhone,isMask,animated:true}}"></template>
+
+

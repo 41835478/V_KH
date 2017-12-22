@@ -1,86 +1,176 @@
-var appUtil = require('../../../utils/appUtil.js');
-var util = require('../../../utils/util.js');
-var app = getApp();
-Page({
-    data: {},
-    onLoad: function (options) {
-        var that = this;
-        that.setData({
-            isWaimai: options.isWaimai
+let app = getApp(),
+    utilCommon = require('../../../utils/utilCommon'),
+    util = require('../../../utils/util.js'),
+    ApiService = require('../../../utils/ApiService');
+const appPage = {
+    data: {
+        text: 'page address',
+        isShow: false,
+        options: {},
+    },
+    onLoad(options) {
+        new app.ToastPannel();//初始自定义toast
+        let that = this;
+        try {
+            if (options) {
+                Object.assign(that.data.options, options);
+                console.warn(`初始化${that.data.text}`, options);
+            } else {
+                throw {message: '初始化options为空'};
+            }
+        } catch (e) {
+            console.warn(e, options);
+        }
+        that.loadCb();
+    },
+    /**
+     * 页面渲染完成
+     */
+    onReady() {
+        this.setData({
+            isShow: true
         });
     },
-    onShow() {
-        this.loadAddressList();
+    /**
+     * 页面显示
+     * @param options 为页面跳转所带来的参数
+     */
+    onShow(options) {
+        console.warn(`${this.data.text}页面显示`);
+        if (this.data.isShow) {
+            this.loadData();
+        }
     },
-    loadAddressList: function () {//查询会员收货地址
-        var that = this;
-        var addressData = [];
-        var url = app.globalData.serverAddress + 'microcode/loadAddressList';
-        var data = {openId: app.globalData.openId};
-        appUtil.httpRequest(url, data, function (rsp) {
-            console.log(rsp);
-            if (rsp.returnStatus) {
-                rsp.value.forEach(function (val, key) {
-                    addressData.push(val);
-                });
-                that.setData({
-                    addressData: addressData
-                });
-                addressData.forEach(function (val, key) {
-                    if (val.defaultAddress) {
-                        that.setData({
-                            defaultAddress: val
-                        });
-                    }
-                });
-                if (addressData.length > 0) {
-                    if (!that.data.defaultAddress.defaultAddress) {//如果没有默认地址，就默认第一个为默认地址
-                        that.data.defaultAddress.defaultAddress = true;
-                        that.setData({
-                            defaultAddress: addressData[0]
-                        });
+    onHide() {
+        // 页面隐藏
+    },
+    onUnload() {
+        // 页面关闭
+    }
+};
+const methods = {
+    loadCb() {
+        let that = this,
+            options = that.data.options;
+        that.setData({
+            isWaimai: options.isWaimai || 0
+        });
+        app.getLoginRequestPromise().then(
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    that.data.objId = rsp.value.objId;
+                    that.data.token = rsp.value.token;
+                    ApiService.token = rsp.value.token;
+                    that.loadData();
+                } else {
+                    console.warn('获取objId失败');
+                    util.failToast('用户登录失败');
+                }
+            },
+            (err) => {
+
+            }
+        );
+    },
+    loadData() {//查询会员收货地址
+        let that = this,
+            objId = that.data.objId;
+        ApiService.loadAddressList({userId: objId},
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    that.setData({
+                        addressData: rsp.value
+                    });
+                }
+            },
+            (rsp) => {
+                if (!rsp.status) {
+                    // util.failToast(rsp.message);
+                }
+            }
+        );
+    },
+};
+const events = {
+    /**
+     * 删除地址
+     */
+    deleteAddress(e) {
+        let that = this,
+            addressId = e.currentTarget.dataset.id,
+            data = {userId: that.data.objId, id: addressId};
+        if (addressId && addressId.length > 0) {
+            wx.showModal({
+                content: '是否删除当前地址',
+                confirmText: '是',
+                cancelText: '否',
+                cancelColor: '#f74b7b',
+                success: function (res) {
+                    if (res.confirm) {
+                        ApiService.deleteConsigneeAddress(data,
+                            (rsp) => {
+
+                            },
+                            (rsp) => {
+                                if (rsp.code && 2000 == rsp.code) {
+                                    util.showToast({
+                                        title: '删除地址成功',
+                                        success() {
+                                            that.loadData();
+                                        }
+                                    });
+                                } else {
+                                    that.loadData();
+                                }
+                            }
+                        )
+                    } else if (res.cancel) {
+
                     }
                 }
-            } else {
-                wx.showToast({
-                    title: rsp.message,
-                    duration: 2000
-                });
-            }
-        });
+            });
+        }
     },
-    changAddress: function (e) {
-        var that = this;
-        var addressId = e.currentTarget.dataset.id;
-        that.data.addressData.forEach(function (val, key) {
-            if (val.id == addressId) {
-                var url = app.globalData.serverAddress + 'microcode/setDefaultAddress';
-                var data = {openId: app.globalData.openId, addressId: addressId};
-                appUtil.httpRequest(url, data, function (rsp) {
-                    if (rsp.returnStatus) {
-                        // console.log(rsp);
-                        val.defaultAddress = true;
-                        // console.log(val);
-                        that.setData({
-                            defaultAddress: val,
-                        });
-                        that.loadAddressList();
-                    } else {
-                        wx.showToast({
-                            title: rsp.message,
-                            duration: 2000
-                        });
+    /**
+     * 设置默认地址
+     * @param e
+     */
+    changAddress(e) {
+        let that = this,
+            addressId = e.currentTarget.dataset.id,
+            value = e.currentTarget.dataset.value;
+        if (value && !value.defaultAddress) {
+            let data = {userId: that.data.objId, id: addressId};
+            ApiService.setDefaultAddress(data,
+                function (rsp) {
+                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                        if (1 == that.data.isWaimai) {
+                            util.go(-1);
+                        }
                     }
-                });
-            }
-        });
+                },
+                (rsp) => {
+                    if (!rsp.status) {
+                        util.failToast(rsp.message)
+                    }
+                    that.loadData();
+                }
+            );
+        }
     },
-    modify: function (e) {
-        var that = this;
-        var address = e.currentTarget.dataset.modify;
-        util.go('/pages/vkahui/address-edit/address-edit', {
-            type: 'blank',
-            data: {
+    /**
+     * 编辑地址
+     * @param e
+     */
+    modify(e) {
+        let that = this,
+            address = e.currentTarget.dataset.modify,
+            data = {
+                isWaimai: that.data.isWaimai
+            },
+            type = '';
+        if (utilCommon.isEmptyValue(address)) {
+            data = Object.assign(data, {
                 address: address.address,
                 name: address.name,
                 mobile: address.mobile,
@@ -88,14 +178,17 @@ Page({
                 sex: address.sex,
                 longitude: address.longitude,
                 latitude: address.latitude,
-                gaiAddress: 1,
-                isWaimai: that.data.isWaimai
-            }
+                gaiAddress: 1
+            })
+        }
+        if (1 == data.isWaimai) {
+            type = 'blank';
+        }
+        util.go('/pages/vkahui/address-edit/address-edit', {
+            type,
+            data
         });
-    },
-    toWaimai: function (e) {
-        var that = this;
-        that.changAddress(e);
-        util.go(-1);
     }
-})
+};
+Object.assign(appPage, methods, events);
+Page(Object.assign(appPage));

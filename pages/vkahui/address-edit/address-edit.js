@@ -1,11 +1,13 @@
-var appUtil = require('../../../utils/appUtil.js');
-var util = require('../../../utils/util.js');
-var utilCommon = require('../../../utils/utilCommon');
-var authorize = require('../../../utils/authorize');
-var ApiService = require('../../../utils/ApiService');
-var app = getApp();
-Page({
+const app = getApp(),
+    util = require('../../../utils/util.js'),
+    utilCommon = require('../../../utils/utilCommon'),
+    authorize = require('../../../utils/authorize'),
+    ApiService = require('../../../utils/ApiService');
+const appPage = {
     data: {
+        text: 'page address-edit',
+        isShow: false,
+        options: {},
         focus: 0,
         nikeName: '',
         mobile: '',
@@ -17,12 +19,50 @@ Page({
             latitude: ''
         },
         isAddress: 0,
-        isWaimai: false,
+        isWaimai: 0,
         gaiAddress: false,//新增地址
     },
-    onLoad: function (options) {
+    onLoad(options) {
         new app.ToastPannel();//初始自定义toast
-        var that = this;
+        let that = this;
+        try {
+            if (options) {
+                Object.assign(that.data.options, options);
+                console.warn(`初始化${that.data.text}`, options);
+            } else {
+                throw {message: '初始化options为空'};
+            }
+        } catch (e) {
+            console.warn(e, options);
+        }
+        that.loadCb();
+    },
+    /**
+     * 页面渲染完成
+     */
+    onReady() {
+        this.setData({
+            isShow: true
+        });
+    },
+    /**
+     * 页面显示
+     * @param options 为页面跳转所带来的参数
+     */
+    onShow(options) {
+        console.warn(`${this.data.text}页面显示`);
+    },
+    onHide() {
+        // 页面隐藏
+    },
+    onUnload() {
+        // 页面关闭
+    }
+};
+const methods = {
+    loadCb() {
+        let that = this,
+            options = that.data.options;
         try {
             let location = {}, address = [], nickName;
             if (options && utilCommon.isFalse(options.address)) {
@@ -45,23 +85,39 @@ Page({
                 mobile: utilCommon.isFalse(options.mobile),
                 id: utilCommon.isFalse(options.id),
                 sex: utilCommon.isFalse(options.sex),
-                gaiAddress: utilCommon.isFalse(options.gaiAddress),
-                isWaimai: utilCommon.isFalse(options.isWaimai)
+                gaiAddress: options.gaiAddress || 0,
+                isWaimai: options.isWaimai || 0
             });
-            if (that.data.gaiAddress) {
+            if (1 == that.data.gaiAddress) {
                 that.setData({
                     nikeName: that.data.name,
                     sex: that.data.sex,
                     mobile: that.data.mobile,
                     address: that.data.address
                 });
-                if (that.data.sex == 1) {
-                    that.setData({check: true});
-                }
             }
         } catch (e) {
             console.log('编辑配送地址初始化失败,pages/vkahui/address-edit/address-edit');
         }
+        app.getLoginRequestPromise().then(
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    that.data.objId = rsp.value.objId;
+                    that.data.token = rsp.value.token;
+                    ApiService.token = rsp.value.token;
+                    that.loadData();
+                } else {
+                    console.warn('获取objId失败');
+                    util.failToast('用户登录失败');
+                }
+            },
+            (err) => {
+
+            }
+        );
+    },
+    loadData() {
+
     },
     formSubmit(e) {
         var value = e.detail.value,
@@ -80,22 +136,24 @@ Page({
         this.submit();
     },
     chooseLocation() {
-        let _this = this;
+        let that = this;
         authorize.userLocation(true).then(
             function () {
                 util.chooseLocation().then(function (res) {
-                    _this.setData({
+                    that.setData({
                         location: res,
                         focus: 2
                     });
                 })
-            }, () => {
+            },
+            () => {
                 wx.showModal({
                     content: '请打开微信定位权限，避免无法获取用户定位导致配送问题',
                     showCancel: false,
                     confirmText: '知道了'
                 });
-            });
+            }
+        );
     },
     bindChange(e) {
         let value = e.detail.value,
@@ -110,82 +168,101 @@ Page({
         });
     },
     submit() {
-        let _this = this,
-            location = _this.data.location;
+        let that = this,
+            location = that.data.location;
         console.log(this.data, 'submit');
         let locationAddress = '';
         if (location.address && location.name.length > 0 && location.latitude && location.longitude) {
             locationAddress = location.address + ',' + (location.name || '')
         } else {
-            _this.showToast('获取位置失败，为了你的餐品能及时送达请允许定位权限申请');
+            that.showToast('获取位置失败，为了你的餐品能及时送达请允许定位权限申请');
             return;
         }
         let address = {
-            sex: _this.data.sex,
-            mobile: _this.data.mobile,
+            sex: that.data.sex,
+            mobile: that.data.mobile,
             address: locationAddress,
             latitude: location.latitude,
             longitude: location.longitude
         };
-        if (!_this.data.nikeName || _this.data.nikeName.length === 0) {
-            _this.showToast('姓名不能为空');
+        if (!that.data.nikeName || that.data.nikeName.length === 0) {
+            that.showToast('姓名不能为空');
             return;
         }
-        if (!utilCommon.isNumberOfNaN(_this.data.sex)) {
-            _this.showToast('请选择性别');
+        if (!utilCommon.isNumberOfNaN(that.data.sex)) {
+            that.showToast('请选择性别');
             return;
         }
-        if (!_this.data.mobile || !(/^1[34578]\d{9}$/.test(_this.data.mobile))) {
-            _this.showToast('输入的手机号码格式有误，请重新输入');
+        if (!that.data.mobile || !(/^1[34578]\d{9}$/.test(that.data.mobile))) {
+            that.showToast('输入的手机号码格式有误，请重新输入');
             return;
         }
-        if (_this.data.gaiAddress) {//更新地址
-            address.id = _this.data.id;
-            address.name = _this.data.nikeName;
+        if (that.data.gaiAddress) {//更新地址
+            address.id = that.data.id;
+            address.name = that.data.nikeName;
             ApiService.updateConsigneeAddress(address,
-                () => {
-                    util.showToast({
-                        title: "更新地址成功",
-                        success: function () {
-                            if (_this.data.isWaimai) {
-                                let addressId = _this.data.id;
-                                setDefaultAddress({openId: app.globalData.openId, addressId});
-                            } else {
-                                goAddress();
+                (rsp) => {
+                    if (2000 == rsp.code) {
+                        util.showToast({
+                            title: "更新地址成功",
+                            success: function () {
+                                let addressId = that.data.id;
+                                if (1 == that.data.isWaimai) {
+                                    setDefaultAddress({userId: that.data.objId, id: addressId});
+                                } else {
+                                    util.go(-1);
+                                }
                             }
-                        }
-                    })
-                })
-        }
-        else {//新增地址
-            address.openId = app.globalData.openId;
-            address.nikeName = _this.data.nikeName;
+                        })
+                    }
+                },
+                (rsp) => {
+                    if (!rsp.status) {
+                        util.failToast('更新地址失败')
+                    }
+                }
+            )
+        } else {//新增地址
+            address.userId = that.data.objId;
+            address.name = that.data.nikeName;
             ApiService.addAddress(address,
                 (rsp) => {
-                    util.showToast({
-                        title: "添加地址成功",
-                        success: function () {
-                            if (_this.data.isWaimai) {
+                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                        util.showToast({
+                            title: "添加地址成功",
+                            success: function () {
                                 let addressId = rsp.value;
-                                setDefaultAddress({openId: app.globalData.openId, addressId});
-                            } else {
-                                goAddress();
+                                if (1 == that.data.isWaimai) {
+                                    setDefaultAddress({userId: that.data.objId, id: addressId});
+                                } else {
+                                    util.go(-1);
+                                }
                             }
-                        }
-                    });
-                })
+                        });
+                    }
+                },
+                (rsp) => {
+                    if (!rsp.status) {
+                        util.failToast('添加地址失败')
+                    }
+                }
+            )
         }
 
         let setDefaultAddress = (data) => {
-            ApiService.setDefaultAddress(data, function () {
-                util.go(-1);
-            });
-        };
+            ApiService.setDefaultAddress(data,
+                () => {
 
-        let goAddress = () => {
-            util.go('/pages/vkahui/address/address', {
-                type: 'blank'
-            });
+                },
+                () => {
+                    util.go(-1);
+                }
+            );
         };
     }
-});
+};
+
+const events = {};
+
+Object.assign(appPage, methods, events);
+Page(Object.assign(appPage));

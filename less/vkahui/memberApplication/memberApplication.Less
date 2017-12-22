@@ -1,0 +1,61 @@
+@import "../../index";
+
+page {
+  background: #f8f8f8;
+  view.new-class {
+    view {
+      color: #0d0c0c;
+    }
+    .azm-title {
+      .px2rpx(height, 35);
+      .px2rpx(line-height, 40);
+      .px2rpx(font-size, 13);
+      .px2rpx(font-weight, 500);
+    }
+
+    .azm-image {
+      .px2rpx(width, 70);
+      .px2rpx(height, 70);
+      border-radius: 100%;
+      overflow: hidden;
+      box-shadow: 0 0 5*2rpx #020203;
+      margin: 0 auto;
+    }
+
+    .azm-resName {
+      text-align: center;
+      .px2rpx(margin-top, 10);
+      .px2rpx(padding-bottom, 30);
+      .px2rpx(font-size, 17);
+      font-weight: bold;
+    }
+    .azm-binMobile {
+      transform: translateX(100%);
+    }
+    .azm-binMobile-out {
+      transform: translateX(-100%);
+    }
+    .azm-txt {
+      text-align: center;
+      width: 200*2rpx;
+      margin: 0 auto;
+    }
+    .weui-cell {
+      text, input {
+        .px2rpx(font-size, 13);
+      }
+    }
+    .azm-memberName {
+      input {
+      }
+    }
+    .azm-footer {
+      .px2rpx(padding-top, 20);
+    }
+    .azm-button {
+      text-align: center;
+      .px2rpx(margin-top, 40);
+      .px2rpx(margin-bottom, 10);
+    }
+  }
+}

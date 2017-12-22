@@ -2,6 +2,22 @@
 
 const util = require('./util'),
     utilCommon = require('./utilCommon');
+let showToast = (message, cb) => {
+    let page = getCurrentPages();
+    if (page.showToast) {
+        page.showToast(message);
+    } else {
+        util.showToast(message);
+    }
+};
+let failToast = (message, cb) => {
+    let page = getCurrentPages();
+    if (page.showToast) {
+        page.showToast(message);
+    } else {
+        util.failToast(message);
+    }
+};
 
 class HttpRequest {
     constructor() {
@@ -9,9 +25,7 @@ class HttpRequest {
     }
 
     request(params, resolve) {
-        let page = getCurrentPages(),
-            retryNum = 0,
-            data = {},
+        let retryNum = 0,
             url = params.url,
             isLoading = false,
             promise = null,
@@ -82,21 +96,9 @@ class HttpRequest {
             });
         }
 
-        let showToast = (message, cb) => {
-            if (page.showToast) {
-                page.showToast(message);
-            } else {
-                util.showToast(message);
-            }
-        };
         if (isLoading) {
-            wx.showLoading({
-                title: '加载中',
-                mask: true,
-                success() {
-                    setRequest();
-                }
-            });
+            util.showLoading('加载中');
+            setRequest();
         } else {
             setRequest();
         }
@@ -112,33 +114,42 @@ class HttpRequest {
                 method: params.method || 'GET',
                 success(res) {
                     let returnStatus = res.data.returnStatus;
-                    if (isReturnStatus) {
-                        returnStatus = true;
-                    }
-                    if (res.statusCode === 200 && returnStatus) {
+                    if (res.statusCode === 200) {
                         flag = true;
                     }
                 },
-                fail(res) {
-
-                },
                 complete(res) {
                     wx.hideNavigationBarLoading();
-                    wx.hideToast();
+                    if (isLoading) {
+                        wx.hideLoading();
+                    }
                     console.log('__________获取数据______________', url, res);
                     if (!res.statusCode || res.statusCode !== 200) {
                         failCallback(res);
                     } else {
-                        if (!flag && !isReturnStatus) {
-                            showToast(res.data.message)
+                        let code = res.data.code;
+                        try {
+                            if (5001 == code) {
+                                util.failToast('获取参数错误');
+                                res.data.status = true;
+                            } else if (4000 == code) {
+                                util.failToast('网络连接失败');
+                                res.data.status = true;
+                            } else if (flag && (/^300/i.test(code) || /^200/i.test(code))) {
+                                if (/^300/i.test(code) && !isReturnStatus) {
+                                    util.failToast(res.data.message);
+                                }
+                                res.data.status = true;
+                                resolve && resolve(res.data);
+                            } else {
+                                res.data.status = false;
+                            }
+                        } catch (e) {
+                            console.warn(res.data.message);
                         }
-                        if (flag) {
-                            resolve && resolve(res.data);
-                        } else {
-                            reject && reject(res.data);
-                        }
-                    }
 
+                    }
+                    reject && reject(res.data);
                 }
             })
         }
@@ -176,4 +187,6 @@ class HttpRequest {
     };
 }
 
-module.exports = new HttpRequest();
+module.exports = {
+    HttpRequest
+};

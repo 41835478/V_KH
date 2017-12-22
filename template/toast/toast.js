@@ -6,7 +6,6 @@ let _compData = {
 };
 let toastPannel = {
     showToast() {
-
         let self = this, text, time, data = arguments[0];
         if (utilCommon.isString(data)) {
             text = data;

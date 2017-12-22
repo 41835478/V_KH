@@ -1,17 +1,82 @@
 const util = require('./util'),
     utilCommon = require('./utilCommon'),
     queryString = require('./queryString'),
-    apiService = require('./ApiService');
+    ApiService = require('./ApiService');
+const failToast = (that, text) => {
+    if (that.showToast) {
+        that.showToast(text);
+    } else {
+        util.failToast(text);
+    }
+};
+
+const showToast = (that, text) => {
+    if (that.showToast) {
+        that.showToast(text);
+    } else {
+        util.showToast(text);
+    }
+};
 module.exports = {
+    _app: null,
+    getApp() {
+        if (!this._app) {
+            this._app = getApp();
+        }
+        return this._app;
+    },
+    /**
+     * 转发分享事件
+     * @param options
+     * @returns {{title: string, path: string, success: success, fail: fail}}
+     */
+    onShareAppMessage(options) {
+        let that = this,
+            route = util.CurrentPages(),
+            resId = that.data.resId,
+            data = that.data.options,
+            orderType = that.data.orderType,
+            shopInfo = that.data.shopInfo,
+            resName = shopInfo ? '欢迎光临' + shopInfo.resName : '欢迎使用V卡汇小程序',
+            imageUrl = shopInfo ? this.data.imageServer + shopInfo.resLogo : null,
+            path = '/pages/init/init';//jumpMode跳转模式  0：无模式 1：分享 2：加菜 。。。
+        if (1 === that.data.isShareCurrentPage) {
+            path = '/pages/shop/home/home'
+        } else if (2 === that.data.isShareCurrentPage) {
+            if (3 == orderType) {
+                path = '/pages/shop/home/home'
+            } else {
+                path = '/' + route
+            }
+        }
+        return {
+            title: resName,
+            path: path + '?' + queryString.stringify(data),
+            success: function (res) {
+                showToast(that, '分享成功')
+            },
+            fail: function (res) {
+                failToast(that, '分享失败')
+            }
+        }
+    },
+
+    /**
+     * 图片加载失败事件
+     * @param e
+     */
+    imageError(e) {
+        console.log(e)
+    },
     /**
      * 设置并并保存本地购物车信息
      */
-    setShopCartsStorage() {
-        let app = getApp();
-        let resId = this.data.resId,
-            shopCartsStorage = app.globalData.shopCarts,
-            shopInfo = this.data.shopInfo,
-            orderType = this.data.orderType,
+    utilPage_setShopCartsStorage() {
+        this.getApp();
+        let that = this;
+        let resId = that.data.resId,
+            shopCartsStorage = that._app.globalData.shopCarts,
+            shopInfo = that.data.shopInfo,
             shopCarts = {
                 hallCarts: {
                     totalPrice: 0,
@@ -68,54 +133,150 @@ module.exports = {
             if (!shopCartsStorage || !shopCartsStorage[resId]) {
                 shopCartsStorage[resId] = shopCarts;
             }
+            shopCarts.hallCarts.info.resName = shopInfo.resName;
+            shopCarts.hallCarts.info.resLogo = shopInfo.resLogo;
             shopCartsStorage[resId].hallCarts.otherList = shopCarts.hallCarts.otherList;
             shopCartsStorage[resId].hallCarts.info = shopCarts.hallCarts.info;
             shopCartsStorage[resId].hallCarts.unsetOrders = shopCarts.hallCarts.unsetOrders;
             if (!utilCommon.isArray(shopCartsStorage[resId].hallCarts.list)) {
                 shopCartsStorage[resId].hallCarts.list = shopCarts.hallCarts.list;
             }
+            shopCarts.takeawayCarts.info.resName = shopInfo.resName;
+            shopCarts.takeawayCarts.info.resLogo = shopInfo.resLogo;
             shopCartsStorage[resId].takeawayCarts.otherList = shopCarts.takeawayCarts.otherList;
             shopCartsStorage[resId].takeawayCarts.info = shopCarts.takeawayCarts.info;
             if (!utilCommon.isArray(shopCartsStorage[resId].takeawayCarts.list)) {
                 shopCartsStorage[resId].takeawayCarts.list = shopCarts.takeawayCarts.list;
             }
-            app.globalData.shopCarts = shopCartsStorage;
-            app.setShopCartsStorage();
+            that._app.globalData.shopCarts = shopCartsStorage;
+            that._app.setShopCartsStorage();
         }
     },
     /**
      * 获取会员卡信息
      */
-    getOneMemberCardList(resId) {
-        let app = getApp();
-        if (!resId) {
-            return;
-        }
-        let _this = this,
-            openId = app.globalData.openId,
-            appMemberCardDto = app.globalData.memberCardDtoObj[resId];
-        if (appMemberCardDto && appMemberCardDto.resId === resId) {
-            _this.data.memberCardDto && (_this.data.memberCardDto = util.extend(appMemberCardDto));
-            return;
-        }
-        apiService.getMemberCardList({resId, openId}, (res) => {
-            if (res.value && res.value.length > 0 && res.value[0].resId === resId) {
-                let memberCardDto = res.value[0];
-                memberCardDto.memberTypeDiscount = util.moneyToFloat(memberCardDto.memberTypeDiscount);
-                memberCardDto.memberBalance = util.moneyToFloat(memberCardDto.memberBalance);
-                memberCardDto.memberIntegral = util.moneyToFloat(memberCardDto.memberIntegral);
-                app.globalData.memberCardDtoObj[resId] = memberCardDto;
-                this.data.memberCardDto && Object.assign(this.data.memberCardDto, memberCardDto);
-                // _this.setData({memberCardDto});
+    utilPage_checkMember(resId) {
+        this.getApp();
+        let that = this,
+            data = {
+                message: '获取会员卡失败',
+                status: false,
+                code: 0
+            };
+        return new Promise(function (resolve, reject) {
+            if (!resId) {
+                data.message = 'resId为空';
+                reject(data);
+                return;
             }
-            _this.updateShopCart && _this.updateShopCart();
-        });
+
+            let objId = that.data.objId;
+            if (!utilCommon.isObject(that.data.memberCardDto)) {
+                that.data.memberCardDto = {};
+            }
+            try {
+                let memberCardDto = that._app.globalData.memberCardDtos[resId];
+                if (memberCardDto && memberCardDto.resId === resId) {
+                    that.data.memberCardDto && Object.assign(that.data.memberCardDto, memberCardDto);
+                    data.message = '获取会员卡成功';
+                    data.status = true;
+                    resolve(data);
+                    return;
+                }
+                ApiService.checkMember(
+                    {resId, objId},
+                    (rsp) => {
+                        if (2000 == rsp.code && rsp.value && 1 === rsp.value.isBindMobile && rsp.value.member) {
+                            memberCardDto = rsp.value.member;
+                            that._app.globalData.memberCardDtos[resId] = memberCardDto;
+                            that.data.memberCardDto && Object.assign(that.data.memberCardDto, memberCardDto);
+                            data.message = '获取会员卡成功';
+                            data.status = true;
+                        }
+                    },
+                    (err) => {
+                        if (2000 == err.code && err.value && err.value.length > 0 && err.value[0].resId === resId) {
+                            resolve(data);
+                        } else {
+                            data.message = '获取会员卡失败';
+                            data.code = 1;
+                            reject(data);
+                        }
+                    }
+                );
+            } catch (e) {
+                console.warn('utilPage_getMemberCardList调用失败');
+                data.message = 'utilPage_getMemberCardList调用失败';
+                reject(data);
+            }
+        })
+    },
+    /**
+     * 获取店铺信息
+     */
+    utilPage_getResDetail(resId) {
+        let that = this,
+            data = {
+                message: '获取店铺信息失败',
+                status: false,
+                code: 0
+            };
+        that.getApp();
+        return new Promise(function (resolve, reject) {
+            if (!resId) {
+                data.message = 'resId为空';
+                reject(data);
+                return;
+            }
+            if (!utilCommon.isObject(that.data.shopInfo)) {
+                that.data.shopInfo = {};
+            }
+
+            let shopInfo = that.data.shopInfo;
+            try {
+                let resDetailDto = that._app.globalData.resDetailDtos[resId];
+                if (resDetailDto && resDetailDto.resId === resId) {
+                    shopInfo && Object.assign(shopInfo, resDetailDto);
+                    that.setData({shopInfo});
+                    data.message = '获取店铺信息成功';
+                    data.status = true;
+                    resolve(data);
+                    return;
+                }
+                ApiService.getResDetail(
+                    {resId},
+                    (rsp) => {
+                        if (2000 == rsp.code && rsp.value && rsp.value.resId === resId) {
+                            resDetailDto = rsp.value;
+                            that._app.globalData.resDetailDtos[resId] = resDetailDto;
+                            shopInfo && Object.assign(shopInfo, resDetailDto);
+                            that.setData({shopInfo});
+                            data.message = '获取店铺信息成功';
+                            data.status = true;
+                        }
+                    },
+                    (err) => {
+                        if (2000 == err.code && err.value && err.value.resId === resId)
+                            resolve(data);
+                        else {
+                            data.message = '获取店铺信息失败';
+                            data.code = 1;
+                            reject(data);
+                        }
+                    }
+                );
+            } catch (e) {
+                console.warn('utilPage_getResDetail调用失败');
+                data.message = 'utilPage_getResDetail调用失败';
+                reject(data);
+            }
+        })
     },
     /**
      * 设置导航栏信息
      * @param txt
      */
-    setNavigationBarTitle(txt) {
+    utilPage_setNavigationBarTitle(txt) {
         wx.setNavigationBarTitle({
             title: txt
         })
@@ -138,22 +299,23 @@ module.exports = {
         })
     },
     /**
-     * 图片加载失败事件
-     * @param e
-     */
-    imageError(e) {
-        console.log(e)
-    },
-    /**
      * 打开module-popup弹框
      * @param str
      */
-    openModule(str) {
-        let data = {
-            isMask: true,
-            isTemplate: true
-        };
+    utilPage_openModule(str) {
+        let that = this,
+            data = {
+                isMask: true,
+                isTemplate: true
+            };
         data[str] = str;
+        data[`isAnimated`] = true;
+        if (that.data[`${str}Data`] && that.data[`${str}Data`].AnimatedTimeout) {
+            clearTimeout(that.data[`${str}Data`].AnimatedTimeout);
+            that.setData({
+                [`${str}Data.isAnimated`]: false
+            });
+        }
         this.setData(data);
     },
     /**
@@ -161,58 +323,136 @@ module.exports = {
      * @param str
      * @param animated
      */
-    closeModule(str, animated) {
+    utilPage_closeModule(str, animated) {
         let that = this;
         let data = {
             isMask: false,
             isTemplate: false,
         };
-        if (animated) {
-            setTimeout(() => {
-                data = {
-                    isMask: false,
-                    animated: false
-                };
-                that.setData(data);
-            });
+        if (that.data[`${str}Data`]) {
+            that.data[`${str}Data`].AnimatedTimeout = setTimeout(() => {
+                that.setData({
+                    [`${str}Data.isAnimated`]: false
+                });
+            }, 300);
+            that.setData({[`${str}Data.data`]: {}});
         }
         data[str] = '';
         this.setData(data);
     },
     /**
-     * 转发分享事件
-     * @param options
-     * @returns {{title: string, path: string, success: success, fail: fail}}
+     * 设置店铺就餐模式
+     * @param info
      */
-    onShareAppMessage(options) {
-        let route = util.CurrentPages(),
-            resId = this.data.resId,
-            orderType = this.data.orderType,
-            shopInfo = this.data.shopInfo,
-            imageUrl = shopInfo ? this.data.imageServer + shopInfo.resLogo : null,
-            path = '/' + route,
-            data = {resId, orderType, isShare: 1};
-        if (!this.data.isShareCurrentPage) {
-            path = '/pages/shop/home/home'
+    utilPage_setOrderType(info) {
+        let data = {//默认堂食
+            isOrderType: 0,
+            text: '堂食'
+        };
+        if (this.data.orderType == 1) {
+            data.isOrderType = 1;//外卖
+            data.text = '外卖';
+        } else if (info) {
+            data = this.utilPage_getOrderType(info)
         }
-        return {
-            title: '欢迎光临' + shopInfo.resName,
-            path: path + '?' + queryString.stringify(data),
-            success: function (res) {
-                wx.showToast({
-                    title: '分享成功',
-                    icon: 'success',
-                    duration: 2000
-                })
-            },
-            fail: function (res) {
-                wx.showToast({
-                    title: '分享失败',
-                    icon: 'success',
-                    duration: 2000
-                })
+        this.utilPage_setNavigationBarTitle(`${data.text}-${this.data.text}`);
+        this.setData({isOrderType: data.isOrderType});
+        return data;
+    },
+    /**
+     * 获取店铺就餐模式
+     * @param info
+     * @returns {{isOrderType: number, text: string}}
+     */
+    utilPage_getOrderType(info) {
+        let data = {};
+        try {
+            data = {
+                isOrderType: 0,
+                text: '堂食'
+            };
+            if (info.payType == 1) {
+                data.isOrderType = 3;//餐后付款
+                data.text = '餐后付款';
+            } else {
+                if (info.dinnerType == 1) {
+                    data.isOrderType = 2;//自助取餐
+                    data.text = '自助取餐';
+                }
+            }
+        } catch (e) {
+            data = {
+                isOrderType: -1,
+                text: ''
             }
         }
+        return data;
+    },
+    /**
+     * 根据二维码获取ID
+     * @param q
+     */
+    utilPage_getQrcodeRid(q) {
+        try {
+            if (q && q.length > 0) {
+                q = decodeURIComponent(q);
+                return queryString.parse(q).id;
+            }
+        } catch (e) {
+            console.error(e, '根据二维码获取ID报错');
+        }
+    },
+    utilPage_getQRcodeTable(rid) {
+        let _this = this;
+        return new Promise(function (resolve, reject) {
+            let data = {
+                type: null,
+                resId: null,
+                tableName: null,
+                tableCode: null,
+                status: 0
+            };
+            if (!rid) {
+                reject(data);
+                return;
+            }
+            ApiService.getQRcodeTable(
+                {id: rid},
+                (rsp) => {
+                    try {
+                        if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                            data.resId = rsp.value.resId;
+                            data.type = rsp.value.type;
+                            if (!data.resId) {
+                                data.message = '扫描二维码不正确';
+                                failToast(_this, data.message);
+                                reject(data);
+                                return;
+                            } else {
+                                data.status = 1;
+                            }
+                            data.tableCode = rsp.value.tableCode;
+                            if (!!data.tableCode) {
+                                data.status = 2;
+                            }
+                            data.tableName = rsp.value.tableName;
+                            resolve(data)
+                        } else {
+                            data.message = '无效的二维码';
+                            failToast(_this, data.message);
+                            reject(data);
+                        }
+                    } catch (err) {
+                        data.status = 0;
+                        console.error('rid获取resId与tableCode', err, data);
+                        reject(data);
+                    }
+                },
+                () => {
+                    reject(data);
+                }
+            )
+        })
     },
     /**
      * 获取二维码桌台
@@ -221,7 +461,7 @@ module.exports = {
      * @param bol
      * @returns {Promise}
      */
-    getQRcodeTable(qrCode, resId, bol) {
+    utilPage_isQRcode(qrCode, resId, bol) {
         if (utilCommon.isBoolean(resId)) {
             bol = resId;
             resId = null;
@@ -236,9 +476,9 @@ module.exports = {
                 let rid = queryString.parse(qrCode);
                 if (rid && rid.id && rid.id.length > 0) {
                     let id = rid.id;
-                    apiService.getQRcodeTable({id}, (res) => {
+                    ApiService.getQRcodeTable({id}, (res) => {
                         try {
-                            if (!res.value) {
+                            if (!utilCommon.isEmptyValue(res.value)) {
                                 throw {message: '无效的二维码'}
                             }
                             data.value = {
@@ -286,34 +526,14 @@ module.exports = {
         });
         return promise;
     },
-    setOrderType(info) {
-        let data = {//默认堂食
-            isOrderType: 0,
-            text: '堂食'
-        };
-        if (this.data.orderType == 1) {
-            data.isOrderType = 1;//外卖
-            data.text = '外卖';
-        } else if (info) {
-            data = this.getOrderType(info)
-        }
-        this.setNavigationBarTitle(data.text + ' - ' + this.data.text);
-        this.setData({isOrderType: data.isOrderType});
-    },
-    getOrderType(info) {
-        let data = {
-            isOrderType: 0,
-            text: '堂食'
-        };
-        if (info.payType == 1) {
-            data.isOrderType = 3;//餐后付款
-            data.text = '餐后付款';
-        } else {
-            if (info.dinnerType == 1) {
-                data.isOrderType = 2;//自助取餐
-                data.text = '自助取餐';
+    utilPage_goMemberApplication() {
+        let that = this;
+        util.go('/pages/vkahui/memberApplication/memberApplication', {
+            data: {
+                resId: that.data.resId,
+                resName: that.data.shopInfo.resName,
+                resLogo: that.data.shopInfo.resLogo
             }
-        }
-        return data;
+        })
     }
 };

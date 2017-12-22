@@ -1,0 +1,66 @@
+@import "../../index";
+
+page {
+  .azm-fixed {
+    top: 0;
+    bottom: 0;
+    background-color: @bg-default-color;
+    z-index: 400;
+    .memberCode {
+      position: absolute;
+      display: block;
+      //background-color: #fff;
+      //opacity: .95;
+      width: 300*2rpx;
+      height: 200*2rpx;
+      border-radius: 5*2rpx;
+      //border: @border-btn-1px-primary;
+      top: 35%;
+      left: 50%;
+      box-sizing: border-box;
+      transform: translate(-50%, -50%);
+      padding: 10*2rpx 15*2rpx;
+      .p {
+        margin-bottom: 20*2rpx;
+      }
+      .azm-text {
+        color: @placeholder-color;
+        font-size: 12*2rpx;
+      }
+      .azm-code {
+        box-sizing: border-box;
+        border-radius: 3*2rpx;
+        .flexBox-item {
+          height: 40*2rpx;
+          min-height: 40*2rpx;
+          overflow: hidden;
+          box-sizing: border-box;
+          &.border-color-1px {
+            border: @border-1px;
+            &:nth-child(1) {
+              border-right: none;
+            }
+          }
+        }
+        .azm-codeText {
+          box-sizing: border-box;
+          background-color: #fff;
+          padding: 0 10*2rpx;
+          overflow: hidden;
+        }
+        input {
+          //display: inline-block;
+          font-size: 12*2rpx !important;
+          background-color: #fff;
+          height: 40*2rpx !important;
+          min-height: 40*2rpx !important;
+        }
+        button {
+          border-radius: 0;
+          line-height: 40*2rpx;
+          border: none;
+        }
+      }
+    }
+  }
+}

@@ -1,9 +1,9 @@
 page .orderIndex view,
-page .orderIndex navigator {
+page .orderIndex view::after,
+page .orderIndex view::before,
+page .orderIndex navigator,
+page .orderIndex scroll-view {
   box-sizing: border-box;
-}
-page .orderIndex .weui-loadmore__tips_in-line {
-  background-color: #f1f2f4;
 }
 page .orderIndex .row {
   background-color: #fff;
@@ -14,7 +14,6 @@ page .orderIndex .row .azm-title {
   padding-left: 50rpx;
   height: 80rpx;
   line-height: 80rpx;
-  border-bottom: 2rpx solid #e2e2e2;
 }
 page .orderIndex .row .azm-title .h2 {
   display: inline-block;
@@ -34,7 +33,7 @@ page .orderIndex .row .azm-section {
   padding-bottom: 20rpx;
 }
 page .orderIndex .row .azm-section .azm-image {
-  padding-left: 50rpx;
+  padding-left: 10rpx;
 }
 page .orderIndex .row .azm-section .azm-image image {
   border-radius: 22rpx;
@@ -87,7 +86,7 @@ page .orderIndex .row .azm-section .azm-right button {
   margin-left: 16rpx;
   margin-right: 16rpx;
   line-height: 46rpx;
-  border: 2rpx solid #e2e2e2;
+  border: 1rpx solid #e2e2e2;
   color: #000;
 }
 page .orderIndex .row .azm-section .azm-right button.azm-btn-red {

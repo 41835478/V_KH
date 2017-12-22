@@ -28,8 +28,14 @@ var rmb_money = function (num, len) {
 var us_money = function (num, len) {
     return money(num, '$', len);
 };
+var diff = function (deliveryAmount, totalPrice) {
+    var price = deliveryAmount - totalPrice;
+    return money(price);
+};
+
 module.exports = {
     Money: money,
     RMB: rmb_money,
-    US: us_money
+    US: us_money,
+    Diff: diff
 };

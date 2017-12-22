@@ -11,7 +11,7 @@ page {
   right: 0;
 }
 .orderPage .header {
-  background-color: #4b4b4b;
+  background-color: #2d2c34;
 }
 .orderPage .header .shopInfo {
   padding: 20rpx 0rpx 20rpx 0rpx;
@@ -126,7 +126,7 @@ page {
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList {
   margin-left: 0;
   margin-top: 0;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
   padding: 16rpx 0rpx 16rpx 0rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList:nth-last-child(1) {
@@ -150,26 +150,22 @@ page {
   color: rgba(45, 44, 52, 0.8);
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .foodList-item > view.right .money {
-  padding-top: 15rpx;
-  color: #000;
+  padding-top: 20rpx;
   font-size: 30rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .foodList-item > view.right .member-price {
-  display: inline-block;
-  padding-top: 0;
-  padding-left: 6rpx;
-  padding-right: 6rpx;
   color: #f74b7b;
-  font-size: 24rpx;
+  font-size: 22rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select {
   right: 0;
-  top: 80rpx;
+  top: 90rpx;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select.food-btn-rule button {
-  font-size: 26rpx;
+  font-size: 24rpx;
   border-radius: 56rpx;
-  line-height: 56rpx;
+  line-height: 2.2;
+  padding: 0 1.2em;
 }
 .orderPage .section .dishes-tab > .right .dishes-tab-item .dishes-tab-item-foodList .select.food-btn-rule .weui-badge {
   position: absolute;
@@ -187,10 +183,11 @@ page {
   right: -10rpx;
 }
 .orderPage .footer {
-  position: absolute;
+  position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
+  z-index: 410;
   height: 100rpx;
   line-height: 100rpx;
   overflow: hidden;
@@ -250,7 +247,8 @@ page {
   height: inherit;
 }
 .orderPage .shopCart {
-  position: absolute;
+  position: fixed;
+  transform: translateY(200%);
   left: 0;
   bottom: 100rpx;
   max-height: 600rpx;
@@ -262,8 +260,7 @@ page {
 .orderPage .shopCart .top {
   padding: 10rpx 30rpx 10rpx 30rpx;
   height: 80rpx;
-  line-height: 80rpx;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
   background-color: #f3f3f3;
 }
 .orderPage .shopCart .top .left .h2 {
@@ -285,30 +282,8 @@ page {
 .orderPage .shopCart .top .right {
   position: relative;
   padding-left: 40rpx;
-  text-align: right;
-}
-.orderPage .shopCart .top .right text {
-  color: #aab0ca;
-  display: inline-block;
-  width: 100%;
-  height: inherit;
   line-height: 60rpx;
-}
-.orderPage .shopCart .top .right button {
-  border: none;
-  height: 60rpx;
-  line-height: 60rpx;
-}
-.orderPage .shopCart .top .right::after {
-  content: '';
-  position: absolute;
-  width: 24rpx;
-  height: 25rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 84rpx;
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAYAAAA+stv/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiM2E3MDNhMi1lYzVmLWIwNDYtYWRiMi1jYWZkMDc1ZTlkOWIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTYxNTIwRURGNEU3MTFFNkI4MUNCNzFFODRGNzRCREUiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTYxNTIwRUNGNEU3MTFFNkI4MUNCNzFFODRGNzRCREUiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6M2JjZGNlNDUtMWVlYS1jNTRkLWFlYTYtZjMzNTkxNjcyOTMwIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6Mzk1NTMzMzAtZjM0MS0xMWU2LTkzODQtYTE4OWU5MzQxOWY1Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+7Lw8JgAAAXFJREFUeNpiXLxqOwMRwACIzwAxMwNx4B8Q2wHxUUIKmYg08D/UUAYS1P8nRiELkQZeBGI2BhoAFmgoKBDho49A/IdIc0FRJQDEjATUPQY54CkQSzAMDHgPcsAJIDYeIAdcATkgkGEAARPDAANsDtAFYnka2CUNxPqEHCACxJeA+DAegxyh6tABPxA74NG3E4gvoCd4dAcIotHowB2I9wFxMxa5MiDeD8ShOPTCHC2MzwG/ofQnHIZI4nGgEFJQYwMwM39Rkgi/QemvJMoNrVww6oBRB4w6YNQBow4YdQA+wA2lebHIwcR4aOmAh1D6CbY2PpS+T2rHhBQAag3pAPE9LHKdQLwOiK9SwwH4ekC4LPhFwPJfxEQBzEF8NEhvsDYhKz4HfIHSoH5dC5RmgXZMycEsUM9UArE4tvYmehS8AOKtQOwNxNVQ/IeITia+Ti2yHYfREzC2XABqVi8H4rdIjmQmE8Msfw9NoP7olgEEGAA3kzyBrHPG7AAAAABJRU5ErkJggg==") no-repeat 0 0;
-  background-size: 24rpx 25rpx;
+  color: #808080;
 }
 .orderPage .shopCart .ul {
   padding: 0;
@@ -322,7 +297,7 @@ page {
   margin-bottom: 0;
   height: 100rpx;
   line-height: 100rpx;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 .orderPage .shopCart .ul .li::after {
   width: 0;
@@ -352,6 +327,9 @@ page {
   top: 0;
   right: 0;
   padding-top: 24rpx;
+}
+.orderPage .shopCart-show {
+  transform: translateY(0%);
 }
 .shopCartModule-mask {
   bottom: 100rpx;

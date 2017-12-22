@@ -1,9 +1,10 @@
-let $http = require('./httpRequest'),
-    httpConfig = require('./httpConfig'),
-    util = require('./util'),
-    serverAddress = httpConfig.api;
+const config = require('./config'),
+    utilCommon = require('./utilCommon');
+import {HttpRequest} from './httpRequest';
+
+const $http = new HttpRequest();
 module.exports = {
-    url: serverAddress,
+    url: config.host,
     token: null,
     api: {
         /**
@@ -11,6 +12,43 @@ module.exports = {
          */
         getOpenId: {
             path: '/microcode/getOpenId',
+            query: {}
+        },
+        /**
+         * 获取平台用户信息
+         */
+        getCommonUserInfo: {
+            path: '/commonUser/getCommonUserInfo',
+            query: {}
+        },
+        /**
+         * 更新平台用户信息
+         */
+        updateCommonUserInfo: {
+            path: '/commonUser/updateCommonUserInfo',
+            query: {}
+        },
+        /**
+         * 申请会员卡  API
+         */
+        applyMember: {
+            path: '/microcode/applyMember',
+            query: {
+                name: '',//String *
+                birthday: '',//2017-10-24 00:00:00 *
+                sex: 0,//0：无 1：男 2：女 *
+                provinceId: '',//省
+                cityId: '',//市
+                objId: '',//*
+                token: '',//*
+                resId: '',//*
+            }
+        },
+        /**
+         * 判断时候为首次使用获取openid  API
+         */
+        newCheckIsFirstUse: {
+            path: '/microcode/newCheckIsFirstUse',
             query: {}
         },
         /**
@@ -45,11 +83,22 @@ module.exports = {
             path: '/microcode/checkMemberBindMobile',
             query: {}
         },
+        checkMember: {
+            path: '/microcode/checkMember',
+            query: {}
+        },
         /**
-         * 获取点餐列表
+         * 获取菜品列表
          */
         getFoodList: {
             path: '/food/getFoodList',
+            query: {}
+        },
+        /**
+         * 获取菜品tab分类
+         */
+        findFoodCatalogList: {
+            path: '/foodCatalog/findFoodCatalogList  ',
             query: {}
         },
         /**
@@ -88,10 +137,10 @@ module.exports = {
             query: {}
         },
         /**
-         * 获取收货地址
+         * 绑定手机
          */
-        loadDefaultAddress: {
-            path: '/microcode/loadDefaultAddress',
+        bindMobile: {
+            path: '/microcode/bindMobile',
             query: {}
         },
         /**
@@ -196,14 +245,35 @@ module.exports = {
          * 新增地址
          */
         addAddress: {
-            path: '/microcode/addAddress',
+            path: '/consigneeAddress/addAddress',
             query: {}
         },
         /**
          * 设置默认地址
          */
         setDefaultAddress: {
-            path: '/microcode/setDefaultAddress',
+            path: '/consigneeAddress/setDefaultAddress',
+            query: {}
+        },
+        /**
+         * 设置默认地址
+         */
+        deleteConsigneeAddress: {
+            path: '/consigneeAddress/deleteConsigneeAddress',
+            query: {}
+        },
+        /**
+         * 设置默认收货地址
+         */
+        loadDefaultAddress: {
+            path: '/consigneeAddress/loadDefaultAddress',
+            query: {}
+        },
+        /**
+         * 获取收货地址列表
+         */
+        loadAddressList: {
+            path: '/consigneeAddress/loadAddressList',
             query: {}
         },
         /**
@@ -223,6 +293,22 @@ module.exports = {
                 OrderPaySuccess: 'TF3BoYwKtKDEuwhNt5tkcRmRs9DcdM5-8mIu72xYvUc'
             }
         },
+        /**
+         * 三级联动 - 省
+         */
+        getAllProvince: {
+            path: '/region/getAllProvince',
+            query: {}
+        },
+        /**
+         * 三级联动 - 市/区
+         */
+        getRegionByPid: {
+            path: '/region/getRegionByPid',
+            query: {
+                pid: ''
+            }
+        },
     },
     getToken() {
         const app = getApp();
@@ -238,8 +324,7 @@ module.exports = {
      * @param cb
      * @returns {*}
      */
-    checkIsFirstUse(data, cb, reject) {
-        var isReturnStatus = true;
+    checkIsFirstUse(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.checkIsFirstUse.path;
         data.token = this.getToken();
         data.sex = data.sex || 0;
@@ -251,8 +336,7 @@ module.exports = {
         }, isReturnStatus, reject);
         return http;
     },
-    checkBindMobile(data, cb, reject) {
-        var isReturnStatus = true;
+    checkBindMobile(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.checkBindMobile.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
@@ -261,8 +345,7 @@ module.exports = {
         }, isReturnStatus, reject);
         return http;
     },
-    checkMemberBindMobile(data, cb, reject) {
-        var isReturnStatus = true;
+    checkMemberBindMobile(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.checkMemberBindMobile.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
@@ -272,14 +355,27 @@ module.exports = {
         return http;
     },
     /**
+     * 是否绑定会员卡
+     * @param data
+     * @param cb
+     * @param reject
+     * @returns {*}
+     */
+    checkMember(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.checkMember.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
      * 检查是否存在未结账的消费者
      */
-    checkHasWaitPayConsumer(data, cb, reject) {
-        var isReturnStatus = true;
+    checkHasWaitPayConsumer(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.checkHasWaitPayConsumer.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -287,12 +383,71 @@ module.exports = {
     /**
      * 验证会员卡支付验证码
      */
-    checkSmsCodeByOpenId(data, cb, reject) {
-        var isReturnStatus = true;
+    checkSmsCodeByOpenId(data, cb, isReturnStatus, reject) {
+        let query = this.api.checkSmsCodeByOpenId.query;
         const url = this.url + this.api.checkSmsCodeByOpenId.path;
         data.token = this.getToken();
-        const http = $http.get(url, data, (res) => {
-
+        Object.assign(query, data);
+        const http = $http.get(url, query, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 判断时候为首次使用获取openid  API
+     * @param data
+     * @param cb
+     */
+    getOpenId(data, cb, isReturnStatus, reject) {
+        const url = `${this.url}${this.api.getOpenId.path}`;
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 获取平台用户信息  API
+     * @param data
+     * @param cb
+     */
+    getCommonUserInfo(data, cb, isReturnStatus, reject) {
+        const url = `${this.url}${this.api.getCommonUserInfo.path}`;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            if (utilCommon.isEmptyValue(res.value)) {
+                res.value = JSON.parse(res.value);
+            }
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 更新平台用户信息  API
+     * @param data
+     * @param cb
+     */
+    updateCommonUserInfo(data, cb, isReturnStatus, reject) {
+        const url = `${this.url}${this.api.updateCommonUserInfo.path}`;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            if (utilCommon.isEmptyValue(res.value)) {
+                res.value = JSON.parse(res.value);
+            }
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 判断时候为首次使用获取openid  API
+     * @param data
+     * @param cb
+     */
+    applyMember(data, cb, isReturnStatus, reject) {
+        const url = `${this.url}${this.api.applyMember.path}`;
+        let query = this.api.applyMember.query;
+        data.token = this.getToken();
+        Object.assign(query, data);
+        const http = $http.post(url, query, (res) => {
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -302,8 +457,20 @@ module.exports = {
      * @param data
      * @param cb
      */
-    getOpenId(data, cb, isReturnStatus, reject) {
-        const url = this.url + this.api.getOpenId.path;
+    newCheckIsFirstUse(data, cb, isReturnStatus, reject) {
+        const url = `${this.url}${this.api.newCheckIsFirstUse.path}`;
+        if (!data.nikeName) {
+            let str = null;
+            if (data.objId) {
+                str = data.objId.substring(data.objId.length - 5);
+            } else if (data.jsCode) {
+                str = data.jsCode.substring(data.jsCode.length - 5);
+            }
+            data.nikeName = `微信用户${str}`;
+        }
+        if (!data.sex) {
+            data.sex = 0;
+        }
         const http = $http.post(url, data, (res) => {
             cb && cb(res);
         }, isReturnStatus, reject);
@@ -347,6 +514,20 @@ module.exports = {
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
 
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 获取菜品tab分类
+     * @param data
+     * @param cb
+     * @returns {*}
+     */
+    findFoodCatalogList(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.findFoodCatalogList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -397,13 +578,12 @@ module.exports = {
         const url = this.url + this.api.getResDetail.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
     },
     /**
-     * 获取点餐店铺列表
+     * 绑定手机号码
      */
     bindWechatUser(data, cb, isReturnStatus, reject) {
         const url = this.url + this.api.bindWechatUser.path;
@@ -415,10 +595,10 @@ module.exports = {
         return http;
     },
     /**
-     * 获取收货地址
+     * 绑定手机号码
      */
-    loadDefaultAddress(data, cb, isReturnStatus, reject) {
-        const url = this.url + this.api.loadDefaultAddress.path;
+    bindMobile(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.bindMobile.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
 
@@ -457,7 +637,6 @@ module.exports = {
         const url = this.url + this.api.findTableDtoList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -469,7 +648,6 @@ module.exports = {
         const url = this.url + this.api.commitOrder.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -505,7 +683,6 @@ module.exports = {
         const url = this.url + this.api.getSmsCode.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -517,7 +694,6 @@ module.exports = {
         const url = this.url + this.api.getSmsCodeByConn.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -529,7 +705,6 @@ module.exports = {
         const url = this.url + this.api.getOrderList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -541,7 +716,6 @@ module.exports = {
         const url = this.url + this.api.finishPay.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -553,7 +727,6 @@ module.exports = {
         const url = this.url + this.api.wxPayForH5.path;
         data.token = this.getToken();
         const http = $http.get(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -565,7 +738,6 @@ module.exports = {
         const url = this.url + this.api.updateConsigneeAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -577,7 +749,6 @@ module.exports = {
         const url = this.url + this.api.addAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -589,6 +760,40 @@ module.exports = {
         const url = this.url + this.api.setDefaultAddress.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 删除收货地址
+     */
+    deleteConsigneeAddress(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.deleteConsigneeAddress.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 获取收货地址(默认)
+     */
+    loadDefaultAddress(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.loadDefaultAddress.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 获取收货地址
+     */
+    loadAddressList(data, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.loadAddressList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+
             cb && cb(res);
         }, isReturnStatus, reject);
         return http;
@@ -608,9 +813,42 @@ module.exports = {
     /**
      * 消息模板通知
      */
-    sendMiniWxTemplateMsg(data, cb, reject) {
-        let isReturnStatus = true;
+    sendMiniWxTemplateMsg(data, isReturnStatus, cb, reject) {
         const url = this.url + this.api.sendMiniWxTemplateMsg.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 三级联动 - 省
+     * @param data
+     *
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getAllProvince(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getAllProvince.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 三级联动 - 市/区
+     * @param data
+     *      pid:
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getRegionByPid(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getRegionByPid.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             cb && cb(res);

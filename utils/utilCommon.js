@@ -170,9 +170,9 @@ function isEmptyObject(obj) {
     try {
         var name;
         for (name in obj) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     } catch (e) {
         return false;
         console.log('非对象');
@@ -180,6 +180,30 @@ function isEmptyObject(obj) {
 }
 
 module.exports.isEmptyObject = isEmptyObject;
+
+/**
+ * 判断是否为非空值
+ * @param value
+ * @returns {boolean}
+ */
+function isEmptyValue(value) {
+    try {
+        if (!value) {
+            return false;
+        } else if (isString(value)) {
+            return !!value;
+        } else if (Array.isArray(value)) {
+            return value && value.length > 0;
+        } else if (isObject(value)) {
+            return isEmptyObject(value);
+        }
+    } catch (e) {
+        return false;
+        console.log('判断是否为非空值出差', value);
+    }
+}
+
+module.exports.isEmptyValue = isEmptyValue;
 
 function isFalse(arg) {
     if (isString(arg) && arg.trim() === '') {

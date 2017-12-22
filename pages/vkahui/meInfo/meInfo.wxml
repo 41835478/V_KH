@@ -1,0 +1,122 @@
+<view>
+    <form bindsubmit="formInfoSubmit" report-submit>
+        <view class="weui-cells__title">
+            <text>基本资料</text>
+        </view>
+        <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_access">
+                <view class="weui-cell__bd">
+                    <text>头像</text>
+                </view>
+                <view class="weui-cell_primary azm-popup-picker-primary-color">
+                    <view class="azm-avatar">
+                        <block wx:if="{{userInfo.avatarUrl}}">
+                            <view class="azm-image">
+                                <image lazy-load src="{{userInfo.avatarUrl}}"></image>
+                            </view>
+                        </block>
+                        <block wx:else>
+                            <text class="iconfont-2 icon-yonghu azm-icon"></text>
+                        </block>
+                    </view>
+                </view>
+                <view class="weui-cell__ft"></view>
+            </view>
+            <view class="weui-cell weui-cell_access" catchtap="bindNickName" data-value="{{userInfo.name}}">
+                <view class="weui-cell__bd">
+                    <text>昵称</text>
+                </view>
+                <view class="weui-cell_primary azm-popup-picker-primary-color">
+                    <block wx:if="{{userInfo.name}}">
+                        <text>{{userInfo.name}}</text>
+                    </block>
+                </view>
+                <view class="weui-cell__ft weui-cell__ft_in-access">
+                    <block wx:if="{{!userInfo.name}}">
+                        <text class="azm-popup-picker-placeholder">请输入昵称</text>
+                    </block>
+                </view>
+            </view>
+            <picker name="birthday" class="azm-cell-border_top" mode="date" value="{{userInfo.birthday}}"
+                    bindchange="bindDateChange" end="{{currentDate}}">
+                <view class="weui-cell weui-cell_access picker">
+                    <view class="weui-cell__bd">
+                        <text>生日</text>
+                    </view>
+                    <view class="weui-cell_primary azm-popup-picker-primary-color">
+                        <block></block>
+                        <text>{{userInfo.birthday}}</text>
+                    </view>
+                    <view class="weui-cell__ft weui-cell__ft_in-access">
+                        <block wx:if="{{!userInfo.birthday}}">
+                            <text class="azm-popup-picker-placeholder">请选择生日</text>
+                        </block>
+                    </view>
+                </view>
+            </picker>
+            <picker name="sex" class="azm-cell-border_top" mode="selector" value="{{userInfo.sex}}"
+                    range="{{arraySex}}"
+                    range-key="name"
+                    bindchange="bindSexChange">
+                <view class="weui-cell weui-cell_access picker">
+                    <view class="weui-cell__bd">
+                        <text>性别</text>
+                    </view>
+                    <view class="weui-cell_primary azm-popup-picker-primary-color">
+                        <block wx:if="{{userInfo.sex == 1 || userInfo.sex == 2}}">
+                            <text>{{arraySex[userInfo.sex-1].name}}</text>
+                        </block>
+                    </view>
+                    <view class="weui-cell__ft weui-cell__ft_in-access">
+                        <block wx:if="{{userInfo.sex != 1 && userInfo.sex != 2}}">
+                            <text class="azm-popup-picker-placeholder">无</text>
+                        </block>
+                    </view>
+                </view>
+            </picker>
+            <navigator url="{{isBindMobile?'':'/pages/vkahui/phone-add/phone-add'}}"
+                       class="weui-cell weui-cell_access picker">
+                <view class="weui-cell__bd">
+                    <text decode>手机号</text>
+                </view>
+                <view class="weui-cell_primary azm-popup-picker-primary-color">
+                    <block wx:if="{{isBindMobile}}">
+                        <text>{{userInfo.mobile}}</text>
+                    </block>
+                </view>
+                <view class="weui-cell__ft {{!isBindMobile?'weui-cell__ft_in-access':''}}">
+                </view>
+            </navigator>
+            <picker name="address" class="azm-cell-border_top" mode="multiSelector" bindchange="bindRegionChange"
+                    value="{{addAddress.value}}"
+                    catchtap="bindRegionTap"
+                    bindcolumnchange="bindRegionColumnChange" range="{{addAddress.range}}" range-key="name">
+                <view class="weui-cell weui-cell_access">
+                    <view class="weui-cell__bd">
+                        <text>地区</text>
+                    </view>
+                    <view class="weui-cell_primary azm-popup-picker-primary-color">
+                        <block wx:if="{{addAddress.region[0] && addAddress.region[1]}}">
+                            <text space="true" decode="true">{{addAddress.region[0].name}}&nbsp;</text>
+                            <text>{{addAddress.region[1].name}}</text>
+                        </block>
+                    </view>
+                    <view class="weui-cell__ft weui-cell__ft_in-access">
+                        <block wx:if="{{!addAddress.region[0] || !addAddress.region[0]}}">
+                            <text class="azm-popup-picker-placeholder">请选择地区</text>
+                        </block>
+                    </view>
+                </view>
+            </picker>
+        </view>
+    </form>
+</view>
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
+
+<!--编辑昵称弹窗-->
+<import src="../../../template/module/index.wxml"/>
+<template is="module-popup" data="{{...moduleNameData,class:moduleName,isMask,animated:true}}"></template>
+
+

@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "加载中..."
+  "navigationBarTitleText": "加载中...",
+  "backgroundTextStyle": "dark",
+  "enablePullDownRefresh": true
 }

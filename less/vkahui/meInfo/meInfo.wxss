@@ -1,0 +1,60 @@
+page view {
+  color: #0d0c0c;
+}
+page .azm-title {
+  height: 70rpx;
+  line-height: 80rpx;
+  font-size: 26rpx;
+  font-weight: 1000rpx;
+}
+page .azm-avatar {
+  width: 128rpx;
+  height: 128rpx;
+  line-height: 128rpx;
+  text-align: center;
+  border-radius: 100%;
+  overflow: hidden;
+  box-shadow: 0 0 10rpx #020203;
+}
+page .azm-avatar .azm-image {
+  display: inline-block;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 100%;
+  overflow: hidden;
+}
+page .azm-avatar .azm-icon {
+  font-size: 100rpx;
+  color: #2d2c34;
+  text-shadow: 0 0 10rpx #020203;
+}
+page .azm-resName {
+  text-align: center;
+  margin-top: 20rpx;
+  padding-bottom: 60rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+}
+page .azm-binMobile {
+  transform: translateX(100%);
+}
+page .azm-binMobile-out {
+  transform: translateX(-100%);
+}
+page .azm-txt {
+  text-align: center;
+  width: 400rpx;
+  margin: 0 auto;
+}
+page .weui-cell text,
+page .weui-cell input {
+  font-size: 26rpx;
+}
+page .azm-footer {
+  padding-top: 40rpx;
+}
+page .azm-button {
+  text-align: center;
+  margin-top: 80rpx;
+  margin-bottom: 20rpx;
+}

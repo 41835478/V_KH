@@ -1,0 +1,59 @@
+@import "../index";
+@import './setOnepx';
+
+.setLine(@c: #C7C7C7) {
+  content: " ";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  height: 1*2rpx;
+  border: 1*2rpx solid @c;
+  color: @c;
+  height: 200%;
+  transform-origin: left top;
+  transform: scale(0.5);
+}
+
+.azm-1px, .azm-1px-t, .azm-1px-b, .azm-1px-tb, .azm-1px-l, .azm-1px-r {
+  position: relative;
+}
+
+.azm-1px {
+  &:before {
+    .setLine();
+  }
+}
+
+.azm-1px-t {
+  &:before {
+    .setTopLine();
+  }
+}
+
+.azm-1px-b {
+  &:after {
+    .setBottomLine();
+  }
+}
+
+.azm-1px-tb {
+  &:before {
+    .setTopLine();
+  }
+  &:after {
+    .setBottomLine();
+  }
+}
+
+.azm-1px-l {
+  &:before {
+    .setLeftLine();
+  }
+}
+
+.azm-1px-r {
+  &:after {
+    .setRightLine();
+  }
+}

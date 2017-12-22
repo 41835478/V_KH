@@ -4,7 +4,7 @@
 page {
   font-family: "Adobe 黑体 Std R,Helvetica Neue,Helvetica,Roboto,Segoe UI,Arial,sans-serif";
   box-sizing: border-box;
-  background-color: @bg-default;
+  background-color: @bg-default-color;
   view, view::after, view::before, navigator, button, scroll-view {
     font-family: "Adobe 黑体 Std R,Helvetica Neue,Helvetica,Roboto,Segoe UI,Arial,sans-serif";
     .px2rpx(font-size, 14);
@@ -40,9 +40,6 @@ page {
   }
   .pa {
     position: absolute;
-  }
-  .bg-color-hotPink {
-    background-color: #f96f95 !important;
   }
 
   .flexBox {
@@ -181,7 +178,7 @@ page {
   }
 
   .text-center {
-    text-align: center;
+    text-align: center !important;
   }
 
   .text-right {
@@ -193,7 +190,11 @@ page {
   }
 
   .text-hotPink {
-    color: #f96f95 !important;
+    color: @color-f74b7b !important;
+  }
+
+  .bg-color-hotPink {
+    background-color: @color-f74b7b !important;
   }
 
   .text-overflow {
@@ -240,22 +241,23 @@ page {
       background-color: @color-f74b7b;
       color: #fff;
       border-radius: 100px;
-      border-color: @color-f74b7b;
+      border: @border-btn-1px-primary;
       &.button-hover {
-        background-color: @color-f74b7b;
+        color: rgba(255, 255, 255, .6);
+        background-color: @primary-hover-color;
         color: #d8dbe4;
-        border-color: @color-f74b7b;
+        border: @border-btn-1px-primary;
       }
     }
     &.btn-white {
       background-color: #fff;
       color: #000;
       border-radius: 100px;
-      border-color: #d8dbe4;
+      border: @border-1px;
       &.button-hover {
         background-color: #fff;
         color: #d8dbe4;
-        border-color: #d8dbe4;
+        border: @border-1px;
       }
     }
 
@@ -272,9 +274,10 @@ page {
     &.btn-red-default {
       border: 1px solid @color-f74b7b;
       color: @color-f74b7b;
+      border: @border-btn-1px-primary;
       &.button-hover {
         background-color: @color-f74b7b;
-        border-color: @color-f74b7b;
+        border: @border-btn-1px-primary;
         color: #fff;
       }
     }
@@ -307,11 +310,177 @@ page {
     .food-btn-plus();
   }
 
+  .azm-fixed {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+  .weui-cells__border_1px {
+    .weui-cell::before {
+      border-top-width: 1px;
+    }
+  }
+  .azm-cell {
+    &.azm-cell-border_w_92::before {
+      width: 92%;
+    }
+    &.azm-cell-placeholder-color, .azm-cell-placeholder-color {
+      color: @placeholder-color;
+    }
+    .px2rpx-two(padding, 10, 15, 10, 15);
+    position: relative;
+    &.azm-cell-l-0px {
+      &::before {
+        left: 0;
+      }
+    }
+  }
+  .azm-cell-border_top {
+    position: relative;
+    &:before {
+      content: " ";
+      width: 96%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 1px;
+      border-top: 1*1rpx solid #d9d9d9;
+      color: #d9d9d9;
+      left: 4%;
+    }
+  }
+  .azm-popup-picker-primary-color {
+    color: @placeholder-color;
+    font-weight: 400;
+  }
+  .azm-primary-color {
+    color: @placeholder-color;
+    font-weight: 400;
+  }
+  .azm-radio_checked {
+    color: @primary-color;
+  }
+  .azm-popup-picker-placeholder {
+    color: @placeholder-color;
+    font-weight: 500;
+  }
+  .azm-footer_fixed_bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .azm-scroll-y {
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  .azm-scroll-x {
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .azm-text_color_white {
+    color: #fff;
+  }
+  .azm-text_color_primary {
+    color: @primary-color !important;
+    font-weight: 400 !important;
+  }
+  .azm-text_color_yellow {
+    color: #ffff00 !important;
+    font-weight: 400 !important;
+  }
+  .weui-loadmore__tips_in-line {
+    background-color: @default-color;
+  }
+  .weui-cell.azm-cell-border_0px {
+    &::before {
+      border: none;
+    }
+  }
+  .weui-cells.weui-cells_border_0px {
+    &::after, &::before {
+      border: none;
+    }
+  }
+  .azm-footer-50px {
+    height: 55*2rpx;
+    width: 100%;
+  }
+  //标签样式
+  image {
+    display: inline-block;
+    width: inherit;
+    height: inherit;
+  }
+  text {
+    font-weight: inherit;
+    font-size: inherit;
+    color: inherit;
+    font-family: inherit;
+  }
+
+  button::after {
+    border: none;
+  }
+  button {
+    border: @border-1px;
+  }
+  .button-hover {
+    border: @border-1px;
+  }
+  button[type="primary"] {
+    color: #FFFFFF;
+    background-color: @primary-color;
+    border: @border-btn-1px-primary;
+  }
+  .button-hover[type="primary"] {
+    color: rgba(255, 255, 255, .6);
+    background-color: @primary-hover-color;
+    border: @border-btn-1px-primary;
+  }
+  button[size="mini"] {
+    display: inline-block;
+    line-height: 2.3;
+    font-size: 13*2rpx;
+    padding: 0 1.6em;
+  }
+  button[plain] {
+    color: #353535;
+    border: @border-1px;
+    background-color: transparent;
+  }
+  button.button-hover[plain] {
+    color: #353535;
+    border: @border-1px;
+    opacity: .6;
+    background-color: transparent;
+  }
+  button[type="primary"][plain] {
+    color: @primary-color;
+    border: @border-btn-1px-primary;
+    background-color: transparent;
+  }
+  .button-hover[type="primary"][plain] {
+    color: @primary-color;
+    border: @border-btn-1px-primary;
+    background-color: transparent;
+    opacity: .6;
+  }
+  button[type="white"] {
+    color: #353535;
+    border: @border-btn-1px;
+    background-color: #fff;
+  }
+  .button-hover[type="white"] {
+    color: #353535;
+    border: @border-btn-1px;
+    background-color: #fff;
+    opacity: .6;
+  }
   view.new-class {
     view, view::after, view::before, navigator, scroll-view {
       box-sizing: border-box;
       .px2rpx(font-size, 12);
-      color: #fff;
     }
     button {
       .px2rpx(padding-left, 10);
@@ -437,19 +606,17 @@ page {
       width: inherit;
       .clearFix();
     }
-
-    //标签样式
-    image {
-      display: inline-block;
-      width: inherit;
-      height: inherit;
-    }
-    text {
-      font-weight: inherit;
-      font-size: inherit;
-      color: inherit;
+    .txt-box {
+      font-weight: 400;
+      .px2rpx(font-size, 12);
+      .px2rpx(padding-top, 10);
+      color: #000;
       font-family: inherit;
     }
+    .width-100 {
+      width: 100%;
+    }
+
   }
 
   .old-class {

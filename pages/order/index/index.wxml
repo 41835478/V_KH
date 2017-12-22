@@ -1,49 +1,50 @@
 <view class="orderIndex">
-    <block wx:for="{{orderList}}">
-        <view class="row">
-            <view class="azm-title">
-                <view class="h2">订单类型</view>
-                <view class="azm-span">
-                    <text wx:if="{{item.consumerType==2}}">外卖</text>
-                    <text wx:elif="{{item.consumerType==1}}">快餐</text>
-                    <text wx:else>堂食</text>
-                </view>
-            </view>
-            <view class="azm-section">
-                <view class="flexBox"
-                      data-value="{{item}}" catchtap="goOrderDetail">
-                    <view class="flexBox-item fb-4 azm-image">
-                        <block wx:if="{{item.resLogo}}">
-                            <image src="{{serverAddressImg+item.resLogo}}"></image>
-                        </block>
-                        <block wx:else>
-                            <view>
-                                <text class="iconfont icon-jiazaishibai azm-icon"></text>
-                            </view>
-                        </block>
+    <block wx:for="{{orderList}}" wx:key="*this" wx:for-item="items">
+        <block wx:for="{{items}}" wx:key="*this">
+            <view class="weui-cells row weui-cells_border_0px">
+                <view class="azm-title weui-cell">
+                    <view class="h2">订单类型</view>
+                    <view class="azm-span">
+                        <text>{{filterUtil.OrderType(item)}}</text>
                     </view>
-                    <view class="flexBox-item fb-5 azm-center">
-                        <view class="h3 text-overflow">{{item.resName}}</view>
-                        <view class="azm-time text-overflow">{{item.consumerTime}}</view>
-                        <view class="azm-money text-overflow">
-                            <text>实付：</text>
-                            <text class="text-red" decode> ¥{{item.amount}}</text>
+                </view>
+                <view class="azm-section weui-cell">
+                    <view class="flexBox"
+                          data-value="{{item}}" catchtap="goOrderDetail">
+                        <view class="flexBox-item fb-4 azm-image">
+                            <block wx:if="{{item.resLogo}}">
+                                <image lazy-load src="{{imageServer+item.resLogo}}"></image>
+                            </block>
+                            <block wx:else>
+                                <view>
+                                    <text class="iconfont icon-jiazaishibai azm-icon"></text>
+                                </view>
+                            </block>
+                        </view>
+                        <view class="flexBox-item fb-5 azm-center">
+                            <view class="h3 text-overflow">{{item.resName}}</view>
+                            <view class="azm-time text-overflow">{{item.consumerTime}}</view>
+                            <view class="azm-money text-overflow">
+                                <text>实付：</text>
+                                <text class="text-red" decode> {{filterMoney.RMB(item.amount)}}</text>
+                            </view>
+                        </view>
+                        <view class="flexBox-item fb-3 azm-right">
+                            <view class="azm-status text-overflow">状态：{{filterUtil.OrderStatus(item).str}}</view>
+                            <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:key="*this" wx:for-item="val">
+                                <block wx:if="{{1 == filterUtil.OrderType(item,1)}}">
+                                    <button class="azm-btn {{val.class}}" plain type="mini"
+                                            data-orderType="{{filterUtil.OrderType(item,1)}}"
+                                            data-value="{{item}}" data-type="{{val.jumpType}}" catchtap="jumpBtn">
+                                        {{val.name}}
+                                    </button>
+                                </block>
+                            </block>
                         </view>
                     </view>
-                    <view class="flexBox-item fb-3 azm-right">
-                        <view class="azm-status text-overflow">状态：{{statusStr[item.consumerStatus]}}</view>
-                        <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:for-item="val">
-                            <block wx:if="{{val.type === 100 || val.type == item.consumerType}}">
-                                <button class="azm-btn {{val.class}}" plain type="mini"
-                                        data-value="{{item}}" data-type="{{val.jumpType}}" catchtap="jumpBtn">
-                                    {{val.name}}
-                                </button>
-                            </block>
-                        </block>
-                    </view>
                 </view>
             </view>
-        </view>
+        </block>
     </block>
     <view class="weui-loadmore" wx:if="{{!hasMoreData}}">
         <view class="weui-loading"></view>
@@ -53,4 +54,13 @@
         <view class="weui-loadmore__tips weui-loadmore__tips_in-line">我是有底线的</view>
     </view>
 </view>
+
+
+<!--过滤器-->
+<wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>
+<wxs src="../../../utils/filter/filter_orderType.wxs" module="filterUtil"/>
+
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
 

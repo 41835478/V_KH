@@ -6,12 +6,16 @@
   view, scroll-view {
     box-sizing: border-box;
   }
+  .spinner2 {
+    position: absolute;
+  }
   position: absolute;
   margin: 0;
   .px2rpx(top, 73);
-  .px2rpx(left, 30);
-  .px2rpx(right, 30);
-  .px2rpx(bottom, 220);
+  .px2rpx(left, 40);
+  .px2rpx(right, 40);
+  //.px2rpx(bottom, 220);
+  min-height: 187*2rpx;
   z-index: 700;
   background: #fff;
   .px2rpx(border-radius, 6);
@@ -30,33 +34,34 @@
       position: absolute;
       top: 0;
       right: 0;
+      background-color: transparent;
+      border: none;
+      color: #fff;
       .px2rpx(height, 47.5);
       .px2rpx(line-height, 47.5);
       .px2rpx(width, 47.5);
-      &::after {
-        content: 'X';
-        display: block;
-        position: absolute;
-        .px2rpx(height, 47.5);
-        .px2rpx(line-height, 47.5);
-        .px2rpx(width, 47.5);
-        top: 0;
-        right: 0;
-        color: #FFF;
-        .px2rpx(font-size, 18);
-        text-align: center;
-        font-family: Arial, SimSun, sans-serif;
+      &::before {
+        border: none;
       }
     }
 
   }
   .module-content {
-    .fullScreen();
-    .px2rpx(top, 47.5);
-    .px2rpx(bottom, 47.5);
-    .px2rpx-two(margin, 12, 0, 0, 0);
+    position: relative;
+    overflow: hidden;
+    margin: auto;
+    top: 0;
+    left: 0;
+    //bottom: 0;
+    right: 0;
+    max-height: 300*2rpx;
+    min-height: 100*2rpx;
+    .px2rpx(margin-bottom, 10);
+    //.px2rpx-two(padding, 12, 0, 0, 0);
     scroll-view {
-      .px2rpx-two(padding, 0, 12, 0, 12);
+      max-height: 300*2rpx;
+      min-height: 100*2rpx;
+      .px2rpx-two(padding, 0, 5, 0, 12);
       .module-radio-list {
         text-align: center;
         .px2rpx(padding-top, 10);
@@ -94,10 +99,61 @@
           text-align: left;
         }
       }
+      .module-content-nikeName {
+        height: 100%;
+        min-height: 120*2rpx;
+        .p {
+          text-align: center;
+          margin-top: 20*2rpx;
+        }
+        .module-content-nikeName-input {
+          border: @border-1px;
+          padding: 5*2rpx 20*2rpx;
+          border-radius: 3*2rpx;
+          input {
+            height: 26.25*2rpx !important;
+            min-height: 26.25*2rpx !important;
+            font-size: 13*2rpx;
+          }
+        }
+        .module-content-nikeName-text {
+
+        }
+      }
+      .modulePhone {
+        padding: 20*2rpx 15*2rpx;
+        .modulePhone-code-text, .modulePhone-phone {
+          position: relative;
+          border: 1*2rpx solid #C7C7C7;
+          border-radius: 5*2rpx;
+          padding: 2*2rpx 5*2rpx 2*2rpx 35*2rpx;
+          input {
+            height: 36*2rpx !important;
+            min-height: 36*2rpx !important;
+            font-size: 13*2rpx !important;
+          }
+          .azm-icon {
+            position: absolute;
+            top: 50%;
+            left: 10*2rpx;
+            transform: translateY(-50%);
+          }
+        }
+        .modulePhone-code {
+          margin-top: 15*2rpx;
+          width: 100%;
+          .modulePhone-code-btn {
+            padding-left: 5*2rpx;
+            button {
+              line-height: 40*2rpx;
+            }
+          }
+        }
+      }
     }
   }
   .module-footer {
-    position: absolute;
+    position: relative;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -115,24 +171,46 @@
     .module-footer-left {
       .px2rpx(font-size, 12);
       .px2rpx(line-height, @moduleFooterH);
-      .px2rpx(height, @moduleFooterH);
       .px2rpx(padding-left, 20);
       overflow: hidden;
       .text-overflow();
-      .text-red {
-        .px2rpx(font-size, 18);
-        color: @color-f74b7b;
+      .font-lg {
+        .px2rpx(font-size, 16);
       }
-      .text-black {
-        .px2rpx(font-size, 18);
-        color: #000;
+      .font-md {
+        .px2rpx(font-size, 14);
       }
-      .price-red {
+      .font-sm {
         .px2rpx(font-size, 12);
-        color: @color-f74b7b;
       }
-      .text-bold {
+      .font-xs {
+        .px2rpx(font-size, 10);
+      }
+      .font-bold {
         font-weight: bold;
+      }
+    }
+    .module-footer-moduleName {
+      text-align: center;
+      position: relative;
+      button {
+        position: absolute;
+        padding: 0 3em;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50*2rpx;
+        box-shadow: 0 0 5*2rpx #020203;
+      }
+    }
+    &.modulePhone-footer {
+      background-color: transparent;
+      .modulePhone-submit {
+        button {
+          padding: 0 50*2rpx;
+          line-height: 30*2rpx;
+          border-radius: 32*2rpx;
+        }
       }
     }
   }

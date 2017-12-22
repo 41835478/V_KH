@@ -54,7 +54,7 @@
 				{
 					"id": 4,
 					"name": "1号桌台线上",
-					"pathName": "pages/shop/home/home",
+					"pathName": "pages/init/init",
 					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D2278ddc78f884094b9351af5cdc1c180",
 					"scene": "1011"
 				},
@@ -79,17 +79,24 @@
 					"scene": "1011"
 				},
 				{
-					"id": -1,
-					"name": "绑定手机",
-					"pathName": "pages/vkahui/phone-add/phone-add",
-					"query": "",
+					"id": 8,
+					"name": "确认订单",
+					"pathName": "pages/shop/confirm-order/confirm-order",
+					"query": "resId=000000005c2536d5015c2e169199061f&orderType=0",
 					"scene": "1011"
 				},
 				{
-					"id": -1,
-					"name": "1号桌台线上（汉字）",
+					"id": 9,
+					"name": "分享进顶呱呱",
 					"pathName": "pages/shop/home/home",
-					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3Dd1380d3a1120479b82f45950db58952a",
+					"query": "resId=000000005a2c413b015a64fb9b71130f",
+					"scene": "1036"
+				},
+				{
+					"id": 10,
+					"name": "申请会员卡",
+					"pathName": "pages/vkahui/memberApplication/memberApplication",
+					"query": "resId=000000005a2c413b015a64fb9b71130f&resName=%E9%A1%B6%E5%91%B1%E5%91%B1&resLogo=%2Fresources%2FUPLOADIMAGE%2FTEMP%2F000000005a2c413b015a64fb9b71130f%2Fres%2Fo_1b9l3i5obpu71itd1tlh1cta1e75n.JPG",
 					"scene": "1011"
 				}
 			]

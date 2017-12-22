@@ -1,110 +1,57 @@
-<view class="old-class">
-    <block wx:if="{{isWaimai}}">
-        <view class="wrapper has-nav">
-            <view data-id="{{item.id}}" class="entry inblk relative address" wx:if="{{!defaultAddress==''}}"
-                  style="padding-top:0.8rem;padding-bottom:0.8rem;">
-                <view class="inblk relative" style="width:100%">
-                    <view class="left fl">
-                        <image src="/images/icon/radio.png" class="radioImg"></image>
-                        <text style="margin-left:1.8rem;">{{defaultAddress.name}}</text>
-                        <text class="inline-text gray-1 sex" wx:if="{{defaultAddress.sex == 0}}">先生</text>
-                        <text class="inline-text gray-1 sex" wx:if="{{defaultAddress.sex== 1}}">女士</text>
-                        <text class="inline-text gray-1">{{defaultAddress.mobile}}</text>
-                    </view>
-                    <view class="right fl marginLeft">
-                        <view class="inline-div mg-top-small">
-                            <text class="inline-text gray-1">{{defaultAddress.address}}</text>
-                        </view>
-                    </view>
-                    <view class="edit" catchtap="modify" data-modify="{{defaultAddress}}">
-                        <image src="/images/icon/edit.png"></image>
-                    </view>
-                </view>
-            </view>
-            <view class="switch h4">切换其他地址</view>
-            <radio-group style="z-index:10">
-                <block wx:for="{{addressData}}">
-                    <view bindtap="toWaimai" data-id="{{item.id}}" class="entry inblk relative me">
-                        <view class="inblk relative">
-                            <view class="fl">
-                                <text style="margin-left:0rem;">{{item.name}}</text>
-                                <text class="inline-text gray-1 sex" wx:if="{{item.sex == 0}}">先生</text>
-                                <text class="inline-text gray-1 sex" wx:if="{{item.sex== 1}}">女士</text>
-                                <text class="inline-text gray-1">{{item.mobile}}</text>
+<block wx:if="{{true}}">
+    <view class="new-class azm-address" style="position: fixed;top: 0;width: 100%;height: 100%;">
+        <scroll-view scroll-y style="position: fixed;top: 0.5em;width: 100%;height: 91%;">
+            <view class="weui-cells__title"></view>
+            <block wx:for="{{addressData}}" wx:key="*this">
+                <view class="weui-cells">
+                    <view class="weui-cell">
+                        <view class="weui-cell__bd">
+                            <view class="row">
+                                <text decode="true">{{item.name}}&nbsp;&nbsp;</text>
+                                <text class="azm-primary-color">{{item.mobile}}</text>
                             </view>
-                            <view class="right fl">
-                                <view class="inline-div  mg-top-small">
-                                    <text class="inline-text gray-1">{{item.address}}</text>
-                                </view>
+                            <view class="row azm-primary-color" style="margin-top: .3em;">
+                                <text>{{item.address}}</text>
                             </view>
                         </view>
-                        <view class="radio">
-                            <radio value="{{true}}" class="rad" color="#f74b7b" checked="{{item.defaultAddress}}"/>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                        </view>
+                        <view class="weui-cell__ft">
                         </view>
                     </view>
-                </block>
-            </radio-group>
-            <navigator url="/pages/vkahui/address-edit/address-edit?isWaimai=true" open-type="redirect">
-                <view class="btn-ctn text-center pd-tb">
-                    <button class="btn btn-red inblk h4">新建收货地址</button>
-                </view>
-            </navigator>
-        </view>
-    </block>
-    <block wx:else>
-        <view class="wrapper has-nav">
-            <view data-id="{{item.id}}" class="entry inblk relative address" wx:if="{{!defaultAddress==''}}"
-                  style="padding-top:0.8rem;padding-bottom:0.8rem;">
-                <view class="inblk relative" style="width:100%">
-                    <view class="left fl">
-                        <image src="/images/icon/radio.png" class="radioImg"></image>
-                        <text style="margin-left:1.8rem;">{{defaultAddress.name}}</text>
-                        <text class="inline-text gray-1 sex" wx:if="{{defaultAddress.sex == 0}}">先生</text>
-                        <text class="inline-text gray-1 sex" wx:if="{{defaultAddress.sex== 1}}">女士</text>
-                    </view>
-                    <view class="right fl marginLeft">
-                        <view class="inline-div mg-top-small">
-                            <text class="inline-text gray-1">{{defaultAddress.address}}</text>
+                    <view class="weui-cell">
+                        <label class="weui-cell__bd azm-label_radio_one" catchtap="changAddress" data-value="{{item}}"
+                               data-id="{{item.id}}">
+                            <radio color="#F74B7B" value=""
+                                   checked="{{item.defaultAddress}}"/>
+                            <block wx:if="{{item.defaultAddress}}">
+                                <text>默认地址</text>
+                            </block>
+                            <block wx:else>
+                                <text>设置默认</text>
+                            </block>
+                        </label>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                            <button size="mini" plain catchtap="modify" data-modify="{{item}}">
+                                <text class="iconfont icon-bianji"></text>
+                                <text decode="true">&nbsp;编辑</text>
+                            </button>
+                            <button size="mini" plain wx:if="{{!item.defaultAddress}}" catchtap="deleteAddress"
+                                    data-id="{{item.id}}">
+                                <text class="iconfont icon-lajixiang"></text>
+                                <text decode="true">&nbsp;删除</text>
+                            </button>
                         </view>
-                    </view>
-                    <view class="edit" catchtap="modify" data-modify="{{defaultAddress}}">
-                        <image src="/images/icon/edit.png"></image>
-                    </view>
-                </view>
-            </view>
-            <view class="switch h4" wx:if="{{!defaultAddress==''}}">切换其他地址</view>
-            <radio-group style="z-index:10">
-                <block wx:for="{{addressData}}">
-                    <view data-id="{{item.id}}" class="entry inblk relative me" bindtap="changAddress">
-                        <view class="inblk relative">
-                            <view class="fl">
-                                <view>
-                                    <text style="margin:0;">{{item.name}}</text>
-                                    <text class="inline-text gray-1 sex" wx:if="{{item.sex == 0}}">先生</text>
-                                    <text class="inline-text gray-1 sex" wx:if="{{item.sex== 1}}">女士</text>
-                                    <text class="inline-text gray-1">{{item.mobile}}</text>
-                                </view>
-                            </view>
-                            <view class="right fl">
-                                <view class="inline-div  mg-top-small">
-                                    <text class="inline-text gray-1">{{item.address}}</text>
-                                </view>
-                            </view>
-                        </view>
-                        <view class="radio">
-                            <radio value="{{true}}" class="rad" color="#f74b7b" checked="{{item.defaultAddress}}"/>
-                        </view>
-                    </view>
-                </block>
-            </radio-group>
-            <navigator url="/pages/vkahui/address-edit/address-edit" open-type="navigate">
-                <view class="btn-ctn text-center pd-tb">
-                    <button class="btn btn-red inblk button">新建地址</button>
-                </view>
-            </navigator>
-        </view>
-    </block>
+                        <view class="weui-cell__ft azm-popup-picker-primary-color">
 
-    <!--<import src="/pages/template/template.wxml" />
-    <template is="navigation" />-->
-</view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <view class="azm-footer_fixed_bottom" catchtap="modify">
+            <text class="iconfont icon-jiahao azm-icon"></text>
+            <text decode="true">&nbsp;新建地址</text>
+        </view>
+    </view>
+</block>

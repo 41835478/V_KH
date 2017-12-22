@@ -5,6 +5,8 @@ const utilMd5 = require('../utils/md5.js'),
     dateFormate = require('../utils/formateDate'),
     queryString = require('../utils/queryString');
 
+module.exports.dateFormate = dateFormate;
+
 function getToken() {
     const app = getApp();
     if (app && app.globalData && app.globalData.token) {
@@ -132,7 +134,7 @@ function formateDate(strTime, format, needMap) {
     for (var k in dateMap) {
         format = format.replace(new RegExp(k, 'g'), dateMap[k]);
     }
-
+    return format;
 }
 
 function formatTimeDifference(start, end, config) {
@@ -373,10 +375,11 @@ module.exports.getSignature = getSignature;
 
 function money(num) {
     num = parseFloat(num) || 0;
-    return num.toFixed(2);
+    return Number(num.toFixed(2));
 }
 
 module.exports.money = money;
+
 
 function moneyToFloat(num) {
     num = money(num);
@@ -394,7 +397,7 @@ function showToast(option) {
         title: option,
         icon: 'success',
         mask: true,
-        duration: 4000
+        duration: 1500
     };
     if (utilCommon.isObject(option)) {
         data.title = option.title;
@@ -414,6 +417,7 @@ function showToast(option) {
             data.complete = arguments[1];
         }
     }
+    wx.hideToast();
     wx.hideLoading();
     wx.showToast(data);
 }
@@ -424,10 +428,10 @@ module.exports.showToast = showToast;
 function failToast(option) {
     let data = {
         title: option,
-        icon: 'success',
-        image: 'success',
+        icon: 'fail',
+        image: '/images/fail.png',
         mask: true,
-        duration: 4000
+        duration: 1500
     };
     if (utilCommon.isObject(option)) {
         data.title = option.title;
@@ -435,7 +439,11 @@ function failToast(option) {
         data.image = option.image;
         data.mask = option.mask || true;
         data.duration = option.duration || 2000;
-        data.success = option.success;
+        data.success = option.success ? () => {
+            setTimeout(() => {
+                option.success();
+            }, data.duration)
+        } : null;
         data.fail = option.fail;
         data.complete = option.complete;
     } else {
@@ -443,11 +451,29 @@ function failToast(option) {
             data.complete = arguments[1];
         }
     }
+    wx.hideToast();
     wx.hideLoading();
     wx.showToast(data);
 }
 
 module.exports.failToast = failToast;
+
+
+function showLoading(text, cb) {
+    wx.hideToast();
+    wx.hideLoading();
+    wx.showLoading({
+        title: text,
+        mask: true,
+        success() {
+            setTimeout(function () {
+                cb && cb();
+            }, 1000);
+        }
+    });
+}
+
+module.exports.showLoading = showLoading;
 
 /**
  * 判断是否为非空对象
@@ -507,7 +533,7 @@ function extend() {
                     continue;
                 }
                 // 如果我们拷贝的对象是一个对象或者数组的话
-                if (deep && copy && ( utilCommon.isPlainObject(copy) || (copyIsArray = utilCommon.isArray(copy)) )) {
+                if (deep && copy && (utilCommon.isPlainObject(copy) || (copyIsArray = utilCommon.isArray(copy)))) {
                     if (copyIsArray) {
                         copyIsArray = false;
                         clone = src && utilCommon.isArray(src) ? src : [];
@@ -574,16 +600,7 @@ function go(a, options) {
     if (utilCommon.isNumberOfNaN(a)) {
         if (a < 0) {
             wx.navigateBack({
-                delta: -a,
-                success() {
-                    options.success && options.success()
-                },
-                fail() {
-                    options.fail && options.fail()
-                },
-                complete() {
-                    options.complete && options.complete()
-                }
+                delta: -a
             })
         }
     } else if (utilCommon.isString(a) && regExpUtil.isPath(a)) {
@@ -619,6 +636,32 @@ function go(a, options) {
                     options.complete && options.complete()
                 }
             })
+        } else if (options.type === 'goInit') {
+            go('/pages/init/init',
+                {
+                    type: 'tab',
+                    success() {
+                        setTimeout(() => {
+                            go(a, {
+                                data: options.data
+                            });
+                        }, 200)
+                    }
+                }
+            )
+        } else if (options.type === 'goOrder') {
+            go('/pages/order/index/index',
+                {
+                    type: 'tab',
+                    success() {
+                        setTimeout(() => {
+                            go(a, {
+                                data: options.data
+                            });
+                        }, 200)
+                    }
+                }
+            )
         } else if (options.type === 'blankAll') {
             wx.reLaunch({
                 url: url,
@@ -696,11 +739,62 @@ function dateformat(micro_second, type) {
 
 
 class Countdown {
-    constructor(time, type) {
-        this.time = time > 0 ? time : 0;
-        this.type = type;
+    constructor(that, options) {
+        let time;
+        if (options.time && options.time > 0) {
+            time = options.time;
+        } else {
+            time = 0;
+        }
+        switch (options.timeType) {
+            case 6:
+                options.timeType = 1000 / 100;
+                break;
+            case 5:
+                options.timeType = 1000 / 20;
+                break;
+            case 4:
+                options.timeType = 1000 / 10;
+                break;
+            case 3:
+                options.timeType = 1000 / 5;
+                break;
+            case 2:
+                options.timeType = 1000 / 4;
+                break;
+            case 1:
+                options.timeType = 1000 / 2;
+                break;
+            default:
+                options.timeType = 1000 / 4;
+        }
+        this.module = options.module;
+        this.timeType = options.timeType;
+        this.type = options.type;
         this.clearTimeout = null;
-        this.onCountdownEnd = null
+        this.onEnd = options.onEnd || null;
+        if (options) {
+            if (options.createTime) {
+                let endTime,
+                    _time = options.minTime || 15,
+                    spacer = options.spacer || '-',
+                    startTime = options.startTime || new Date();
+                endTime = formatTime(options.createTime, {m: _time, spacer: spacer});
+                time = formatTimeDifference(startTime, endTime);
+            }
+        }
+        this.time = time > 0 ? time : 0;
+        this.text = options.text || 'countdown';
+        this.startUp(that);
+        if (this.module) {
+            that.setData({
+                [`${this.module}Data.azm_${this.text}`]: this
+            })
+        } else {
+            that.setData({
+                [`azm_${this.text}`]: this
+            })
+        }
     }
 
     clear() {
@@ -708,36 +802,44 @@ class Countdown {
     }
 
     /* 毫秒级倒计时 */
-    countdown(that, text) {
+    startUp(that) {
         // 渲染倒计时时钟
-        var _this = this;
+        var _this = this,
+            countdownTime = dateformat(_this.time, _this.type);
         _this.clear();
-        that.setData({
-            [text]: dateformat(_this.time, _this.type)
-        });
-
+        if (this.module) {
+            that.setData({
+                [`${this.module}Data.azm_${this.text}`]: this,
+                [`${this.module}Data.azm_${this.text}.countdownTime`]: countdownTime,
+                [`${this.module}Data.azm_${this.text}.time`]: _this.time,
+            })
+        } else {
+            that.setData({
+                [`azm_${_this.text}.countdownTime`]: countdownTime,
+                [`azm_${_this.text}.time`]: _this.time,
+            });
+        }
         if (_this.time <= 0) {
-            _this.onCountdownEnd && _this.onCountdownEnd();
-            if (_this.type === 'mm:ss') {
-                that.setData({
-                    [text]: "00:00"
-                });
-            } else {
-                that.setData({
-                    [text]: ''
-                });
-            }
+            _this.onEnd && _this.onEnd();
             // timeout则跳出递归
             return;
         }
         _this.clearTimeout = setTimeout(function () {
             // 放在最后--
-            _this.time -= 10;
-            _this.countdown(that, text);
-        }, 10)
+            _this.time -= _this.timeType;
+            _this.startUp(that, _this.text);
+        }, _this.timeType)
     }
-
-
 }
 
 module.exports.Countdown = Countdown;
+
+function trim(x) {
+    try {
+        return x.replace(/^\s+|\s+$/gm, '');
+    } catch (e) {
+        return x
+    }
+}
+
+module.exports.trim = trim;

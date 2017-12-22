@@ -1,59 +1,61 @@
-<view class="old-class">
-    <view class="wrapper has-nav">
-        <view class="headline text-center" wx:if="{{true}}">
-            <block wx:if="{{wxInfo.avatarUrl}}">
-                <image class="icon-user-bigger" src="{{wxInfo.avatarUrl}}"></image>
+<view class="azm-fixed">
+    <navigator url="{{isBindMobile?'/pages/vkahui/meInfo/meInfo':'/pages/vkahui/phone-add/phone-add'}}"
+               class="azm-top text-center">
+        <view class="azm-avatar">
+            <block wx:if="{{userInfo.avatarUrl}}">
+                <view class="azm-image">
+                    <image lazy-load src="{{userInfo.avatarUrl}}"></image>
+                </view>
             </block>
             <block wx:else>
-                <text class="iconfont-2 icon-yonghu" style="font-size: 80rpx"></text>
+                <text class="iconfont-2 icon-yonghu azm-icon"></text>
             </block>
-            <text class="h2-big blk mg-top name">{{wxInfo.nickName}}</text>
         </view>
-        <view class="ct arrow-list-ctn relative">
-            <view class="listMe list">
-                <navigator url="" open-type="switchTab" url="/pages/init/init">
-                    <view class="entry h5" style="border-bottom:none;margin:0;">
-                        会员卡
-                        <text style="color:#aab1cb;">({{memberCardCount}})</text>
-                        <view class="arrow">
-                            <view class="outer">
-                                <view class="inner">
-                                    <image src="/images/icon/arrow-right.png"></image>
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                </navigator>
-            </view>
-            <view class="list">
-                <navigator url="/pages/vkahui/address/address" open-type="navigate">
-                    <view class="entry" style="border-bottom:none;margin:0;">
-                        <text class="h5">收货地址</text>
-                        <view class="arrow">
-                            <view class="outer">
-                                <view class="inner">
-                                    <image src="/images/icon/arrow-right.png"></image>
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                </navigator>
-            </view>
-            <view class="list" wx:if="{{memberCardCount>0}}">
-                <navigator url="{{!isBindMobile?'/pages/vkahui/phone-add/phone-add':''}}" open-type="navigate">
-                    <view class="entry h5" style="border-bottom:none;margin:0;">
-                        <text>绑定手机</text>
-                        <text style="color:#aab1cb;">{{isBindMobile?' 已绑定':''}}</text>
-                        <view class="arrow" wx:if="{{!isBindMobile}}">
-                            <view class="outer">
-                                <view class="inner">
-                                    <image src="/images/icon/arrow-right.png"></image>
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                </navigator>
-            </view>
+        <view class="box azm-name">
+            <block wx:if="{{userInfo.name}}">
+                <text>{{userInfo.name}}</text>
+            </block>
+            <block wx:else>
+                <text>{{userInfo.nickName}}</text>
+            </block>
         </view>
+    </navigator>
+    <view class="weui-cells">
+        <navigator open-type="switchTab" url="/pages/init/init" class="weui-cell weui-cell_access picker">
+            <view class="weui-cell__bd">
+                <text class="iconfont icon-huiyuanqia azm-text_color_primary"></text>
+                <text decode>&nbsp;&nbsp;会员卡({{memberCardCount}})</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color">
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access">
+            </view>
+        </navigator>
+        <navigator url="/pages/vkahui/address/address" class="weui-cell weui-cell_access picker">
+            <view class="weui-cell__bd">
+                <text class="iconfont icon-shouhuodizhi azm-text_color_yellow"></text>
+                <text decode>&nbsp;&nbsp;收货地址</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color">
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access">
+            </view>
+        </navigator>
+    </view>
+    <view class="weui-cells">
+        <navigator url="{{isBindMobile?'':'/pages/vkahui/phone-add/phone-add'}}"
+                   class="weui-cell weui-cell_access picker">
+            <view class="weui-cell__bd">
+                <text class="iconfont icon-telphone"></text>
+                <text decode>&nbsp;&nbsp;绑定手机</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color">
+                <block wx:if="{{isBindMobile}}">
+                    <text>{{userInfo.mobile}}</text>
+                </block>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access">
+            </view>
+        </navigator>
     </view>
 </view>

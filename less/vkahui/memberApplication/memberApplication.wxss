@@ -1,0 +1,50 @@
+page {
+  background: #f8f8f8;
+}
+page view.new-class view {
+  color: #0d0c0c;
+}
+page view.new-class .azm-title {
+  height: 70rpx;
+  line-height: 80rpx;
+  font-size: 26rpx;
+  font-weight: 1000rpx;
+}
+page view.new-class .azm-image {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 100%;
+  overflow: hidden;
+  box-shadow: 0 0 10rpx #020203;
+  margin: 0 auto;
+}
+page view.new-class .azm-resName {
+  text-align: center;
+  margin-top: 20rpx;
+  padding-bottom: 60rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+}
+page view.new-class .azm-binMobile {
+  transform: translateX(100%);
+}
+page view.new-class .azm-binMobile-out {
+  transform: translateX(-100%);
+}
+page view.new-class .azm-txt {
+  text-align: center;
+  width: 400rpx;
+  margin: 0 auto;
+}
+page view.new-class .weui-cell text,
+page view.new-class .weui-cell input {
+  font-size: 26rpx;
+}
+page view.new-class .azm-footer {
+  padding-top: 40rpx;
+}
+page view.new-class .azm-button {
+  text-align: center;
+  margin-top: 80rpx;
+  margin-bottom: 20rpx;
+}

@@ -1,0 +1,112 @@
+"use strict";
+var ORDER_STATUS = {
+    s3: {
+        str: '待支付',
+        statusStr: '待支付'
+    },
+    s4: {
+        str: '待支付',
+        statusStr: '反结账'
+    },
+    s5: {
+        str: '待接单',
+        statusStr: '待接单'
+    },
+    s6: {
+        str: '退款中',
+        statusStr: '退款中'
+    },
+    s7: {
+        str: '已退款',
+        statusStr: '已退款'
+    },
+    s8: {
+        str: '已取消',
+        statusStr: '订单已取消'
+    },
+    s11: {
+        str: '已完成',
+        statusStr: '商家已接单'
+    },
+    s12: {
+        str: '已关闭',
+        statusStr: '商家已拒单'
+    },
+    s13: {
+        str: '已完成',
+        statusStr: '拒单成功退款失败'
+    },
+    S0: {
+        str: '已完成',
+        statusStr: '订单已完成'
+    }
+};
+
+function getOrderType(data, type) {
+    var orderType = 0,
+        orderName = '堂食';
+    if (data.consumerType == 2) {
+        orderType = 1;
+        orderName = '外卖'
+    } else if (data.consumerType == 0) {
+        if (data.payType == 0 && data.dinnerType == 1) {
+            orderType = 2;
+            orderName = '自助取餐'
+        } else if (data.payType == 1) {
+            orderType = 3;
+            orderName = '餐后付款'
+        }
+    }
+    if (1 == type) {
+        return orderType
+    } else if (2 == type) {
+        return {orderName, orderType}
+    } else {
+        return orderName
+    }
+}
+
+function getOrderStatus(data, type) {
+    var orderType = getOrderType(data, 1);
+    data.status = data.status || data.consumerStatus;
+    if (data.finishTime) {
+        return ORDER_STATUS.S0
+    } else {
+        if (11 == data.status && 2 === orderType) {
+            return {
+                str: '待叫号',
+                statusStr: '制作中，待叫号',
+                icon: ''
+            }
+        } else if (3 == data.status && 3 === orderType) {
+            if (0 == data.orderStatus) {
+                return {
+                    str: '已开单',
+                    statusStr: '商家已开单'
+                }
+            } else if (1 == data.orderStatus) {
+                return ORDER_STATUS['s5']
+            } else if (2 == data.orderStatus) {
+                return {
+                    str: '已接单',
+                    statusStr: '商家已接单'
+                }
+            } else if (3 == data.orderStatus) {
+                return {
+                    str: '已拒单',
+                    statusStr: '商家已拒单'
+                }
+            }
+        } else if (5 == data.status && 3 === orderType) {
+            return ORDER_STATUS.S0
+        } else {
+            return ORDER_STATUS['s' + data.status]
+        }
+    }
+}
+
+
+module.exports = {
+    OrderType: getOrderType,
+    OrderStatus: getOrderStatus,
+};

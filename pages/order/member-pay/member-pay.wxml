@@ -1,0 +1,30 @@
+<view class="azm-fixed">
+    <form class="memberCode" report-submit="true" bindsubmit="confirmCode">
+        <view class="p text-center azm-text">
+            <text>请验证已绑定会员手机号</text>
+        </view>
+        <view class="p azm-code flexBox">
+            <view class="flexBox-item fb-8 border-color-1px azm-codeText">
+                <input type="number" name="codeText"
+                       value="{{codeText}}"
+                       placeholder="请输入6位数的验证码"
+                       maxlength="6" bindinput="inputCodeText" focus/>
+            </view>
+            <view class="flexBox-item fb-4 {{azm_clockCode&&azm_clockCode.time>0?'border-color-1px':''}}">
+                <block wx:if="{{azm_clockCode&&azm_clockCode.time>0}}">
+                    <button>{{azm_clockCode.countdownTime}}秒</button>
+                </block>
+                <block wx:else>
+                    <button type="primary" bindtap="getCode">获取验证码</button>
+                </block>
+            </view>
+        </view>
+        <view class="p text-center azm-btn">
+            <button type="primary" formType="submit">确定</button>
+        </view>
+    </form>
+</view>
+
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
