@@ -145,6 +145,6 @@
 
 <!--编辑昵称弹窗-->
 <import src="../../../template/module/index.wxml"/>
-<template is="module-popup" data="{{...modulePhoneData,class:modulePhone,isMask,animated:true}}"></template>
+<template is="module-popup" data="{{...modulePhoneData,class:modulePhone,animated:true}}"></template>
 
 

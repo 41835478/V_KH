@@ -20,7 +20,7 @@
             </view>
         </view>
     </view>
-    <!-----------------------菜品-->
+    <!---菜品-->
     <view class="section">
         <view class="flexBox flexBox-start dishes-tab">
             <!---------------菜品类Tab-->
@@ -39,7 +39,7 @@
                     </view>
                 </block>
             </scroll-view>
-            <!----------------------------菜品列表-->
+            <!--------菜品列表-->
             <!--scroll-into-view="{{dishesTabListIndex}}"-->
             <scroll-view scroll-y scroll-with-animation class="flexBox-item fb-9 right"
                          enable-back-to-top="true" bindscrolltoupper="upper"
@@ -51,7 +51,7 @@
                     <block wx:for="{{foodListObj[dishesTab.code]}}" wx:key="*this" wx:for-item="val" wx:for-index="i">
                         <view class="dishes-tab-item-foodList content">
                             <view class="flexBox flexBox-start foodList-item">
-                                <!------------------------------菜品图片-->
+                                <!----------菜品图片-->
                                 <view class="flexBox-item fb-4 left">
                                     <view class="image">
                                         <image lazy-load wx:if="{{val.foodImage}}"
@@ -59,7 +59,7 @@
                                         <image lazy-load wx:else src="../../../images/bitmap.png"></image>
                                     </view>
                                 </view>
-                                <!---------------------------菜品信息-->
+                                <!-------菜品信息-->
                                 <view class="flexBox-item fb-8 right pr row">
                                     <view class="h2 text-overflow">
                                         <text>{{val.name}}</text>
@@ -80,10 +80,10 @@
                                             <text class="iconfont icon-huiyuan azm-icon"></text>
                                             <text decode="true" class="azm-icon">&nbsp;会员价&nbsp;</text>
                                         </block>
-                                        <text> {{filterMoney.RMB(val.memberPrice)}}起</text>
+                                        <text>{{filterMoney.RMB(val.memberPrice)}}起</text>
                                     </view>
                                     <block wx:if="{{val.foodType == 2}}">
-                                        <!----------------------套餐按钮-->
+                                        <!--套餐按钮-->
                                         <view class="pa select food-btn-rule">
                                             <view class="weui-badge"
                                                   wx:if="{{_foodListObj[val.foodCode].amount>0}}">
@@ -97,7 +97,7 @@
                                         </view>
                                     </block>
                                     <block wx:else>
-                                        <!----------------------规格按钮-->
+                                        <!--规格按钮-->
                                         <view wx:if="{{val.foodRuleCount>1 || val.foodPracticesCount>0}}"
                                               class="pa select food-btn-rule">
                                             <view class="weui-badge"
@@ -111,7 +111,7 @@
                                             </button>
                                         </view>
 
-                                        <!----------------------选菜按钮-->
+                                        <!--选菜按钮-->
                                         <view wx:else class="pa select food-btn-plus">
                                             <template is="foodBtnPlus"
                                                       data="{{data:val,index:i,active:'plusToShopCart',replaceData:_foodListObj}}"></template>
@@ -126,7 +126,7 @@
         </view>
     </view>
 
-    <!-----------------------底部价格与确认订单按钮-->
+    <!---底部价格与确认订单按钮-->
     <view class="footer azm-text_color_white">
         <view class="row flexBox">
             <view class="flexBox-item fb-8 left">
@@ -146,7 +146,8 @@
                         </view>
                     </view>
                     <view class="flexBox-item shopCart-btn">
-                        <image lazy-load catchtap="bindAzmShopCartBtn" src="../../../images/icon/shopping-car.png"></image>
+                        <image lazy-load catchtap="bindAzmShopCartBtn"
+                               src="../../../images/icon/shopping-car.png"></image>
                         <text>{{amount}}</text>
                     </view>
                 </view>
@@ -197,7 +198,8 @@
                         <!--套餐-->
                         <block wx:elif="{{item.info.foodPackagesLength>0}}">
                             <view class="p text-overflow {{item.info.foodPackagesLength>0?'text-bottom':''}}">
-                                <block wx:for="{{item.foodPackagesList}}" wx:key="*this" wx:for-item="val" wx:for-index="i"
+                                <block wx:for="{{item.foodPackagesList}}" wx:key="*this" wx:for-item="val"
+                                       wx:for-index="i"
                                        wx:if="{{val.foodName}}">
                                     <text decode="true">{{val.foodName}}</text>
                                     <text wx:if="{{(item.foodPackagesList.length-1)!==i}}">/</text>

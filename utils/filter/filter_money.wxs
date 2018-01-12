@@ -6,12 +6,10 @@ function isNumberOfNaN(arg) {
     }
     return typeof arg === 'number' && !isNaN(arg);
 }
-
 function _money(num, len) {
     num = parseFloat(num) || 0;
     return num.toFixed(len);
 }
-
 var money = function (num, type, len) {
     type = type || '';
     len = len || 2;

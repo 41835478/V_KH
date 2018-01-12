@@ -1,0 +1,62 @@
+@import "../../index";
+
+.reservationDesk {
+  .top {
+    margin-top: 0;
+    .zan-tab {
+      height: 45*2rpx;
+      .zan-tab__title {
+        height: 44*2rpx;
+        line-height: 44*2rpx;
+        font-size: 14*2rpx;
+      }
+    }
+  }
+  .section {
+    margin-top: 0;
+    top: 55*2rpx;
+    bottom: 55*2rpx;
+    button[type="primary"] {
+      color: #f74b7b;
+      background-color: #fbe7ed;
+    }
+    .zan-panel {
+      margin-top: 3*2rpx;
+      &:nth-child(1) {
+        margin-top: 0;
+      }
+    }
+    .zan-cell::after {
+      border: none;
+    }
+    .tableList-blurry {
+      margin-top: 15*2rpx;
+      .flexBox-item {
+        height: 50*2rpx;
+        button {
+          border-radius: 30*2rpx;
+        }
+      }
+    }
+    .tableList {
+      box-sizing: border-box;
+      padding: 0 15*2rpx 10*2rpx;
+      .flexBox-item {
+        text-align: center;
+        button {
+          width: 90%;
+          font-size: 14*2rpx;
+          padding-left: 5*2rpx;
+          padding-right: 5*2rpx;
+          //.flexBox-item {
+          //  font-size: 11*2rpx;
+          //}
+        }
+      }
+    }
+  }
+  .azm-footer_fixed_bottom {
+    line-height: 45*2rpx;
+    border-radius: 0;
+  }
+}

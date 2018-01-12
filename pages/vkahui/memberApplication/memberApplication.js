@@ -176,7 +176,8 @@ const methods = {
                 }
                 data.hasMoreData = true;
                 that.setData(data);
-            });
+            }
+        );
         ApiService.getCommonUserInfo(
             {objId},
             (rsp) => {

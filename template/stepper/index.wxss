@@ -1,0 +1,14 @@
+.azm-stepper .azm-stepper__minus .azm-icon,
+.azm-stepper .azm-stepper__plus .azm-icon {
+  color: #f74b7b;
+  font-size: 40rpx;
+}
+.azm-stepper .center .azm-stepper__text {
+  text-align: center;
+  width: 70rpx;
+  min-width: 60rpx;
+  font-size: 24rpx;
+  height: 50rpx;
+  min-height: 50rpx;
+  color: #000;
+}

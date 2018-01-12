@@ -60,6 +60,18 @@ module.exports = {
             }
         }
     },
+    /**
+     * 预览图片
+     * @param e
+     */
+    previewImage(e) {
+        console.log(e);
+        let currentImageUrl = e.currentTarget.dataset.imageUrl
+        wx.previewImage({
+            current: currentImageUrl, // 当前显示图片的http链接
+            urls: [currentImageUrl] // 需要预览的图片http链接列表
+        })
+    },
 
     /**
      * 图片加载失败事件
@@ -335,7 +347,10 @@ module.exports = {
                     [`${str}Data.isAnimated`]: false
                 });
             }, 300);
-            that.setData({[`${str}Data.data`]: {}});
+            data[`${str}Data.data`] = {};
+            data[`${str}Data.isMask`] = false;
+            data[`${str}Data.isLoading`] = false;
+            data[`${str}Data.isDisabled`] = false;
         }
         data[str] = '';
         this.setData(data);
@@ -403,7 +418,7 @@ module.exports = {
         }
     },
     utilPage_getQRcodeTable(rid) {
-        let _this = this;
+        let _this = this, objId = this.data.objId;
         return new Promise(function (resolve, reject) {
             let data = {
                 type: null,
@@ -417,7 +432,7 @@ module.exports = {
                 return;
             }
             ApiService.getQRcodeTable(
-                {id: rid},
+                {id: rid, objId},
                 (rsp) => {
                     try {
                         if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
@@ -462,6 +477,7 @@ module.exports = {
      * @returns {Promise}
      */
     utilPage_isQRcode(qrCode, resId, bol) {
+        let objId = this.data.objId;
         if (utilCommon.isBoolean(resId)) {
             bol = resId;
             resId = null;
@@ -476,7 +492,7 @@ module.exports = {
                 let rid = queryString.parse(qrCode);
                 if (rid && rid.id && rid.id.length > 0) {
                     let id = rid.id;
-                    ApiService.getQRcodeTable({id}, (res) => {
+                    ApiService.getQRcodeTable({id, objId}, (res) => {
                         try {
                             if (!utilCommon.isEmptyValue(res.value)) {
                                 throw {message: '无效的二维码'}

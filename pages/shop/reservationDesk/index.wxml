@@ -1,0 +1,84 @@
+<!--pages/shop/reservationDesk/index.wxml-->
+<view class="reservationDesk">
+    <view class="zan-panel top azm-fixed">
+        <template is="zan-tab" data="{{ ...tab, componentId: 'tab' }}"></template>
+    </view>
+    <view class="section azm-fixed">
+        <swiper current="{{tab.selectedId}}" data-component-id="tab" class="height-all" enable-back-to-top
+                bindchange="bindSwiperChange">
+            <swiper-item style="background-color: #fff">
+                <view class="flexBox flexBox-start tableList tableList-blurry">
+                    <block wx:for="{{tableDtoList}}" wx:key="subareaId" wx:for-item="v" wx:for-index="i">
+                        <view class="flexBox-item fb-6" wx:if="{{i < 11 || item.moreSelect}}">
+                            <block wx:if="{{tableSelect.subareaId === v.subareaId}}">
+                                <button class="zan-ellipsis" type="primary" size="mini"
+                                        disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
+                                        data-table-name="{{v.name}}" data-subarea-id="{{v.subareaId}}"
+                                        data-subarea-name="{{v.subareaName}}"
+                                        data-value="{{v}}" catchtap="bindTableSelect">
+                                    <text>{{v.subareaName}}</text>
+                                </button>
+                            </block>
+                            <block wx:else>
+                                <button class="zan-ellipsis" type="white" plain size="mini"
+                                        disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
+                                        data-table-name="{{v.name}}" data-subarea-id="{{v.subareaId}}"
+                                        data-subarea-name="{{v.subareaName}}"
+                                        data-value="{{v}}"
+                                        catchtap="bindTableSelect">
+                                    <text>{{v.subareaName}}</text>
+                                </button>
+                            </block>
+                        </view>
+                    </block>
+                </view>
+            </swiper-item>
+            <swiper-item>
+                <scroll-view class="height-all" scroll-y="false">
+                    <block wx:for="{{tableDtoList}}" wx:key="subareaId">
+                        <view class="zan-panel">
+                            <view class="zan-cell">
+                                <text>{{item.subareaName}}</text>
+                            </view>
+                            <view class="flexBox flexBox-start tableList">
+                                <block wx:for="{{item.tableList}}" wx:key="tableCode" wx:for-item="v" wx:for-index="i">
+                                    <view class="flexBox-item fb-3" wx:if="{{i < 11 || item.moreSelect}}">
+                                        <block wx:if="{{tableSelect.tableCode === v.tableCode}}">
+                                            <button class="zan-ellipsis" type="primary" size="mini"
+                                                    disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
+                                                    data-table-name="{{v.name}}"
+                                                    data-value="{{v}}" catchtap="bindTableSelect">
+                                                <text>{{v.name}}/</text>
+                                                <text class="zan-font-10">{{v.howPeople}}人</text>
+                                            </button>
+                                        </block>
+                                        <block wx:else>
+                                            <button class="zan-ellipsis" type="white" plain size="mini"
+                                                    disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
+                                                    data-table-name="{{v.name}}"
+                                                    data-value="{{v}}"
+                                                    catchtap="bindTableSelect">
+                                                <text>{{v.name}}</text>
+                                                <text class="zan-font-10">/{{v.howPeople}}人</text>
+                                            </button>
+                                        </block>
+                                    </view>
+                                    <view class="flexBox-item fb-3" wx:if="{{i == 11 && !item.moreSelect}}">
+                                        <button class="zan-ellipsis" data-component-id="tableDtoList[{{index}}]"
+                                                data-index="{{index}}" size="mini"
+                                                plain catchtap="bindMoreSelect">
+                                            <text>更多》</text>
+                                        </button>
+                                    </view>
+                                </block>
+                            </view>
+                        </view>
+                    </block>
+                </scroll-view>
+            </swiper-item>
+        </swiper>
+    </view>
+    <button type="primary" class="azm-footer_fixed_bottom">确认</button>
+</view>
+
+<import src="../../../lib/zanui/tab/index.wxml"/>

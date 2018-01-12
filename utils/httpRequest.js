@@ -1,4 +1,13 @@
 "use strict";
+Promise.prototype.finally = function (callback) {
+    let P = this.constructor;
+    return this.then(
+        value => P.resolve(callback()).then(() => value),
+        reason => P.resolve(callback()).then(() => {
+            throw reason
+        })
+    );
+};
 
 const util = require('./util'),
     utilCommon = require('./utilCommon');
@@ -39,7 +48,8 @@ class HttpRequest {
                 reject = arguments[i];
             }
         }
-        console.log('__________请求数据______________', params);
+        let _url = url.split('/')
+        console.log(`__________请求数据${_url[_url.length - 1]}______________`, params);
         if (params.data.config && params.data.config.isLoading) {
             isLoading = params.data.config.isLoading;
             delete params.data.config;
@@ -98,12 +108,17 @@ class HttpRequest {
 
         if (isLoading) {
             util.showLoading('加载中');
-            setRequest();
+            return setPromise();
         } else {
-            setRequest();
+            return setPromise();
         }
 
-        function setRequest() {
+        function setPromise() {
+            let p = new Promise(setRequest)
+            return p
+        }
+
+        function setRequest(_resolve, _reject) {
             let flag = false;
             promise = null;
             wx.showNavigationBarLoading();
@@ -123,11 +138,17 @@ class HttpRequest {
                     if (isLoading) {
                         wx.hideLoading();
                     }
-                    console.log('__________获取数据______________', url, res);
                     if (!res.statusCode || res.statusCode !== 200) {
                         failCallback(res);
+                        _reject(res)
                     } else {
+                        res.data.code = Number(res.data.code);
                         let code = res.data.code;
+                        if (utilCommon.isJsonObject(res.data.value)) {
+                            res.data.value = JSON.parse(res.data.value);
+                            console.log(res.data.value, '返回json对象值');
+                        }
+                        console.log(`____获取数据${_url[_url.length - 1]}____`, res.data);
                         try {
                             if (5001 == code) {
                                 util.failToast('获取参数错误');
@@ -147,12 +168,14 @@ class HttpRequest {
                         } catch (e) {
                             console.warn(res.data.message);
                         }
-
+                        _resolve(res.data)
                     }
                     reject && reject(res.data);
                 }
             })
         }
+
+
     };
 
     post(url, options, resolve, isReturnStatus, reject) {

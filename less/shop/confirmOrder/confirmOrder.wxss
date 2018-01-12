@@ -103,6 +103,13 @@ page view.new-class .azm-shopList .azm-cell .weui-cell__ft {
 }
 page view.new-class .azm-shopList .azm-shopList-box .azm-cell {
   padding: 10rpx 30rpx;
+  line-height: 1;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-cell_avatar {
+  line-height: 54rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell .azm-resLogo .azm-resLogo-img {
+  border-radius: 100%;
 }
 page view.new-class .azm-shopList .azm-shopList-box .azm-cell::before {
   border: none;
@@ -129,7 +136,7 @@ page view.new-class .azm-shopList .azm-member-btn > view {
   overflow: hidden;
 }
 page view.new-class .azm-shopList .azm-member-btn button {
-  line-height: 52rpx;
+  line-height: 48rpx;
   font-size: 22rpx;
 }
 page view.new-class .azm-shopList .azm-note .flexBox-item {
@@ -175,6 +182,7 @@ page view.new-class .azm-payment-method .azm-member {
   padding-bottom: 4rpx;
 }
 page view.new-class .azm-payment-method .azm-member .azm-icon {
+  font-size: 34rpx;
   color: #e10b29;
 }
 page view.new-class .azm-payment-method .azm-member-content {

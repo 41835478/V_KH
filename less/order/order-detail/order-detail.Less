@@ -1,6 +1,9 @@
 @import "../../index";
 
 page {
+  .azm-p-1px-b {
+    border-bottom: @border-btn-2px-table;
+  }
   .moduleMeal {
     position: fixed;
     background-color: #57565c;
@@ -147,6 +150,7 @@ page {
         .weui-cell__bd, .azm-icon {
           font-size: 14*2rpx;
           line-height: 25*2rpx;
+          color: #333;
         }
         .azm-icon {
           font-weight: 400;
@@ -312,7 +316,7 @@ page {
         width: 65*2rpx;
       }
     }
-    //配送信息&就餐信息
+    //配送信息&订单信息
     .azm-orderInfo {
 
     }
@@ -352,12 +356,55 @@ page {
         }
       }
       .azm-shopList-box {
-        padding-top: 8*2rpx;
-        padding-bottom: 8*2rpx;
+        //padding-top: 8*2rpx;
+        //padding-bottom: 8*2rpx;
+        view {
+          box-sizing: border-box;
+        }
         .azm-cell {
           padding: 5*2rpx 15*2rpx;
+          line-height: 1;
+          &.azm-cell_avatar {
+            line-height: 27*2rpx;
+            .weui-cell__ft {
+              width: 160*2rpx;
+            }
+          }
+          &.azm-orderList__li_0 {
+            padding-top: 10*2rpx;
+          }
+          &.azm-orderList__li_last_0 {
+            padding-bottom: 10*2rpx;
+            border-bottom: @border-btn-2px-table;
+          }
+          &.azm-orderList__li {
+            padding-left: 45*2rpx;
+            .azm-ruleName {
+              font-size: 11*2rpx;
+            }
+            .azm-icon {
+              .px2rpx(font-size, 15);
+              &.azm-icon-blue {
+                color: #008de6;
+              }
+              &.azm-icon-pink {
+                color: @color-f74b7b
+              }
+            }
+          }
           &::before {
             border: none;
+          }
+          .azm-resLogo .azm-resLogo-img {
+            position: relative;
+            border-radius: 100%;
+            .azm-icon {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 27*2rpx;
+            }
           }
         }
       }
@@ -378,7 +425,7 @@ page {
           overflow: hidden;
         }
         button {
-          line-height: 26*2rpx;
+          line-height: 24*2rpx;
           font-size: 11*2rpx;
         }
       }
@@ -431,6 +478,7 @@ page {
       .azm-member {
         padding-bottom: 2*2rpx;
         .azm-icon {
+          font-size: 17*2rpx;
           color: #e10b29;
         }
       }
@@ -453,8 +501,29 @@ page {
     .azm-footer {
       padding: 20*2rpx 15*2rpx;
       button {
-        margin: 0 20*2rpx;
+        position: relative;
+        margin: 0 10*2rpx;
         border-radius: 37*2rpx;
+        line-height: 32*2rpx;
+        font-size: 13*2rpx;
+        background-color: #fff;
+        &.btn-icon {
+          padding-left: 20*2rpx;
+        }
+        .azm-icon {
+          position: absolute;
+          top: 52%;
+          transform: translateY(-50%);
+          left: 15*2rpx;
+          font-size: 16*2rpx;
+          line-height: 1;
+          &.icon-xiangqingye-zaixianmaidan {
+            font-size: 13*2rpx;
+          }
+          &.icon-fuwuhujiao {
+            font-size: 17*2rpx;
+          }
+        }
       }
     }
 

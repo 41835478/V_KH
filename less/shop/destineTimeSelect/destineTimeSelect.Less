@@ -1,0 +1,61 @@
+@import "../../index";
+
+.destineTimeSelect {
+  .top {
+    box-sizing: border-box;
+    top: 0;
+    margin-top: 0;
+    padding-top: 12.5*2rpx;
+    padding-bottom: 12.5*2rpx;
+    .flexBox-item {
+      position: relative;
+      text-align: center;
+      font-size: 14*2rpx;
+      color: #666;
+      &.active {
+        color: #000;
+        &::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 49*2rpx;
+          height: 2*2rpx;
+          background-color: @primary-color;
+        }
+      }
+      .azm-icon {
+        font-size: 14*2rpx;
+      }
+    }
+  }
+  .azm-fixed {
+    top: 80*2rpx;
+    bottom: 55*2rpx;
+    overflow: hidden;
+  }
+  .section {
+    margin-top: 0;
+    box-sizing: border-box;
+    padding-bottom: 10*2rpx;
+    button[type="primary"] {
+      color: #f74b7b;
+      background-color: #fbe7ed;
+    }
+    .zan-cell::after {
+      border: none;
+    }
+    .flexBox-item {
+      text-align: center;
+      button {
+        padding-left: 15*2rpx;
+        padding-right: 15*2rpx;
+      }
+    }
+  }
+  .azm-footer_fixed_bottom {
+    line-height: 45*2rpx;
+    border-radius: 0;
+  }
+}

@@ -1,0 +1,2 @@
+/* pages/shop/reservationDesk/index.wxss */
+@import "../../../less/shop/reservationDesk/reservationDesk.wxss";

@@ -1,109 +1,133 @@
 <view class="new-class orderDetail">
     <form bindsubmit="submitOrder" bindreset="formReset" report-submit>
         <!--状态-->
-        <block wx:if="{{3 == orderType}}">
-            <view class="azm-section azm-progressBar">
-                <view class="azm-top flexBox">
-                    <view class="flexBox-item fb-4">
-                        <text decode="true" class="azm-starts">下拉刷新订单</text>
-                        <!--<text class="azm-icon text-red iconfont-2 {{orderStatus.iconName}}"></text>-->
-                        <!--<text decode="true" class="text-red azm-starts">&nbsp;&nbsp;{{orderStatus.name}}</text>-->
-                    </view>
-                    <view class="flexBox-item fb-8 orderTime text-right">
-                        <text decode="true">下单时间：{{consumerData.createTime}}</text>
-                    </view>
+        <!--<block wx:if="{{3 == orderType}}">-->
+        <!--<view class="azm-section azm-progressBar">-->
+        <!--<view class="azm-top flexBox">-->
+        <!--<view class="flexBox-item fb-4">-->
+        <!--<text decode="true" class="azm-starts">下拉刷新订单</text>-->
+        <!--&lt;!&ndash;<text class="azm-icon text-red iconfont-2 {{orderStatus.iconName}}"></text>&ndash;&gt;-->
+        <!--&lt;!&ndash;<text decode="true" class="text-red azm-starts">&nbsp;&nbsp;{{orderStatus.name}}</text>&ndash;&gt;-->
+        <!--</view>-->
+        <!--<view class="flexBox-item fb-8 orderTime text-right">-->
+        <!--<text decode="true">下单时间：{{consumerData.createTime}}</text>-->
+        <!--</view>-->
+        <!--</view>-->
+        <!--&lt;!&ndash;<view class="row flexBox azm-progressBar-center">&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="active pa azm-round-first">&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="row">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text class="azm-round iconfont icon-point"></text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="row azm-text">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>订单确认</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:for="{{progressBar}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="flexBox-item fb-{{12/progressBar.length}} pr {{item.status?'active':''}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="azm-line"></view>&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="azm-round-row pa">&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="row">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text class="azm-round iconfont icon-point"></text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;<view class="row azm-text">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{item.name}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;</view>&ndash;&gt;-->
+        <!--<view class="azm-progressBar-payment">-->
+        <!--<view class="p text-center azm-text" style="font-weight: bold;color: #000;font-size: 36rpx">-->
+        <!--&lt;!&ndash;<block wx:if="{{1 == isOrderType && 8 == status}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>支付超时，</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--<text>{{filterUtil.OrderStatus(consumerData).str}}</text>-->
+        <!--&lt;!&ndash;<block wx:if="{{3 == isOrderType}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:if="{{4 == status || 3 == status}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:if="{{1 == consumerData.orderStatus}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{statusStr[5].str}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:elif="{{2 == consumerData.orderStatus}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{statusStr[12].str}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:elif="{{3 == consumerData.orderStatus}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{statusStr[11].str}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:elif="{{0 == consumerData.orderStatus}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>已开单</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:elif="{{8 == status}}">&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{statusStr[status].str}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:else>&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>订单已完成</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--&lt;!&ndash;<block wx:else>&ndash;&gt;-->
+        <!--&lt;!&ndash;<text>{{statusStr[status].str}}</text>&ndash;&gt;-->
+        <!--&lt;!&ndash;</block>&ndash;&gt;-->
+        <!--</view>-->
+        <!--<block wx:if="{{3 == status}}">-->
+        <!--<block wx:if="{{3 != isOrderType}}">-->
+        <!--<view class="p text-center azm-text">-->
+        <!--<text class="iconfont-2 icon-timefill azm-icon"></text>-->
+        <!--<text decode>&nbsp;&nbsp;剩余支付时间：</text>-->
+        <!--<text class="azm-icon-time">{{azm_paymentTime.countdownTime}}</text>-->
+        <!--</view>-->
+        <!--</block>-->
+        <!--</block>-->
+        <!--<block wx:if="{{5 == status}}">-->
+        <!--<block wx:if="{{3 != isOrderType}}">-->
+        <!--<view class="p text-center azm-text">-->
+        <!--<text class="iconfont-2 icon-timefill azm-icon"></text>-->
+        <!--<text decode>&nbsp;&nbsp;接拒单超时时间：</text>-->
+        <!--<text class="azm-icon-time">{{azm_ordersTime.countdownTime}}</text>-->
+        <!--</view>-->
+        <!--</block>-->
+        <!--</block>-->
+        <!--</view>-->
+        <!--</view>-->
+        <!--</block>-->
+        <!--<block wx:else>-->
+
+        <!--</block>-->
+        <view class="azm-topStatus weui-cells">
+            <!--状态展示-->
+            <view class="weui-cell azm-cell azm-cell-border_0px azm-topStatus-start" catchtap="openOrderTracking">
+                <view class="weui-cell__bd text-center bold">
+                    <text decode>{{filterUtil.OrderStatus(consumerData).str}}&nbsp;&nbsp;</text>
+                    <text class="iconfont-2 icon-xiangyou1 azm-icon"></text>
                 </view>
-                <!--<view class="row flexBox azm-progressBar-center">-->
-                <!--<view class="active pa azm-round-first">-->
-                <!--<view class="row">-->
-                <!--<text class="azm-round iconfont icon-point"></text>-->
-                <!--</view>-->
-                <!--<view class="row azm-text">-->
-                <!--<text>订单确认</text>-->
-                <!--</view>-->
-                <!--</view>-->
-                <!--<block wx:for="{{progressBar}}">-->
-                <!--<view class="flexBox-item fb-{{12/progressBar.length}} pr {{item.status?'active':''}}">-->
-                <!--<view class="azm-line"></view>-->
-                <!--<view class="azm-round-row pa">-->
-                <!--<view class="row">-->
-                <!--<text class="azm-round iconfont icon-point"></text>-->
-                <!--</view>-->
-                <!--<view class="row azm-text">-->
-                <!--<text>{{item.name}}</text>-->
-                <!--</view>-->
-                <!--</view>-->
-                <!--</view>-->
-                <!--</block>-->
-                <!--</view>-->
-                <view class="azm-progressBar-payment">
-                    <view class="p text-center azm-text" style="font-weight: bold;color: #000;font-size: 36rpx">
-                        <!--<block wx:if="{{1 == isOrderType && 8 == status}}">-->
-                        <!--<text>支付超时，</text>-->
-                        <!--</block>-->
-                        <text>{{filterUtil.OrderStatus(consumerData).str}}</text>
-                        <!--<block wx:if="{{3 == isOrderType}}">-->
-                        <!--<block wx:if="{{4 == status || 3 == status}}">-->
-                        <!--<block wx:if="{{1 == consumerData.orderStatus}}">-->
-                        <!--<text>{{statusStr[5].str}}</text>-->
-                        <!--</block>-->
-                        <!--<block wx:elif="{{2 == consumerData.orderStatus}}">-->
-                        <!--<text>{{statusStr[12].str}}</text>-->
-                        <!--</block>-->
-                        <!--<block wx:elif="{{3 == consumerData.orderStatus}}">-->
-                        <!--<text>{{statusStr[11].str}}</text>-->
-                        <!--</block>-->
-                        <!--<block wx:elif="{{0 == consumerData.orderStatus}}">-->
-                        <!--<text>已开单</text>-->
-                        <!--</block>-->
-                        <!--</block>-->
-                        <!--<block wx:elif="{{8 == status}}">-->
-                        <!--<text>{{statusStr[status].str}}</text>-->
-                        <!--</block>-->
-                        <!--<block wx:else>-->
-                        <!--<text>订单已完成</text>-->
-                        <!--</block>-->
-                        <!--</block>-->
-                        <!--<block wx:else>-->
-                        <!--<text>{{statusStr[status].str}}</text>-->
-                        <!--</block>-->
-                    </view>
-                    <block wx:if="{{3 == status}}">
-                        <block wx:if="{{3 != isOrderType}}">
-                            <view class="p text-center azm-text">
-                                <text class="iconfont-2 icon-timefill azm-icon"></text>
-                                <text decode>&nbsp;&nbsp;剩余支付时间：</text>
-                                <text class="azm-icon-time">{{azm_paymentTime.countdownTime}}</text>
-                            </view>
-                        </block>
-                    </block>
-                    <block wx:if="{{5 == status}}">
-                        <block wx:if="{{3 != isOrderType}}">
-                            <view class="p text-center azm-text">
-                                <text class="iconfont-2 icon-timefill azm-icon"></text>
-                                <text decode>&nbsp;&nbsp;接拒单超时时间：</text>
-                                <text class="azm-icon-time">{{azm_ordersTime.countdownTime}}</text>
-                            </view>
-                        </block>
-                    </block>
+                <view class="weui-cell_primary">
+
+                </view>
+                <view class="weui-cell__ft">
+
                 </view>
             </view>
-        </block>
-        <block wx:else>
-            <view class="azm-topStatus weui-cells">
-                <view class="weui-cell azm-cell azm-cell-border_0px azm-topStatus-start">
-                    <view class="weui-cell__bd text-center bold">
-                        <text decode>{{filterUtil.OrderStatus(consumerData).str}}&nbsp;&nbsp;</text>
-                        <text class="iconfont-2 icon-xiangyou1 azm-icon"></text>
-                    </view>
-                    <view class="weui-cell_primary">
+            <block wx:if="{{3 === orderType}}">
 
-                    </view>
-                    <view class="weui-cell__ft">
+            </block>
+            <block wx:else>
+                <!--接拒单超时时间-->
+                <block wx:if="{{5 == status && consumerData.refusalLongTime}}">
+                    <view class="weui-cell azm-cell azm-cell-border_0px  azm-topStatus-time">
+                        <view class="weui-cell__bd text-center bold text-red">
+                            <text class="iconfont-2 icon-time azm-icon"></text>
+                            <text decode>&nbsp;&nbsp;接拒单超时时间：</text>
+                            <text class="azm-icon-time">{{azm_ordersTime.countdownTime}}</text>
+                        </view>
+                        <view class="weui-cell_primary">
 
+                        </view>
+                        <view class="weui-cell__ft">
+
+                        </view>
                     </view>
-                </view>
-                <block wx:if="{{3 != status}}">
+                </block>
+                <block wx:elif="{{3 != status}}">
+                    <!--自助取餐-取餐号显示-->
                     <block wx:if="{{2 == orderType}}">
                         <view class="weui-cell azm-cell azm-cell-border_0px  azm-topStatus-text">
                             <view class="weui-cell__bd text-center bold">
@@ -131,6 +155,7 @@
                         </block>
                     </block>
                 </block>
+                <!--剩余支付时间-->
                 <block wx:if="{{3 == status}}">
                     <view class="weui-cell azm-cell azm-cell-border_0px  azm-topStatus-time">
                         <view class="weui-cell__bd text-center bold text-red">
@@ -146,25 +171,10 @@
                         </view>
                     </view>
                 </block>
-                <block wx:elif="{{5 == status && consumerData.refusalLongTime}}">
-                    <view class="weui-cell azm-cell azm-cell-border_0px  azm-topStatus-time">
-                        <view class="weui-cell__bd text-center bold text-red">
-                            <text class="iconfont-2 icon-time azm-icon"></text>
-                            <text decode>&nbsp;&nbsp;接拒单超时时间：</text>
-                            <text class="azm-icon-time">{{azm_ordersTime.countdownTime}}</text>
-                        </view>
-                        <view class="weui-cell_primary">
-
-                        </view>
-                        <view class="weui-cell__ft">
-
-                        </view>
-                    </view>
-                </block>
-            </view>
-        </block>
+            </block>
+        </view>
         <!--订单列表-->
-        <block wx:if="{{3 == orderType}}">
+        <block wx:if="{{5 == orderType}}">
             <view class="azm-section azm-order weui-cells">
                 <navigator open-type="navigate" class="azm-title"
                            url="/pages/shop/home/home?resId={{resId}}">
@@ -203,7 +213,7 @@
                                             <text>待接单</text>
                                         </block>
                                         <block wx:elif="{{item.orderStatus == 2}}">
-                                            <text>已拒单</text>
+                                            <text style="color: #808080">已拒单</text>
                                         </block>
                                         <block wx:elif="{{item.orderStatus == 3}}">
                                             <text>已接单</text>
@@ -313,7 +323,7 @@
         <block wx:else>
             <!--订单信息-->
             <view class="weui-cells azm-shopList weui-cells__border_1px">
-                <navigator class="weui-cell weui-cell_access azm-cell azm-1px-b azm-title" open-type="navigate"
+                <navigator class="weui-cell weui-cell_access azm-cell azm-p-1px-b azm-title" open-type="navigate"
                            url="/pages/shop/home/home?resId={{resId}}">
                     <view class="weui-cell__bd flexBox flexBox-start">
                         <view class="flexBox-item azm-resLogo">
@@ -335,18 +345,24 @@
                     </view>
                 </navigator>
                 <!--菜品列表-->
-                <block wx:for="{{consumerData.orderJson}}" wx:key="*this">
-                    <view class="azm-shopList-box">
-                        <view class="weui-cell weui-cell_access azm-cell">
+                <view class="azm-shopList-box">
+                    <block wx:for="{{consumerData.orderJson}}" wx:key="*this">
+                        <!--下单人-->
+                        <view class="weui-cell weui-cell_access azm-cell azm-p-1px-b azm-cell_avatar">
                             <view class="weui-cell__bd azm-cell-border_w_92 flexBox flexBox-start">
                                 <view class="flexBox-item azm-resLogo">
-                                    <block wx:if="{{item.resLogo}}">
+                                    <block wx:if="{{item.headImgUrl}}">
                                         <view class="azm-resLogo-img">
-                                            <image lazy-load="true" src="{{imageServer + item.resLogo}}"/>
+                                            <image lazy-load="true" src="{{item.headImgUrl}}"/>
+                                        </view>
+                                    </block>
+                                    <block wx:else>
+                                        <view class="azm-resLogo-img">
+                                            <text class="iconfont icon-touxiang azm-icon"></text>
                                         </view>
                                     </block>
                                 </view>
-                                <view class="flexBox-item fb-8 azm-content text-overflow">
+                                <view class="flexBox-item fb-5_5 azm-content text-overflow">
                                     <block wx:if="{{item.name}}">
                                         <text>{{item.name}}</text>
                                     </block>
@@ -354,20 +370,21 @@
                                         <text>服务员</text>
                                     </block>
                                 </view>
+                                <view class="flexBox-item fb-3_5 azm-content text-overflow">
+                                    <block wx:if="{{orderType === 3 && consumerData.orderJson.length>1}}">
+                                        <block wx:if="{{item.orderStatus == 1}}">
+                                            <text decode>待接单</text>
+                                        </block>
+                                        <block wx:elif="{{item.orderStatus == 2}}">
+                                            <text style="color: #808080" decode>已拒单</text>
+                                        </block>
+                                        <block wx:elif="{{item.orderStatus == 3}}">
+                                            <text decode>已接单</text>
+                                        </block>
+                                    </block>
+                                </view>
                             </view>
-                            <view class="weui-cell_primary">
-                                <block wx:if="{{orderType === 3}}">
-                                    <block wx:if="{{item.orderStatus == 1}}">
-                                        <text decode>待接单&nbsp;&nbsp;</text>
-                                    </block>
-                                    <block wx:elif="{{item.orderStatus == 2}}">
-                                        <text decode>已拒单&nbsp;&nbsp;</text>
-                                    </block>
-                                    <block wx:elif="{{item.orderStatus == 3}}">
-                                        <text decode>已接单&nbsp;&nbsp;</text>
-                                    </block>
-                                </block>
-                            </view>
+                            <view class="weui-cell_primary"></view>
                             <view class="weui-cell__ft" data-index="{{index}}" catchtap="bindOpenShopList">
                                 <text decode>{{item.orderCreateTime}}&nbsp;&nbsp;</text>
                                 <block wx:if="{{!item.selected}}">
@@ -378,9 +395,10 @@
                                 </block>
                             </view>
                         </view>
+                        <!--下单菜品-->
                         <block wx:for="{{item.orderFoodList}}" wx:key="*this" wx:for-item="val"
                                wx:if="{{!item.selected}}">
-                            <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color">
+                            <view class="weui-cell azm-cell azm-orderList__li azm-orderList__li_{{index}} azm-cell-border_w_92 azm-cell-placeholder-color {{index === item.orderFoodList.length-1?'azm-orderList__li_last_0':''}}">
                                 <view class="weui-cell__bd flexBox flexBox-start">
                                     <view class="flexBox-item fb-10 azm-content">
                                         <block wx:if="{{val.giveFlag == 1}}">
@@ -389,9 +407,9 @@
                                         <block wx:if="{{val.status == 2}}">
                                             <text class="iconfont icon-tui azm-icon azm-icon-pink"></text>
                                         </block>
-                                        <text>{{val.name}}</text>
+                                        <text class="azm-orderName">{{val.name}}</text>
                                         <block wx:if="{{val.ruleName && val.ruleName != '默认' }}">
-                                            <text>({{val.ruleName}})</text>
+                                            <text class="azm-ruleName">({{val.ruleName}})</text>
                                         </block>
                                     </view>
                                     <view class="flexBox-item fb-2">
@@ -406,12 +424,11 @@
                                 </view>
                             </view>
                         </block>
-                    </view>
-                </block>
-
+                    </block>
+                </view>
                 <!--茶位费用-->
                 <block wx:if="{{consumerData.serviceAmount>0}}">
-                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color">
+                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color azm-cell-border_0px">
                         <view class="weui-cell__bd flexBox flexBox-start">
                             <view class="flexBox-item fb-10 azm-content">
                                 <text>茶位费</text>
@@ -430,7 +447,7 @@
                 </block>
                 <!--配送费用-->
                 <block wx:if="{{consumerData.distributionFee>0}}">
-                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color">
+                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color azm-cell-border_0px">
                         <view class="weui-cell__bd flexBox flexBox-start">
                             <view class="flexBox-item fb-10 azm-content">
                                 <text>配送费</text>
@@ -449,7 +466,7 @@
                 </block>
                 <!--餐盒费用-->
                 <block wx:if="{{consumerData.packingCharge>0}}">
-                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color">
+                    <view class="weui-cell azm-cell azm-cell-border_w_92 azm-cell-placeholder-color azm-cell-border_0px">
                         <view class="weui-cell__bd flexBox flexBox-start">
                             <view class="flexBox-item fb-10 azm-content">
                                 <text>餐盒费</text>
@@ -536,7 +553,12 @@
                     <view class="weui-cell azm-cell azm-member-btn azm-cell-l-0px">
                         <view class="weui-cell__bd flexBox flexBox-start">
                             <view class="flexBox-item azm-content azm-note__bd">
-                                <text>会员可优惠：{{filterMoney.RMB(consumerData.discountPrice)}}</text>
+                                <block wx:if="{{consumerData.discountPrice>0}}">
+                                    <text>会员可优惠：{{filterMoney.RMB(consumerData.discountPrice)}}</text>
+                                </block>
+                                <block wx:else>
+                                    <text>会员有优惠</text>
+                                </block>
                             </view>
                             <view class="flexBox-item fb-10">
 
@@ -570,7 +592,7 @@
             </view>
         </block>
 
-        <!--就餐信息-->
+        <!--订单信息-->
         <view class="azm-section azm-orderInfo weui-cells">
             <view class="weui-cell azm-cell azm-orderInfo-title azm-1px-b">
                 <view class="weui-cell__bd flexBox flexBox-start">
@@ -579,7 +601,7 @@
                             <text>配送信息</text>
                         </block>
                         <block wx:else>
-                            <text>就餐信息</text>
+                            <text>订单信息</text>
                         </block>
                     </view>
                     <view class="flexBox-item fb-9 azm-content">
@@ -803,6 +825,22 @@
 
                     </view>
                 </view>
+                <view class="weui-cell azm-cell azm-cell-border_0px  azm-paymentInfo-item">
+                    <view class="weui-cell__bd flexBox flexBox-start">
+                        <view class="flexBox-item azm-cell__start">
+                            <text>支付时间：</text>
+                        </view>
+                        <view class="flexBox-item fb-9 azm-cell__c">
+                            <text>{{filterUtil.DateFilter(consumerData.payTime)}}</text>
+                        </view>
+                    </view>
+                    <view class="weui-cell_primary">
+
+                    </view>
+                    <view class="weui-cell__ft">
+
+                    </view>
+                </view>
             </view>
         </block>
 
@@ -868,43 +906,58 @@
         </block>
 
         <!--底部按钮-->
-        <block wx:if="{{3 == orderType}}">
-            <view class="azm-footer flexBox">
-                <block wx:for="{{foodBtnList}}" wx:key="*this">
-                    <view class="flexBox-item fb-{{12/foodBtnList.length}}">
-                        <button type="{{item.color}}" data-type="{{item.type}}" catchtap="goPay">
-                            {{item.name}}
-                        </button>
-                    </view>
-                </block>
+        <!--<block wx:if="{{3 == orderType}}">-->
+        <!--<view class="azm-footer flexBox">-->
+        <!--<block wx:for="{{foodBtnList}}" wx:key="*this">-->
+        <!--<view class="flexBox-item fb-{{12/foodBtnList.length}}">-->
+        <!--<button type="{{item.color}}" data-type="{{item.type}}" catchtap="goPay">-->
+        <!--{{item.name}}-->
+        <!--</button>-->
+        <!--</view>-->
+        <!--</block>-->
+        <!--</view>-->
+        <!--</block>-->
+        <!--<block wx:else>-->
+        <!---->
+        <!--</block>-->
+        <block wx:if="{{3 == status && 3!= orderType}}">
+            <view class="azm-footer-50px"></view>
+            <view class="flexBox flexBox-start azm-footer-b azm-1px-t">
+                <view class="flexBox-item fb-8_5">
+                    <text>应付：</text>
+                    <text class="azm-price">{{filterMoney.RMB(consumerData.actualPrice)}}</text>
+                    <text decode class="azm-discount">&nbsp;(已优惠：{{filterMoney.RMB(consumerData.discountPrice)}})
+                    </text>
+                </view>
+                <view class="flexBox-item fb-3_5">
+                    <button type="primary" class="azm-btn-submit" data-type="0" form-type="submit">去支付</button>
+                </view>
             </view>
         </block>
         <block wx:else>
-            <block wx:if="{{3 != status}}">
-                <view class="azm-footer flexBox">
-                    <block wx:for="{{foodBtnList}}" wx:key="*this">
-                        <view class="flexBox-item fb-{{12/foodBtnList.length}}">
-                            <button type="{{item.color}}" data-type="{{item.type}}" catchtap="goPay">
-                                {{item.name}}
+            <view class="azm-footer flexBox">
+                <block wx:for="{{filterUtil.FoodBtnList(consumerData)}}" wx:key="*this">
+                    <view class="flexBox-item fb-{{12/filterUtil.FoodBtnList(consumerData).length}}">
+                        <block wx:if="{{item.disabled}}">
+                            <button type="{{item.color}}" class="{{item.icon?'btn-icon':''}}">
+                                <block wx:if="{{item.icon}}">
+                                    <text class="{{item.icon}} azm-icon"></text>
+                                </block>
+                                {{item.nameStr}}
                             </button>
-                        </view>
-                    </block>
-                </view>
-            </block>
-            <block wx:else>
-                <view class="azm-footer-50px"></view>
-                <view class="flexBox flexBox-start azm-footer-b azm-1px-t">
-                    <view class="flexBox-item fb-8_5">
-                        <text>应付：</text>
-                        <text class="azm-price">{{filterMoney.RMB(consumerData.actualPrice)}}</text>
-                        <text decode class="azm-discount">&nbsp;(已优惠：{{filterMoney.RMB(consumerData.discountPrice)}})
-                        </text>
+                        </block>
+                        <block wx:else>
+                            <button plain type="{{item.color}}" data-type="{{item.type}}" catchtap="goPay"
+                                    class="{{item.icon?'btn-icon':''}}">
+                                <block wx:if="{{item.icon}}">
+                                    <text class="{{item.icon}} azm-icon"></text>
+                                </block>
+                                {{item.nameStr}}
+                            </button>
+                        </block>
                     </view>
-                    <view class="flexBox-item fb-3_5">
-                        <button type="primary" class="azm-btn-submit" data-type="0" form-type="submit">去支付</button>
-                    </view>
-                </view>
-            </block>
+                </block>
+            </view>
         </block>
     </form>
 </view>
@@ -923,10 +976,10 @@
     </view>
 </view>
 
-
 <import src="../../../template/picker-view/picker-view.wxml"/>
 <!--支付picker-view-->
-<template is="picker_view" data="{{...pickerViewPaymentData,class:pickerViewPayment,animated:true,isMask}}"></template>
+<template is="picker_view" data="{{...pickerViewPaymentData,class:pickerViewPayment,animated:true}}"></template>
+<template is="picker_view" data="{{...orderTrackingData,class:orderTracking,animated:true}}"></template>
 
 
 <!--过滤器-->

@@ -156,15 +156,28 @@ const methods = {
         );
     },
     jumpBtn(e) {
-        var type = e.currentTarget.dataset.type;
-        this[type](e);
+        let that = this,
+            type = e.currentTarget.dataset.type,
+            orderType = e.currentTarget.dataset.ordertype,
+            value = e.currentTarget.dataset.value;
+        switch (type) {
+            case 0:
+                that.pay(value, orderType, type);
+                break;
+            case 1:
+                that.addDish(value, orderType, type);
+                break;
+            case 2:
+                that.addDish(value, orderType, type);
+                break;
+        }
+
     },
     /**
      * 去支付
      * @param e
      */
-    pay: function (e) {
-        var value = e.currentTarget.dataset.value;
+    pay: function (value) {
         util.go('/pages/order/order-detail/order-detail', {
             data: {
                 resId: value.resId,
@@ -176,13 +189,10 @@ const methods = {
      * 加菜
      * @param e
      */
-    addDish(e) {
+    addDish(value, orderType, type) {
         let that = this,
-            value = e.currentTarget.dataset.value,
-            orderType = e.currentTarget.dataset.ordertype,
             isOrderType = 0,
             consumerId = value.consumerId;
-
         ApiService.getResDetail(
             {resId: value.resId, config: {isLoading: true}},
             (rsp) => {
@@ -193,7 +203,7 @@ const methods = {
                     } else {
                         isOrderType = that.utilPage_getOrderType(resDetailDto.restaurantBusinessRules).isOrderType;
                     }
-                    if (value.consumerStatus == 11 && 3 == isOrderType) {
+                    if (2 == type && 3 == isOrderType) {
                         util.go('/pages/shop/home_scanCode/home_scanCode', {
                             data: {
                                 resId: value.resId,
@@ -201,20 +211,16 @@ const methods = {
                             }
                         });
                     } else {
-                        if (isOrderType == orderType) {
-                            util.go('/pages/shop/order/order', {
-                                data: {
-                                    resId: value.resId,
-                                    orderType,
-                                    consumerId,
-                                    tableCode: value.tableCode,
-                                    tableName: value.Title,
-                                    fNumber: value.fNumber
-                                }
-                            });
-                        } else {
-                            that.showToast('当前就餐模式已变更，无法加菜。');
-                        }
+                        util.go('/pages/shop/order/order', {
+                            data: {
+                                resId: value.resId,
+                                orderType,
+                                consumerId,
+                                tableCode: value.tableCode,
+                                tableName: value.Title,
+                                fNumber: value.fNumber
+                            }
+                        });
                     }
                 }
             },

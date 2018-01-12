@@ -1,0 +1,68 @@
+.orderMeal .weui-cells::after {
+  border: none;
+}
+.orderMeal .weui-cells::before {
+  border: none;
+}
+.orderMeal .weui-cell:before {
+  border-top: 1px solid #f1f3f4;
+}
+.orderMeal input {
+  font-size: 24rpx;
+  height: 50rpx;
+  min-height: 50rpx;
+}
+.orderMeal .flexBox .flexBox-item {
+  height: 50rpx;
+  line-height: 50rpx;
+}
+.orderMeal label {
+  margin-right: 20rpx;
+}
+.orderMeal .azm-payment-method {
+  margin-bottom: 20rpx;
+}
+.orderMeal .azm-payment-method .flexBox-item {
+  height: 48rpx;
+  line-height: 48rpx;
+  overflow: hidden;
+  position: relative;
+}
+.orderMeal .azm-payment-method .flexBox-item .azm-icon {
+  font-size: 40rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.orderMeal .azm-payment-method .azm-images-box {
+  width: 80rpx;
+}
+.orderMeal .azm-payment-method .azm-content {
+  font-size: 28rpx;
+}
+.orderMeal .azm-payment-method .azm-member {
+  padding-bottom: 4rpx;
+}
+.orderMeal .azm-payment-method .azm-member .azm-icon {
+  font-size: 34rpx;
+  color: #e10b29;
+}
+.orderMeal .azm-payment-method .azm-member-content {
+  color: #808080;
+  padding-top: 4rpx;
+  font-size: 24rpx;
+}
+.orderMeal .azm-payment-method .azm-member-content .azm-content {
+  font-size: 24rpx;
+}
+.orderMeal .azm-payment-method .azm-weChat {
+  padding: 39rpx 30rpx;
+}
+.orderMeal .azm-payment-method .azm-weChat .azm-icon {
+  color: #0bb20c;
+}
+.orderMeal .azm-footer_fixed_bottom {
+  line-height: 90rpx;
+  border-radius: 0;
+}

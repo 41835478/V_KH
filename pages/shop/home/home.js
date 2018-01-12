@@ -11,13 +11,15 @@ const SHOP_PAGES = {
             img: '/images/shop/eat.png',
             name: '堂食',
             url: '/pages/shop/order/order',
-            orderType: 0
+            orderType: 0,
+            disabled: false
         },
         {
             img: '/images/shop/takeaway.png',
             name: '外卖',
             url: '/pages/shop/order/order',
-            orderType: 1
+            orderType: 1,
+            disabled: false
         }
     ],
     topImages: [],
@@ -136,12 +138,12 @@ const methods = {
      */
     loadData() {
         let that = this,
-            resId = that.data.resId;
+            resId = that.data.resId,
+            isOrderType = 0;
         if (!resId || resId.length === 0) return;
         that.getMainInfo().then(
             () => {
-                let isOrderType = that.utilPage_getOrderType(that.data.shopInfo.restaurantBusinessRules).isOrderType;
-                ;
+                isOrderType = that.utilPage_getOrderType(that.data.shopInfo.restaurantBusinessRules).isOrderType;
                 if (that.data.isTableCode) {
                     if (isOrderType == 0) {
                         goOrderPage();
@@ -178,7 +180,7 @@ const methods = {
             util.go('/pages/shop/order/order',
                 {
                     data: {
-                        orderType: 0,
+                        orderType: isOrderType,
                         resId: that.data.resId,
                         tableCode: that.data.qrcodeInfo.tableCode,
                         tableName: that.data.qrcodeInfo.tableName
@@ -312,7 +314,12 @@ const events = {
             value = dataset.value,
             resId = that.data.resId,
             url = dataset.url,
+            disabled = dataset.disabled,
             orderType = 1;
+        if (disabled != 1) {
+            util.failToast(`未开通${dataset.text}`);
+            return;
+        }
         let isOrderType = that.utilPage_getOrderType(value).isOrderType;
         if (0 == type && 3 === isOrderType) {
             orderType = 3;

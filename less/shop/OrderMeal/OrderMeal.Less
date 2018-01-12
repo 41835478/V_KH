@@ -1,0 +1,76 @@
+@import "../../index";
+
+.orderMeal {
+  .weui-cells {
+    &::after {
+      border: none;
+    }
+    &::before {
+      border: none;
+    }
+  }
+  .weui-cell:before {
+    border-top: 1px solid #f1f3f4
+  }
+  input {
+    font-size: 12*2rpx;
+    height: 25*2rpx;
+    min-height: 25*2rpx;
+  }
+  .flexBox {
+    .flexBox-item {
+      height: 25*2rpx;
+      line-height: 25*2rpx;
+    }
+  }
+  label {
+    margin-right: 10*2rpx;
+  }
+  .azm-payment-method {
+    margin-bottom: 10*2rpx;
+    .flexBox-item {
+      height: 24*2rpx;
+      line-height: 24*2rpx;
+      overflow: hidden;
+      position: relative;
+      .azm-icon {
+        font-size: 20*2rpx;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+    .azm-images-box {
+      width: 40*2rpx;
+    }
+    .azm-content {
+      font-size: 14*2rpx;
+    }
+    .azm-member {
+      padding-bottom: 2*2rpx;
+      .azm-icon {
+        font-size: 17*2rpx;
+        color: #e10b29;
+      }
+    }
+    .azm-member-content {
+      color: @placeholder-color;
+      padding-top: 2*2rpx;
+      font-size: 12*2rpx;
+      .azm-content {
+        font-size: 12*2rpx;
+      }
+    }
+    .azm-weChat {
+      padding: 19.5*2rpx 15*2rpx;
+      .azm-icon {
+        color: #0bb20c;
+      }
+    }
+  }
+  .azm-footer_fixed_bottom {
+    line-height: 45*2rpx;
+    border-radius: 0;
+  }
+}

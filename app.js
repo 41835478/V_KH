@@ -56,7 +56,8 @@ App({
                 str: '已完成',
                 statusStr: '拒单成功退款失败'
             }
-        }
+        },
+        orderMealData: {},//预定订单信息
     },
     utilPage,
     ToastPannel,
@@ -76,7 +77,7 @@ App({
     onShow: function (options) {
         let that = this;
         console.warn(Global_APP.objId, '___objId___');
-        if (!Global_APP.objId) {
+        if (!that.globalData.objId) {
             try {
                 console.warn(Global_APP.objId, '进入________objId');
                 that.setLoginRequestPromise();

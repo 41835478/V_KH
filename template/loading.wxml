@@ -47,5 +47,6 @@
 
 
 <template name="mask">
-    <view class="mask {{class}}" catch:touchstart="bindAzmCloseMask" hidden="{{!isMask}}" data-type="{{type}}" data-active="close"></view>
+    <view class="mask {{class}}" catch:touchstart="{{event?event:'bindAzmCloseMask'}}" hidden="{{!isMask}}"
+          data-type="{{type}}" data-active="close"></view>
 </template>

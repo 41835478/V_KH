@@ -2,9 +2,7 @@
 @import "./fontIcon/iconfont.wxss";
 @import "./lib/icons/iconfont.wxss";
 @import "./lib/weui/weui.wxss";
+@import "./lib/zanui/index.wxss";
 @import "./less/app.wxss";
 @import "./less/1px/1px.wxss";
-@import "./template/loading.wxss";
-@import "./template/toast/toast.wxss";
-@import "./template/module/index.wxss";
-@import "./template/picker-view/picker-view.wxss";
+@import "./template/index.wxss";

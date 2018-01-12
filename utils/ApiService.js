@@ -309,6 +309,31 @@ module.exports = {
                 pid: ''
             }
         },
+        /**
+         * 订单跟踪
+         */
+        getOrderProcessList: {
+            path: '/order/getOrderProcessList',
+            query: {
+                pid: ''
+            }
+        },
+        /**
+         * 预定营业规则信息
+         */
+        getReserveBusinessRules: {
+            path: '/reserveBusinessRules/getReserveBusinessRules',
+            query: {
+                resId: ''
+            }
+        },
+        /**
+         * 提交预定订单
+         */
+        insertReserve: {
+            path: '/reserve/insertReserve',
+            query: {}
+        },
     },
     getToken() {
         const app = getApp();
@@ -414,7 +439,7 @@ module.exports = {
         const url = `${this.url}${this.api.getCommonUserInfo.path}`;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            if (utilCommon.isEmptyValue(res.value)) {
+            if (utilCommon.isJsonObject(res.value)) {
                 res.value = JSON.parse(res.value);
             }
             cb && cb(res);
@@ -430,7 +455,7 @@ module.exports = {
         const url = `${this.url}${this.api.updateCommonUserInfo.path}`;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
-            if (utilCommon.isEmptyValue(res.value)) {
+            if (utilCommon.isJsonObject(res.value)) {
                 res.value = JSON.parse(res.value);
             }
             cb && cb(res);
@@ -552,7 +577,7 @@ module.exports = {
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
 
-            if (res.value) {
+            if (utilCommon.isJsonObject(res.value)) {
                 res.value = JSON.parse(res.value);
             }
             cb && cb(res);
@@ -846,9 +871,84 @@ module.exports = {
      * @param isReturnStatus
      * @param reject
      * @returns {*}
+     * private Integer isDeposit;//预定押金（0，不需要  1，需要）
+     * private Double depositAmount;//押金金额
+     * private Integer leadTime;//提前时间
+     * private Integer isPreOrder;//预点菜（0，不可以  1，可以）
+     * private Integer isBusiness;//非包房是否营业（0，休业  1 营业）
+     * private Integer isPrivateRoom;//包房是否营业（0，休业  1 营业）
+     * private Integer status;//状态 0关闭 1开启
      */
     getRegionByPid(data = {}, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getRegionByPid.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 订单跟踪
+     * @param data
+     *      String resId ，String consumerId
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     *      private String id;
+     *      private String resId;//餐厅id
+     *      private String consumerId;//消费者id
+     *      private String orderId;//订单id
+     *      private Integer status;//状态  1订单提交 2已支付 3已接单 4已拒单 5已完成 6超时取消 7用户取消
+     *      private Date createTime;//创建时间
+     *      private Date lastUpdateTime;//更新时间
+     */
+    getOrderProcessList(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getOrderProcessList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预定营业规则信息
+     * @param data
+     *      String resId ，String consumerId
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getReserveBusinessRules(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getReserveBusinessRules.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 提交预定订单
+     * @param data
+     * @param data.resId(*) 餐厅id
+     * @param data.source(*)来源 0安卓端 1小程序
+     * @param data.reserveTime(*)预定时间 Long类型
+     * @param data.objId(*)如果source为 1 则这个参数必传
+     * @param data.tableCode 桌台code
+     * @param data.mobile(*)手机号
+     * @param data.name(*)姓名
+     * @param data.sex 姓名
+     * @param data.orderFoodJson 预点菜orderFood json串
+     * @param data.areaCode 分区code
+     * @param data.note 备注
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    insertReserve(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.insertReserve.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             cb && cb(res);

@@ -1,0 +1,55 @@
+.reservationDesk .top {
+  margin-top: 0;
+}
+.reservationDesk .top .zan-tab {
+  height: 90rpx;
+}
+.reservationDesk .top .zan-tab .zan-tab__title {
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 28rpx;
+}
+.reservationDesk .section {
+  margin-top: 0;
+  top: 110rpx;
+  bottom: 110rpx;
+}
+.reservationDesk .section button[type="primary"] {
+  color: #f74b7b;
+  background-color: #fbe7ed;
+}
+.reservationDesk .section .zan-panel {
+  margin-top: 6rpx;
+}
+.reservationDesk .section .zan-panel:nth-child(1) {
+  margin-top: 0;
+}
+.reservationDesk .section .zan-cell::after {
+  border: none;
+}
+.reservationDesk .section .tableList-blurry {
+  margin-top: 30rpx;
+}
+.reservationDesk .section .tableList-blurry .flexBox-item {
+  height: 100rpx;
+}
+.reservationDesk .section .tableList-blurry .flexBox-item button {
+  border-radius: 60rpx;
+}
+.reservationDesk .section .tableList {
+  box-sizing: border-box;
+  padding: 0 30rpx 20rpx;
+}
+.reservationDesk .section .tableList .flexBox-item {
+  text-align: center;
+}
+.reservationDesk .section .tableList .flexBox-item button {
+  width: 90%;
+  font-size: 28rpx;
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+}
+.reservationDesk .azm-footer_fixed_bottom {
+  line-height: 90rpx;
+  border-radius: 0;
+}

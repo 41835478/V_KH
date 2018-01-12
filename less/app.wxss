@@ -346,6 +346,9 @@ page .azm-fixed {
 page .weui-cells__border_1px .weui-cell::before {
   border-top-width: 1px;
 }
+page .azm-placeholder_color {
+  color: #808080;
+}
 page .azm-cell {
   padding: 20rpx 30rpx 20rpx 30rpx;
   position: relative;
@@ -388,6 +391,10 @@ page .azm-radio_checked {
 page .azm-popup-picker-placeholder {
   color: #808080;
   font-weight: 500;
+}
+page .azm-footer_fixed_bottom_45px {
+  width: 100%;
+  height: 90rpx;
 }
 page .azm-footer_fixed_bottom {
   position: fixed;
@@ -463,6 +470,16 @@ page button[size="mini"] {
   line-height: 2.3;
   font-size: 26rpx;
   padding: 0 1.6em;
+}
+page button[type="disabled"] {
+  color: #bfbfbf;
+  background-color: transparent;
+  border: 2rpx solid #bfbfbf;
+}
+page .button-hover[type="disabled"] {
+  color: #bfbfbf;
+  background-color: transparent;
+  border: 2rpx solid #bfbfbf;
 }
 page button[plain] {
   color: #353535;

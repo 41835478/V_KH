@@ -1,0 +1,247 @@
+<view class="zan- {{text}}">
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_access"
+              data-value="{{filterUtil.reserveTimeFilter(shopInfo.closingtime,orderMealData.reserveTime).time}}"
+              data-link="/pages/shop/destineTimeSelect/index"
+              catchtap="routerGo">
+            <view class="weui-cell__bd">
+                <text>时间：</text>
+            </view>
+            <view class="weui-cell_primary azm-memberName">
+                <text>{{filterUtil.reserveTimeFilter(shopInfo.closingtime,orderMealData.reserveTime,1)}}</text>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">
+                <text>人数：</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                <template is="azm-stepper" data="{{ ...config.base.address }}"></template>
+            </view>
+            <view class="weui-cell__ft"></view>
+        </view>
+        <view class="weui-cell weui-cell_access"
+              data-value="{{filterUtil.reserveTimeFilter(shopInfo.closingtime,orderMealData.reserveTime).time}}"
+              data-component-id="orderMealData.reserveTime"
+              data-link="/pages/shop/reservationDesk/index"
+              catchtap="routerGo">
+            <view class="weui-cell__bd">
+                <text>桌位：</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                <text>请选择预定桌位</text>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </view>
+    </view>
+    <view class="weui-cells__title"></view>
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_access">
+            <view class="weui-cell__bd flexBox flexBox-start">
+                <view class="flexBox-item">
+                    <text>姓名：</text>
+                </view>
+                <view class="flexBox-item">
+                    <input name="name" cursor-spacing="50" placeholder="请输入姓名" bindchange="bindChange"/>
+                </view>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                <radio-group class="radio-group" bindchange="radioChange" name="paymentMethod">
+                    <label class="radio">
+                        <radio value="0" checked/>
+                        <text>男</text>
+                    </label>
+                    <label class="radio">
+                        <radio value="1" checked=""/>
+                        <text>女</text>
+                    </label>
+                </radio-group>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd flexBox flexBox-start">
+                <view class="flexBox-item">
+                    <text>手机：</text>
+                </view>
+                <view class="flexBox-item">
+                    <input name="name" type="number" cursor-spacing="50" placeholder="请输入手机号码" bindchange="bindChange"
+                           maxlength="11"/>
+                </view>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName"></view>
+            <view class="weui-cell__ft"></view>
+        </view>
+    </view>
+
+    <!--预点餐-->
+    <view class="weui-cells__title"></view>
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell">
+            <view class="weui-cell__bd">
+                <text decode>是否预点餐&nbsp;&nbsp;</text>
+                <switch color="#f74b7b" bindchange="switch2Change"/>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                <text>（点餐需支付预定金￥50）</text>
+            </view>
+            <view class="weui-cell__ft"></view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">
+                <text>预点菜品信息</text>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+            <view class="weui-cell__ft">
+                <block wx:if="{{false}}">
+                    <text class="iconfont-2 icon-xiangshang2 azm-icon"></text>
+                </block>
+                <block wx:else>
+                    <text class="iconfont-2 icon-xiangxia2 azm-icon"></text>
+                </block>
+            </view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd" style="width: 100%">
+                <block wx:for="{{[1,2,3]}}" wx:key="index">
+                    <view class="flexBox flexBox-start">
+                        <view class="flexBox-item fb-6_5 zan-ellipsis">
+                            <text>烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼烧饼</text>
+                        </view>
+                        <view class="flexBox-item fb-2 zan-center">X100</view>
+                        <view class="flexBox-item fb-3_5 zan-right">
+                            <text>￥5.0</text>
+                        </view>
+                    </view>
+                </block>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+            <view class="weui-cell__ft"></view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">
+            </view>
+            <view class="weui-cell_primary">
+                <text>金额：￥50</text>
+            </view>
+            <view class="weui-cell__ft"></view>
+        </view>
+    </view>
+
+    <!--备注-->
+    <view class="weui-cells__title"></view>
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell">
+            <view class="weui-cell__bd flexBox flexBox-start">
+                <view class="flexBox-item fb-1_5">
+                    <text>备注：</text>
+                </view>
+                <view class="flexBox-item fb-10_5">
+                    <input name="name" type="number" cursor-spacing="50" placeholder="请输入您的要求，我们会尽量安排"
+                           bindchange="bindChange"/>
+                </view>
+            </view>
+            <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+            <view class="weui-cell__ft"></view>
+        </view>
+    </view>
+
+
+    <!--支付方式-->
+    <radio-group class="azm-payment-method weui-cells weui-cells__border_1px" name="paymentMethod">
+        <!--会员支付-->
+        <label class="weui-cell azm-cell azm-member" catchtap="bindRadioGroup">
+            <view class="weui-cell__bd">
+                <view class="flexBox flexBox-start">
+                    <view class="flexBox-item azm-images-box text-center">
+                        <text class="iconfont icon-vip azm-icon"></text>
+                    </view>
+                    <view class="flexBox-item fb-9 azm-content">
+                        <text>会员支付</text>
+                    </view>
+                </view>
+                <view class="flexBox flexBox-start azm-member-content">
+                    <view class="flexBox-item azm-images-box text-center">
+
+                    </view>
+                    <view class="flexBox-item fb-9 azm-content">
+                        <block wx:if="{{isMemberCardDto}}">
+                            <text>余额：{{filterMoney.RMB(memberCardDto.availableBalance)}}</text>
+                            <block wx:if="{{filterMoney.Money(memberCardDto.availableBalance) <= 0 || memberCardDto.availableBalance < (discountTotalPrice + otherTotalPrice)}}">
+                                <text decode>&nbsp;&nbsp;(余额不足)</text>
+                            </block>
+                        </block>
+                        <block wx:else>
+                            <text>未开通会员</text>
+                        </block>
+                    </view>
+                </view>
+            </view>
+            <view class="weui-cell_primary" value="{{paymentMethod}}">
+                <radio color="#f74b7b" value="member"
+                       checked="{{'member'=== paymentMethod}}"
+                       disabled="{{!isMemberCardDto}}"/>
+            </view>
+            <view class="weui-cell__ft">
+
+            </view>
+        </label>
+        <!--微信支付-->
+        <label class="weui-cell azm-cell azm-cell-l-0px azm-weChat">
+            <view class="weui-cell__bd flexBox flexBox-start">
+                <view class="flexBox-item azm-images-box text-center">
+                    <text class="iconfont icon-weixinzhifu azm-icon"></text>
+                </view>
+                <view class="flexBox-item fb-9 azm-content">
+                    <text>微信支付</text>
+                </view>
+            </view>
+            <view class="weui-cell_primary" value="{{paymentMethod}}">
+                <radio color="#f74b7b" value="weChat"
+                       checked="{{'weChat'=== paymentMethod}}"/>
+            </view>
+            <view class="weui-cell__ft">
+
+            </view>
+        </label>
+    </radio-group>
+    <view class="azm-footer_fixed_bottom_45px"></view>
+    <button type="primary" class="azm-footer_fixed_bottom">支付定金</button>
+</view>
+<!--加菜按钮-->
+<template name="azm-stepper">
+    <!--transition-all-->
+    <view class="flexBox flexBox-between azm-stepper {{ size === 'small' ? 'azm-stepper--small' : '' }}">
+        <view class="flexBox-item azm-stepper__minus {{ stepper <= min ? 'azm-stepper--disabled' : '' }}"
+              catchtap="azm_stepper_minus" data-stepper="{{ stepper }}"
+              data-disabled="{{ stepper <= min }}"
+              data-component-id="{{ componentId }}">
+            <text class="azm-icon iconfont-2 icon-jianhao"></text>
+        </view>
+        <view class="center flexBox-item">
+            <input name="stepperNumber" type="number"
+                   class="azm-stepper__text {{ min >= max ? 'azm-stepper--disabled' : '' }}"
+                   data-component-id="{{ componentId }}"
+                   data-min="{{ min }}"
+                   data-max="{{ max }}"
+                   value="{{ stepper }}"
+                   disabled="{{ min >= max }}"
+                   catchinput="azm_stepper_blur"
+                   cursor-spacing="50" disabled=""/>
+        </view>
+        <view class="right flexBox-item azm-stepper__plus {{ stepper >= max ? 'azm-stepper--disabled' : '' }}"
+              catchtap="azm_stepper_plus" data-stepper="{{ stepper }}"
+              data-disabled="{{ stepper >= max }}"
+              data-component-id="{{ componentId }}">
+            <text class="azm-icon iconfont-2 icon-jiahao2"></text>
+        </view>
+    </view>
+</template>
+
+
+<wxs src="../../../utils/filter/filter_orderType.wxs" module="filterUtil"/>
+
+<import src="../../../template/picker-view/picker-view.wxml"/>
+
+<template is="picker_view" data="{{...calendarData,class:calendar,animated:true}}"></template>

@@ -260,13 +260,13 @@ const methods = {
                 if (item && utilCommon.isEmptyObject(item.rule)) {//规格
                     discountPrice = item.rule.minMemberPrice || 0;
                     discountPrice = discountPrice * count;
-                    offerPrice = totalPrice - discountPrice;
+                    offerPrice = price * count - discountPrice;
                     info.discountPrice = discountPrice;
                     info.offerPrice = offerPrice >= 0 ? util.money(offerPrice) : 0;
                 } else {//无规格
                     discountPrice = item.memberPrice || item.price;
                     discountPrice = discountPrice * count;
-                    offerPrice = totalPrice - discountPrice;
+                    offerPrice = price * count - discountPrice;
                     info.discountPrice = discountPrice;
                     info.offerPrice = offerPrice >= 0 ? util.money(offerPrice) : 0;
                 }
@@ -274,7 +274,6 @@ const methods = {
                 info.discountPrice = price * info.count;
                 info.offerPrice = 0;
             }
-
 
             discountTotalPrice += info.discountPrice;
             offerTotalPrice += info.offerPrice;

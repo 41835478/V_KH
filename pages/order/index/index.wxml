@@ -31,14 +31,12 @@
                         </view>
                         <view class="flexBox-item fb-3 azm-right">
                             <view class="azm-status text-overflow">状态：{{filterUtil.OrderStatus(item).str}}</view>
-                            <block wx:for="{{statusBtn[item.consumerStatus]}}" wx:key="*this" wx:for-item="val">
-                                <block wx:if="{{1 == filterUtil.OrderType(item,1)}}">
-                                    <button class="azm-btn {{val.class}}" plain type="mini"
-                                            data-orderType="{{filterUtil.OrderType(item,1)}}"
-                                            data-value="{{item}}" data-type="{{val.jumpType}}" catchtap="jumpBtn">
-                                        {{val.name}}
-                                    </button>
-                                </block>
+                            <block wx:for="{{filterUtil.FoodBtnList(item,1)}}" wx:key="*this" wx:for-item="val">
+                                <button class="azm-btn {{val.class}}" plain type="mini" wx:if="{{!val.disabled}}"
+                                        data-orderType="{{filterUtil.OrderType(item,1)}}"
+                                        data-value="{{item}}" data-type="{{val.type}}" catchtap="jumpBtn">
+                                    {{val.name}}
+                                </button>
                             </block>
                         </view>
                     </view>
@@ -54,7 +52,6 @@
         <view class="weui-loadmore__tips weui-loadmore__tips_in-line">我是有底线的</view>
     </view>
 </view>
-
 
 <!--过滤器-->
 <wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>

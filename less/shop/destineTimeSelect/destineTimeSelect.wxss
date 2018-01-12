@@ -1,0 +1,57 @@
+.destineTimeSelect .top {
+  box-sizing: border-box;
+  top: 0;
+  margin-top: 0;
+  padding-top: 25rpx;
+  padding-bottom: 25rpx;
+}
+.destineTimeSelect .top .flexBox-item {
+  position: relative;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+}
+.destineTimeSelect .top .flexBox-item.active {
+  color: #000;
+}
+.destineTimeSelect .top .flexBox-item.active::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 98rpx;
+  height: 4rpx;
+  background-color: #f74b7b;
+}
+.destineTimeSelect .top .flexBox-item .azm-icon {
+  font-size: 28rpx;
+}
+.destineTimeSelect .azm-fixed {
+  top: 160rpx;
+  bottom: 110rpx;
+  overflow: hidden;
+}
+.destineTimeSelect .section {
+  margin-top: 0;
+  box-sizing: border-box;
+  padding-bottom: 20rpx;
+}
+.destineTimeSelect .section button[type="primary"] {
+  color: #f74b7b;
+  background-color: #fbe7ed;
+}
+.destineTimeSelect .section .zan-cell::after {
+  border: none;
+}
+.destineTimeSelect .section .flexBox-item {
+  text-align: center;
+}
+.destineTimeSelect .section .flexBox-item button {
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+}
+.destineTimeSelect .azm-footer_fixed_bottom {
+  line-height: 90rpx;
+  border-radius: 0;
+}

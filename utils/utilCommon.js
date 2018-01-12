@@ -1,6 +1,5 @@
 'use strict';
 
-
 var arr = [];
 
 var getProto = Object.getPrototypeOf;
@@ -67,11 +66,45 @@ function isNumberOfNaN(arg) {
 
 module.exports.isNumberOfNaN = isNumberOfNaN;
 
+function isDate(obj) {
+    return obj instanceof Date
+}
+
+module.exports.isDate = isDate;
+
 function isString(arg) {
     return typeof arg === 'string';
 }
 
 module.exports.isString = isString;
+
+function trim(x) {
+    try {
+        return x.replace(/^\s+|\s+$/gm, '');
+    } catch (e) {
+        return x
+    }
+}
+
+module.exports.trim = trim;
+
+function isJsonObject(arg = '') {
+    try {
+        let json = trim(arg)
+        if (typeof json == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {
+            return false
+        } else if (!!json && isString(json)) {
+            JSON.parse(json);
+            return true
+        } else {
+            return false
+        }
+    } catch (e) {
+        return false
+    }
+}
+
+module.exports.isJsonObject = isJsonObject;
 
 function isSymbol(arg) {
     return typeof arg === 'symbol';
@@ -97,11 +130,6 @@ function isObject(arg) {
 
 module.exports.isObject = isObject;
 
-function isDate(d) {
-    return binding.isDate(d);
-}
-
-module.exports.isDate = isDate;
 
 function isFunction(arg) {
     return typeof arg === 'function';

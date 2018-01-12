@@ -60,7 +60,8 @@
                             <view class="img-area fl">
                                 <view class="cus-table">
                                     <block wx:if="{{item.resLogo}}">
-                                        <image lazy-load class="icon-user-bigger" src="{{imageServer+item.resLogo}}"></image>
+                                        <image lazy-load class="icon-user-bigger"
+                                               src="{{imageServer+item.resLogo}}"></image>
                                     </block>
                                     <block wx:else>
                                         <view>

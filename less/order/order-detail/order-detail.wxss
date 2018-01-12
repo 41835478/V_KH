@@ -1,3 +1,6 @@
+page .azm-p-1px-b {
+  border-bottom: 2rpx solid #f1f3f4;
+}
 page .moduleMeal {
   position: fixed;
   background-color: #57565c;
@@ -143,6 +146,7 @@ page view.new-class .azm-topStatus .azm-topStatus-start .weui-cell__bd,
 page view.new-class .azm-topStatus .azm-topStatus-start .azm-icon {
   font-size: 28rpx;
   line-height: 50rpx;
+  color: #333;
 }
 page view.new-class .azm-topStatus .azm-topStatus-start .azm-icon {
   font-weight: 400;
@@ -327,15 +331,54 @@ page view.new-class .azm-shopList .azm-cell .weui-cell__ft {
 page view.new-class .azm-shopList .azm-cell.azm-cell-placeholder-color {
   color: #808080;
 }
-page view.new-class .azm-shopList .azm-shopList-box {
-  padding-top: 16rpx;
-  padding-bottom: 16rpx;
+page view.new-class .azm-shopList .azm-shopList-box view {
+  box-sizing: border-box;
 }
 page view.new-class .azm-shopList .azm-shopList-box .azm-cell {
   padding: 10rpx 30rpx;
+  line-height: 1;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-cell_avatar {
+  line-height: 54rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-cell_avatar .weui-cell__ft {
+  width: 320rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li_0 {
+  padding-top: 20rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li_last_0 {
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f1f3f4;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li {
+  padding-left: 90rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li .azm-ruleName {
+  font-size: 22rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li .azm-icon {
+  font-size: 30rpx;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li .azm-icon.azm-icon-blue {
+  color: #008de6;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell.azm-orderList__li .azm-icon.azm-icon-pink {
+  color: #f74b7b;
 }
 page view.new-class .azm-shopList .azm-shopList-box .azm-cell::before {
   border: none;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell .azm-resLogo .azm-resLogo-img {
+  position: relative;
+  border-radius: 100%;
+}
+page view.new-class .azm-shopList .azm-shopList-box .azm-cell .azm-resLogo .azm-resLogo-img .azm-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 54rpx;
 }
 page view.new-class .azm-shopList .azm-total {
   padding-bottom: 6rpx;
@@ -353,7 +396,7 @@ page view.new-class .azm-shopList .azm-member-btn > view {
   overflow: hidden;
 }
 page view.new-class .azm-shopList .azm-member-btn button {
-  line-height: 52rpx;
+  line-height: 48rpx;
   font-size: 22rpx;
 }
 page view.new-class .azm-shopList .azm-note .flexBox-item {
@@ -399,6 +442,7 @@ page view.new-class .azm-payment-method .azm-member {
   padding-bottom: 4rpx;
 }
 page view.new-class .azm-payment-method .azm-member .azm-icon {
+  font-size: 34rpx;
   color: #e10b29;
 }
 page view.new-class .azm-payment-method .azm-member-content {
@@ -419,8 +463,29 @@ page view.new-class .azm-footer {
   padding: 40rpx 30rpx;
 }
 page view.new-class .azm-footer button {
-  margin: 0 40rpx;
+  position: relative;
+  margin: 0 20rpx;
   border-radius: 74rpx;
+  line-height: 64rpx;
+  font-size: 26rpx;
+  background-color: #fff;
+}
+page view.new-class .azm-footer button.btn-icon {
+  padding-left: 40rpx;
+}
+page view.new-class .azm-footer button .azm-icon {
+  position: absolute;
+  top: 52%;
+  transform: translateY(-50%);
+  left: 30rpx;
+  font-size: 32rpx;
+  line-height: 1;
+}
+page view.new-class .azm-footer button .azm-icon.icon-xiangqingye-zaixianmaidan {
+  font-size: 26rpx;
+}
+page view.new-class .azm-footer button .azm-icon.icon-fuwuhujiao {
+  font-size: 34rpx;
 }
 page view.new-class .azm-footer-b {
   height: 100rpx;

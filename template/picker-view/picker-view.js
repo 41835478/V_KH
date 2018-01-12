@@ -1,9 +1,11 @@
-let EVENTS = {};
+import {dateData} from '../../utils/date/calendar'
 
+let EVENTS = {};
 let pickerView = {
     azm_pickerView_show() {
         let that = this, data = arguments[0],
             obj = {
+                isMask: true,
                 type: data.type,
                 isLoading: data.isLoading || true,
                 isDisabled: false,
@@ -16,12 +18,21 @@ let pickerView = {
             obj.footer = {
                 confirmText: data.confirmText || '是',
                 cancelText: data.cancelText || '否',
-                cancelColor: '#f74b7b',
-                confirmColor: '#f74b7b',
+                cancelColor: '',
+                confirmColor: '',
                 status: true
+            };
+            if (data.cancelColor) {
+                obj.footer.cancelColor = `background-color: ${data.cancelColor};color: #fff`
+            }
+            if (data.confirmColor) {
+                obj.footer.confirmColor = `background-color: ${data.confirmColor};color: #fff`
             }
         }
         if (!data.type) return;
+        else if (data.type === 'calendar') {
+            obj.data.calendar = dateData()
+        }
         EVENTS.type = data.type;
         EVENTS.success = data.success;
         EVENTS.fail = data.fail;
@@ -51,7 +62,7 @@ let pickerView = {
             value = e.detail.value, confirm = false, cancel = false;
         try {
             if (!type) type = e.detail.target.dataset.type;
-            that.azm_closeModule(EVENTS.type);//关闭弹框
+            that.azm_closePickerView(EVENTS.type);//关闭弹框
         } catch (e) {
             console.log('azm_pickerView_success调用失败');
         }
@@ -85,8 +96,11 @@ let pickerView = {
             select = e.currentTarget.dataset.select,
             active = e.currentTarget.dataset.active,
             cancel = true,
-            value = e.detail.value;
-        that.azm_closeModule(EVENTS.type);
+            value = null;
+        if (e.detail) {
+            value = e.detail.value
+        }
+        that.azm_closePickerView(EVENTS.type);
         EVENTS.fail && EVENTS.fail({
             cancel,
             active,
@@ -107,11 +121,11 @@ let pickerView = {
         });
     },
     /**
-     * 关闭module-popup弹框
+     * 关闭PickerView弹框
      * @param str
      * @param animated
      */
-    azm_closeModule(str, animated) {
+    azm_closePickerView(str, animated) {
         let that = this;
         let data = {
             isMask: false,
@@ -123,7 +137,10 @@ let pickerView = {
                     [`${str}Data.isAnimated`]: false
                 });
             }, 300);
-            that.setData({[`${str}Data.data`]: {}});
+            data[`${str}Data.data`] = {};
+            data[`${str}Data.isMask`] = false;
+            data[`${str}Data.isLoading`] = false;
+            data[`${str}Data.isDisabled`] = false;
         }
         data[str] = '';
         this.setData(data);
@@ -136,6 +153,12 @@ function PickerView() {
     this.__page = curPage;
     Object.assign(curPage, pickerView);
     curPage.pickerView = this;
+    let components = curPage.data.components || [];
+    components.push({
+        name: 'picker-view',
+        path: '../../../template/picker-view/picker-view.wxml',
+    });
+    curPage.setData({components})
     return this;
 }
 

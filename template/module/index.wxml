@@ -32,7 +32,7 @@
         <form bindsubmit="azm_modulePopup_success" bindreset="azm_modulePopup_fail" report-submit
               class="module-popup {{class?'show':'hide'}}">
             <view class="module-title text-overflow">
-                <block wx:if="{{type}}">
+                <block wx:if="{{version == 1}}">
                     <button class="module-close" form-type="reset">X</button>
                 </block>
                 <block wx:else>
@@ -55,7 +55,9 @@
             </view>
         </form>
     </block>
-    <template is="mask" data="{{isMask}}"></template>
+    <block wx:if="{{isMask}}">
+        <template is="mask" data="{{isMask:true,type}}"></template>
+    </block>
 </template>
 
 <!--底部样式-->

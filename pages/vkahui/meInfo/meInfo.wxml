@@ -117,6 +117,6 @@
 
 <!--编辑昵称弹窗-->
 <import src="../../../template/module/index.wxml"/>
-<template is="module-popup" data="{{...moduleNameData,class:moduleName,isMask,animated:true}}"></template>
+<template is="module-popup" data="{{...moduleNameData,class:moduleName,animated:true}}"></template>
 
 

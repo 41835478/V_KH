@@ -269,7 +269,12 @@
                 <view class="weui-cell azm-cell azm-member-btn azm-cell-l-0px">
                     <view class="weui-cell__bd flexBox flexBox-start">
                         <view class="flexBox-item azm-content azm-note__bd">
-                            <text>会员可优惠：{{filterMoney.RMB(offerTotalPrice)}}</text>
+                            <block wx:if="{{offerTotalPrice>0}}">
+                                <text>会员可优惠：{{filterMoney.RMB(offerTotalPrice)}}</text>
+                            </block>
+                            <block wx:else>
+                                <text>会员有优惠</text>
+                            </block>
                         </view>
                         <view class="flexBox-item fb-10">
 
@@ -369,7 +374,7 @@
                 <text decode class="azm-discount">&nbsp;&nbsp;(已优惠：{{filterMoney.RMB(offerTotalPrice)}})</text>
             </view>
             <view class="flexBox-item fb-3_5">
-                <button type="primary" form-type="submit" class="azm-btn-submit">去支付</button>
+                <button type="primary" form-type="submit" class="azm-btn-submit">{{orderType==3?'确认订单':'去支付'}}</button>
             </view>
         </view>
 
@@ -381,7 +386,7 @@
 <import src="../../../template/module/index.wxml"/>
 <!--规格弹窗-->
 <template is="module-popup"
-          data="{{...moduleActiveMeData,data2:tableDetail,class:moduleActiveMe,isMask,animated:true}}"></template>
+          data="{{...moduleActiveMeData,data2:tableDetail,class:moduleActiveMe,animated:true}}"></template>
 
 <!--过滤器-->
 <wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>

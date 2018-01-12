@@ -16,17 +16,103 @@
         </view>
         <block wx:if="{{footer&&footer.status}}">
             <button class="picker-view-footer azm-btn" plain data-type="confirm" data-active="{{type}}"
+                    style="{{footer.cancelColor}}"
                     catchtap="azm_pickerView_fail">
                 {{footer.cancelText}}
             </button>
         </block>
     </view>
-    <template is="mask" data="{{isMask,type}}"></template>
+    <block wx:if="{{isMask}}">
+        <template is="mask" data="{{isMask:true,type,event:'azm_pickerView_fail'}}"></template>
+    </block>
 </template>
 
 
-<!--支付方式-->
+<!--支付方式1-->
 <template name="picker-view-pickerViewPayment">
+    <view class="pickerViewPayment">
+        <view class="pickerViewPayment-member pickerViewPayment-item">
+            <view class="flexBox">
+                <view class="flexBox-item fb-9_5">
+                    <view class="p">
+                        <text class="iconfont icon-vip azm-icon"></text>
+                        <text decode>&nbsp;&nbsp;&nbsp;会员卡</text>
+                    </view>
+                    <view class="payment-member-content p">
+                        <block wx:if="{{!data.isMemberCardDto}}">
+                            <text>请先申请会员卡</text>
+                        </block>
+                        <block wx:else>
+                            <block wx:if="{{data.memberCardDto.availableBalance>0}}">
+                                <text>余额：{{filterMoney.RMB(data.memberCardDto.availableBalance)}}</text>
+                                <block wx:if="{{data.memberCardDto.status == 1}}">
+                                    <text decode>&nbsp;&nbsp;会员卡已锁，请联系商家客服</text>
+                                </block>
+                                <block wx:elif="{{data.actualPrice>data.memberCardDto.availableBalance}}">
+                                    <text decode>&nbsp;&nbsp;余额不足，请到收银台充值</text>
+                                </block>
+                            </block>
+                            <block wx:else>
+                                <text>余额不足，请到收银台充值</text>
+                            </block>
+                        </block>
+                    </view>
+                </view>
+                <view class="flexBox-item fb-2_5 text-right btn-right">
+                    <block wx:if="{{data.isMemberCardDto}}">
+                        <block wx:if="{{data.memberCardDto.status == 1}}">
+                            <button plain size="mini" data-type="confirm" data-active="{{type}}"
+                                    data-select="recharge"
+                                    class="azm-btn" catchtap="azm_pickerView_success">
+                                已锁
+                            </button>
+                        </block>
+                        <block wx:elif="{{data.memberCardDto.availableBalance>0 && data.actualPrice<data.memberCardDto.availableBalance}}">
+                            <button plain size="mini" type="primary" data-type="confirm"
+                                    data-active="{{type}}"
+                                    data-select="payment"
+                                    class="azm-btn"
+                                    catchtap="azm_pickerView_success">
+                                支付
+                            </button>
+                        </block>
+                        <block wx:elif="{{data.isMemberCardDto}}">
+                            <button plain size="mini" data-type="confirm" data-active="{{type}}"
+                                    data-select="recharge"
+                                    class="azm-btn" catchtap="azm_pickerView_success">
+                                充值
+                            </button>
+                        </block>
+                    </block>
+                    <block wx:else>
+                        <button plain size="mini" type="primary" data-type="confirm" data-active="{{type}}"
+                                data-select="apply"
+                                class="azm-btn"
+                                catchtap="azm_pickerView_success">
+                            申请
+                        </button>
+                    </block>
+                </view>
+            </view>
+        </view>
+        <view class="pickerViewPayment-weChat pickerViewPayment-item flexBox">
+            <view class="flexBox-item fb-9_5 weChat-left">
+                <text class="iconfont icon-weixinzhifu azm-icon"></text>
+                <text decode>&nbsp;&nbsp;&nbsp;微信支付</text>
+            </view>
+            <view class="flexBox-item fb-2_5 text-right btn-right">
+                <button plain size="mini" type="primary" data-type="confirm" data-active="{{type}}" class="azm-btn"
+                        data-select="weChat"
+                        catchtap="azm_pickerView_success">
+                    支付
+                </button>
+            </view>
+        </view>
+    </view>
+</template>
+
+<!--支付方式2-->
+<template name="picker-view-pickerViewPayment2">
     <view class="picker-view-payment">
         <view class="picker-view-payment-member picker-view-payment-item">
             <view class="flexBox">
@@ -119,5 +205,94 @@
     </view>
 </template>
 
+<!--订单跟踪-->
+<template name="picker-view-orderTracking">
+    <view class="picker-view-orderTracking">
+        <block wx:for="{{data.value}}" wx:key="*this">
+            <view class="flexBox flexBox-start picker-view-orderTracking-item">
+                <view class="flexBox-item">
+                    <block wx:if="{{index === 0}}">
+                        <text class="iconfont-2 icon-radioboxfill azm-icon azm-icon-active"></text>
+                    </block>
+                    <block wx:else>
+                        <text class="iconfont icon-point azm-icon"></text>
+                    </block>
+                </view>
+                <view class="flexBox-item fb-5 text-overflow">
+                    <block wx:if="{{item.status == 1}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">订单提交</text>
+                    </block>
+                    <block wx:elif="{{item.status == 2}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">已支付</text>
+                    </block>
+                    <block wx:elif="{{item.status == 3}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">已接单</text>
+                    </block>
+                    <block wx:elif="{{item.status == 4}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">已拒单</text>
+                    </block>
+                    <block wx:elif="{{item.status == 5}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">已完成</text>
+                    </block>
+                    <block wx:elif="{{item.status == 6}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">超时取消</text>
+                    </block>
+                    <block wx:elif="{{item.status == 7}}">
+                        <text class="{{index === 0?'azm-icon-active':''}}">订单已取消</text>
+                    </block>
+                </view>
+                <view class="flexBox-item fb-6 text-right azm-placeholder_color text-overflow">
+                    <text>{{filterUtil.DateFilter(item.createTime)}}</text>
+                </view>
+            </view>
+        </block>
+    </view>
+</template>
+
+<template name="picker-view-calendar">
+    <view class="picker-view-calendar">
+        <view class="headbox2">
+            <view class="headdate">日</view>
+            <view class="headdate">一</view>
+            <view class="headdate">二</view>
+            <view class="headdate">三</view>
+            <view class="headdate">四</view>
+            <view class="headdate">五</view>
+            <view class="headdate">六</view>
+        </view>
+        <view class="headbox">
+            <view class="headdate">日</view>
+            <view class="headdate">一</view>
+            <view class="headdate">二</view>
+            <view class="headdate">三</view>
+            <view class="headdate">四</view>
+            <view class="headdate">五</view>
+            <view class="headdate">六</view>
+        </view>
+        <view class="mouth" wx:for="{{data.calendar.date}}" wx:for-item="date" wx:for-index="index">
+            <view class="mouthhead">{{date[index].year}}年{{date[index].month}}月</view>
+            <view class="daybox">
+                <view class="day" wx:if="{{data.calendar.weeks[index]>0}}"></view>
+                <view class="day" wx:if="{{data.calendar.weeks[index]>1}}"></view>
+                <view class="day" wx:if="{{data.calendar.weeks[index]>2}}"></view>
+                <view class="day" wx:if="{{data.calendar.weeks[index]>3}}"></view>
+                <view class="day" wx:if="{{data.calendar.weeks[index]>4}}"></view>
+                <view class="day" wx:if="{{data.calendar.weeks[index]>5}}"></view>
+                <view class="day {{item.selected == 1 ? 'bc':''}}" wx:for="{{date}}" wx:for-index="idx"
+                      data-index="{{index}}" data-indexs="{{idx}}" bindtap="selectday">
+                    <view class="actname {{item.selected == 1 ? 'bc2':''}}">{{date[idx].act.subject}}</view>
+                    {{date[idx].day}}
+                    <view class="actname2 {{item.selected == 1 ? 'bc2':''}}" wx:if="{{date[idx].act.rate}}">
+                        {{date[idx].act.rate/10}}折
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="none88" wx:if="{{pagetype=='day'}}"></view>
+        <view class="fixedbtn" bindtap="submitbtn" wx:if="{{pagetype=='day'}}">确认选择</view>
+    </view>
+</template>
+
 <!--过滤器-->
 <wxs src="../../utils/filter/filter_money.wxs" module="filterMoney"/>
+<wxs src="../../utils/filter/filter_orderType.wxs" module="filterUtil"/>

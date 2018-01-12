@@ -1,0 +1,2 @@
+/* pages/shop/OrderMeal/OrderMeal.wxss */
+@import "../../../less/shop/OrderMeal/OrderMeal.wxss";

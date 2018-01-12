@@ -8,7 +8,7 @@
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "1.5.0",
+	"libVersion": "1.6.6",
 	"appid": "wxdaecf7a9dfaac8ff",
 	"projectname": "V_KH%EF%BC%88%E5%BC%80%E5%8F%91%EF%BC%89",
 	"condition": {
@@ -20,8 +20,12 @@
 			"current": -1,
 			"list": []
 		},
-		"miniprogram": {
+		"game": {
 			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 2,
 			"list": [
 				{
 					"id": 0,
@@ -54,7 +58,7 @@
 				{
 					"id": 4,
 					"name": "1号桌台线上",
-					"pathName": "pages/init/init",
+					"pathName": "pages/shop/home/home",
 					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D2278ddc78f884094b9351af5cdc1c180",
 					"scene": "1011"
 				},
@@ -68,7 +72,7 @@
 					"id": 6,
 					"name": "本地一号桌台",
 					"pathName": "pages/shop/home/home",
-					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D50f1b9e6219c4f448c446b15f3f6e2e7",
+					"query": "q=http%3A%2F%2Fvip.zhenler.com%2FH5%2Fqrcode.html%3Fid%3D55e83a8b6f124507a142da86ff8c61d7",
 					"scene": "1011"
 				},
 				{
@@ -98,6 +102,41 @@
 					"pathName": "pages/vkahui/memberApplication/memberApplication",
 					"query": "resId=000000005a2c413b015a64fb9b71130f&resName=%E9%A1%B6%E5%91%B1%E5%91%B1&resLogo=%2Fresources%2FUPLOADIMAGE%2FTEMP%2F000000005a2c413b015a64fb9b71130f%2Fres%2Fo_1b9l3i5obpu71itd1tlh1cta1e75n.JPG",
 					"scene": "1011"
+				},
+				{
+					"id": 11,
+					"name": "订单详情-餐后",
+					"pathName": "pages/order/order-detail/order-detail",
+					"query": "resId=000000005c2536d5015c2e169199061f&consumerId=7324b16efc2d49b093c540d0b7e08a8f&tableCode=5971370050014982ab816a541853ee10&tableName=",
+					"scene": "1001"
+				},
+				{
+					"id": 12,
+					"name": "预定界面",
+					"pathName": "pages/shop/OrderMeal/OrderMeal",
+					"query": "resId=000000005c2536d5015c2e169199061f&orderType=4",
+					"scene": "1001"
+				},
+				{
+					"id": 13,
+					"name": "预定界面-时间选择",
+					"pathName": "pages/shop/destineTimeSelect/index",
+					"query": "value=&resId=000000005c2536d5015c2e169199061f&orderType=4",
+					"scene": "1001"
+				},
+				{
+					"id": 14,
+					"name": "预定界面",
+					"pathName": "pages/shop/OrderMeal/OrderMeal",
+					"query": "resId=000000005c2536d5015c2e169199061f&orderType=4",
+					"scene": "1001"
+				},
+				{
+					"id": 15,
+					"name": "预定界面-桌台选择",
+					"pathName": "pages/shop/reservationDesk/index",
+					"query": "value=&resId=000000005c2536d5015c2e169199061f&orderType=4",
+					"scene": "1001"
 				}
 			]
 		}

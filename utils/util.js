@@ -3,9 +3,73 @@ const utilMd5 = require('../utils/md5.js'),
     utilCommon = require('../utils/utilCommon'),
     regExpUtil = require('../utils/RegExpUtil'),
     dateFormate = require('../utils/formateDate'),
+    date_formate = require('../utils/date/format'),
+    date_range = require('../utils/date/range'),
     queryString = require('../utils/queryString');
 
+module.exports.date_formate = date_formate;
+module.exports.date_range = date_range;
 module.exports.dateFormate = dateFormate;
+module.exports.regExpUtil = regExpUtil;
+
+function next3Days(input) {
+    var startDay = new Date()
+    try {
+        if (input && (typeof input === 'string' || typeof input === 'number')) {
+            if (regExpUtil.isDateTime(input)) {
+                input = input.split(' ')[0]
+            }
+            startDay = new Date(input)
+        }
+    } catch (e) {
+
+    }
+
+    var startDay1 = new Date(formatTime(startDay, {D: 1, spacer: '-'})),
+        startDay2 = new Date(formatTime(startDay, {D: 2, spacer: '-'})),
+        arr = [
+            {
+                text: getWeeks(startDay),
+                time: date_formate(startDay, 'MM-DD'),
+                dateTime: date_formate(startDay, 'YYYY-MM-DD'),
+            },
+            {
+                text: getWeeks(startDay1),
+                time: date_formate(startDay1, 'MM-DD'),
+                dateTime: date_formate(startDay1, 'YYYY-MM-DD'),
+            },
+            {
+                text: getWeeks(startDay2),
+                time: date_formate(startDay2, 'MM-DD'),
+                dateTime: date_formate(startDay2, 'YYYY:MM:DD'),
+            },
+        ];
+    return arr
+}
+
+var WEEKS = ['日', '一', '二', '三', '四', '五', '六'];
+
+function getWeeks(date) {
+    if (date instanceof Date) {
+        var toDay = date_formate(new Date(), 'YYYY-MM-DD');
+        var weeks = "周" + WEEKS[date.getDay()];
+        console.log(date_range(toDay, date).length);
+        switch (date_range(toDay, date).length) {
+            case 1:
+                weeks = '今天';
+                break;
+            case 2:
+                weeks = '明天';
+                break;
+            case 3:
+                weeks = '后天';
+                break;
+        }
+        return weeks
+    }
+}
+
+module.exports.next3Days = next3Days;
 
 function getToken() {
     const app = getApp();
@@ -34,7 +98,7 @@ let one_year = 31536000000,
 // 31536000000 2678400000 86400000 90000000 86460000 1000
 // console.log(one_year, one_month, one_day, one_hour, one_minute, one_second);
 
-function formatTime(time, config) {
+function formatTime(time, config, fmt) {
     var time = time || new Date(),
         spacer = config && config.spacer,
         timer = 0;
@@ -44,7 +108,7 @@ function formatTime(time, config) {
     if (config && config.M) {
         timer += Number(config.M) * one_month;
     }
-    if (config && config.M) {
+    if (config && config.D) {
         timer += Number(config.D) * one_day;
     }
 
@@ -57,20 +121,24 @@ function formatTime(time, config) {
     if (config && config.s) {
         timer += Number(config.s) * one_second;
     }
-    if (utilCommon.isString(time) || utilCommon.isNumberOfNaN(time)) {
-        try {
-            let _time = time.trim().replace(/-/g, '/');
-            time = new Date(_time);
-            if (isNaN(time)) {
-                _time = _time.replace(/\s/g, 'T');
+    if (!utilCommon.isDate(time)) {
+        if (utilCommon.isString(time) || utilCommon.isNumberOfNaN(time)) {
+            try {
+                if (utilCommon.isNumberOfNaN(time)) {
+                    time = new Date(time)
+                }
+                let _time = time.trim().replace(/-/g, '/');
                 time = new Date(_time);
+                if (isNaN(time)) {
+                    _time = _time.replace(/\s/g, 'T');
+                    time = new Date(_time);
+                }
+            } catch (e) {
+                return;
+                console.log('时间格式错误', e);
             }
-        } catch (e) {
-            return;
-            console.log('时间格式错误', e);
         }
     }
-
     var date = new Date(+time + timer);
 
     var year = date.getFullYear()
@@ -86,7 +154,6 @@ function formatTime(time, config) {
     } else {
         return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':')
     }
-
 }
 
 module.exports.formatTime = formatTime;
@@ -402,7 +469,7 @@ function showToast(option) {
     if (utilCommon.isObject(option)) {
         data.title = option.title;
         data.icon = option.icon || 'success';
-        data.image = option.image;
+        data.image = option.image || data.image;
         data.mask = option.mask || true;
         data.duration = option.duration || 2000;
         data.success = option.success ? () => {
@@ -436,7 +503,7 @@ function failToast(option) {
     if (utilCommon.isObject(option)) {
         data.title = option.title;
         data.icon = option.icon || 'success';
-        data.image = option.image;
+        data.image = option.image || data.image;
         data.mask = option.mask || true;
         data.duration = option.duration || 2000;
         data.success = option.success ? () => {
@@ -468,7 +535,7 @@ function showLoading(text, cb) {
         success() {
             setTimeout(function () {
                 cb && cb();
-            }, 1000);
+            }, 1500);
         }
     });
 }

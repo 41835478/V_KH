@@ -13,7 +13,10 @@
     "pages/vkahui/address/address",
     "pages/vkahui/phone-add/phone-add",
     "pages/vkahui/memberApplication/memberApplication",
-    "pages/vkahui/meInfo/meInfo"
+    "pages/vkahui/meInfo/meInfo",
+    "pages/shop/OrderMeal/OrderMeal",
+    "pages/shop/destineTimeSelect/index",
+    "pages/shop/reservationDesk/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

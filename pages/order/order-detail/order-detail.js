@@ -128,7 +128,7 @@ const methods = {
             flag = false;
         that.data.currentDate = new Date();
         ApiService.getOrderDetail(
-            {resId, consumerId, config: {isLoading: !bol}},
+            {objId, resId, consumerId, config: {isLoading: !bol}},
             (rsp) => {
                 if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let consumerData = rsp.value, orderList = [];
@@ -143,6 +143,7 @@ const methods = {
                     that.setOrderType(consumerData);
                     OrderDetailData = {consumerData, status: consumerData.status};
                     flag = true;
+                    that.setData({consumerData})
                 }
             },
             () => {
@@ -316,6 +317,59 @@ const methods = {
         });
     },
     /**
+     * 去支付弹窗
+     * @param e
+     */
+    pickerViewPayment(e) {
+        let that = this,
+            consumerData = that.data.consumerData;
+        that.azm_pickerView_show({
+            title: '支付方式',
+            type: 'pickerViewPayment',
+            isAnimated: true,
+            data: {
+                actualPrice: consumerData.actualPrice,
+                memberCardDto: that.data.memberCardDto,
+                isMemberCardDto: utilCommon.isEmptyObject(that.data.memberCardDto)
+            },
+            success(res) {
+                console.log(res);
+                if (res.confirm) {
+                    if ('payment' === res.select) {//去支付
+                        that.memberPay(consumerData)
+                    } else if ('weChat' === res.select) { //微信支付
+                        that.weChatPay(consumerData)
+                    } else if ('recharge' === res.select) {//充值
+                        wx.showModal({
+                            content: '您的会员卡余额不足，请联系商家充值',
+                            showCancel: false,
+                            confirmText: '知道了',
+                            success: function (rsp) {
+
+                            }
+                        });
+                    } else if ('apply' === res.select) {//申请
+                        util.go('/pages/vkahui/memberApplication/memberApplication', {
+                            data: {
+                                resId: that.data.resId,
+                                resName: consumerData.resName,
+                                resLogo: consumerData.resLogo
+                            }
+                        })
+                    }
+                }
+            },
+            fail(rsp) {
+                console.log(rsp);
+            },
+            complete(rsp) {
+                if (rsp.cancel) {
+
+                }
+            }
+        });
+    },
+    /**
      * 点击按钮
      * @param e
      */
@@ -353,58 +407,7 @@ const methods = {
                             }
                         },
                         (err) => {
-                            that.azm_pickerView_show({
-                                title: '支付方式',
-                                type: 'pickerViewPayment',
-                                cancelText: '取消支付',
-                                isAnimated: true,
-                                data: {
-                                    actualPrice: consumerData.actualPrice,
-                                    memberCardDto: that.data.memberCardDto,
-                                    isMemberCardDto: utilCommon.isEmptyObject(that.data.memberCardDto)
-                                },
-                                success(res) {
-                                    console.log(res);
-                                    if (res.confirm) {
-                                        if ('payment' === res.select) {//去支付
-                                            flag = true;
-                                            that.memberPay(consumerData)
-                                        } else if ('weChat' === res.select) { //微信支付
-                                            flag = true;
-                                            that.weChatPay(consumerData)
-                                        } else if ('recharge' === res.select) {//充值
-                                            wx.showModal({
-                                                content: '您的会员卡余额不足，请联系商家充值',
-                                                showCancel: false,
-                                                confirmText: '知道了',
-                                                success: function (rsp) {
-
-                                                }
-                                            });
-                                        } else if ('apply' === res.select) {//申请
-                                            util.go('/pages/vkahui/memberApplication/memberApplication', {
-                                                data: {
-                                                    resId: that.data.resId,
-                                                    resName: consumerData.resName,
-                                                    resLogo: consumerData.resLogo
-                                                }
-                                            })
-                                        }
-                                    }
-                                },
-                                fail(rsp) {
-                                    console.log(rsp);
-
-                                },
-                                complete(rsp) {
-                                    if (rsp.cancel) {
-
-                                    }
-                                    if (!flag) {
-
-                                    }
-                                }
-                            });
+                            that.pickerViewPayment()
                         }
                     );
                 }
@@ -443,7 +446,7 @@ const methods = {
                 if (that.data.azm_countdown && that.data.azm_countdown.time > 0) {
                     wx.showModal({
                         title: '温馨提示',
-                        content: '呼叫买单服务已成功,请' + that.data.azm_countdown.countdownTime + '后重试',
+                        content: '呼叫服务已成功,请' + that.data.azm_countdown.countdownTime + '后重试',
                         showCancel: false,
                         confirmText: '知道了',
                         success: function (rsp) {
@@ -465,7 +468,7 @@ const methods = {
                     if (2000 == res.code) {
                         wx.showModal({
                             title: '温馨提示',
-                            content: '呼叫买单服务成功',
+                            content: '呼叫服务成功',
                             showCancel: false,
                             confirmText: '知道了',
                             success: function (rsp) {
@@ -487,7 +490,7 @@ const methods = {
                 });
                 wx.showModal({
                     title: '温馨提示',
-                    content: '呼叫买单服务失败',
+                    content: '呼叫服务失败',
                     showCancel: false,
                     confirmText: '知道了',
                     success: function (rsp) {
@@ -662,6 +665,49 @@ const methods = {
 
         this.setData({orderType, isOrderType})
         that.setProgressBar(data);
+    },
+    /**
+     * 打开订单跟踪
+     */
+    openOrderTracking() {
+        let that = this,
+            resId = that.data.resId,
+            consumerData = that.data.consumerData,
+            OrderTracking = [], flag = false;
+        ApiService.getOrderProcessList(
+            {resId, consumerId: consumerData.consumerId},
+            (rsp) => {
+                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    flag = true;
+                    OrderTracking = rsp.value;
+                    that.azm_pickerView_show({
+                        title: '订单跟踪',
+                        type: 'orderTracking',
+                        cancelText: '关闭',
+                        cancelColor: '#f74b7b',
+                        isAnimated: true,
+                        data: {
+                            value: OrderTracking
+                        },
+                        success(rsp) {
+                            console.log(rsp);
+                        },
+                        fail(rsp) {
+                            console.log(rsp);
+                        },
+                        complete(rsp) {
+                            if (rsp.cancel) {
+
+                            }
+                        }
+                    });
+                }
+            },
+            (rsp) => {
+                if (!rsp.status || !flag)
+                    that.showToast('没有订单跟踪记录')
+            }
+        );
     }
 };
 const events = {

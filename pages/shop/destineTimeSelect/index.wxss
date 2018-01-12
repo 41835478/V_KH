@@ -1,0 +1,2 @@
+/* pages/shop/destineTimeSelect/index.wxss */
+@import "../../../less/shop/destineTimeSelect/destineTimeSelect.wxss";

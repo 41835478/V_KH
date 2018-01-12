@@ -3,7 +3,7 @@
     <view class="header">
         <swiper indicator-dots="true" indicator-color="rgba(247, 75, 123, 0.3)" indicator-active-color="#f74b7b"
                 autoplay="true" bindchange="" circular="true">
-            <swiper-item wx:for="{{topImages}}" wx:key="*this">
+            <swiper-item wx:for="{{topImages}}" wx:key="id">
                 <image lazy-load="true" src="{{item.id?(imageServer + item.imageUrl):item.imageUrl}}"
                        class="topImages" data-index="{{index}}" binderror="imageError" bindload=""/>
             </swiper-item>
@@ -65,13 +65,12 @@
                     </view>
                 </view>
                 <!-----------------------------------店铺就餐方式列表----------------------------------------------->
-                <view class="shopInfo-list flexBox {{shopList.length>4?'flexBox-start':''}}">
-                    <block wx:for="{{shopList}}" wx:key="*this">
+                <view class="shopInfo-list flexBox {{shopList.length>4?'flexBox-start':''}} {{item.status===1?'':'disabled'}}">
+                    <block wx:for="{{shopList}}" wx:key="url">
                         <view class="shopInfo-list-item flexBox-item fb-{{shopList.length>4?3:12/shopList.length}}"
-                              data-url="{{item.url}}"
-                              data-value="{{item}}"
-                              data-type="{{item.orderType}}" catchtap="bindAzmScanCode" hover-stay-time="100"
-                              wx:if="{{item.status===1}}">
+                              data-url="{{item.url}}" data-text="{{item.name}}"
+                              data-value="{{item}}" data-disabled="{{item.status}}"
+                              data-type="{{item.orderType}}" catchtap="bindAzmScanCode" hover-stay-time="100">
                             <image lazy-load src="{{item.img}}"></image>
                             <view class="text">
                                 <text>{{item.name}}</text>

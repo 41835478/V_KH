@@ -29,10 +29,72 @@
 }
 .picker-view .picker-view-content {
   max-height: 800rpx;
+  min-height: 200rpx;
   background-color: #f8f8f8;
 }
 .picker-view .picker-view-content scroll-view {
   max-height: 800rpx;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment {
+  min-height: 200rpx;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment view {
+  box-sizing: border-box;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-item {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-item:nth-child(1) {
+  border-bottom: 1rpx solid #e2e2e2;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-item .flexBox-item {
+  height: 88rpx;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-item .weChat-left {
+  line-height: 88rpx;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-item .btn-right {
+  height: 88rpx;
+  padding: 16rpx 0;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-weChat .azm-icon {
+  font-size: 34rpx;
+  color: #0bb20c;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-weChat .azm-btn {
+  line-height: 2;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  margin: 0;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-member {
+  position: relative;
+  top: 0;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-member .azm-icon {
+  font-size: 30rpx;
+  color: #f74b7b;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-member .azm-btn {
+  line-height: 2;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  margin: 0;
+}
+.picker-view .picker-view-content scroll-view .pickerViewPayment .pickerViewPayment-member .payment-member-content {
+  position: relative;
+  width: 100%;
+  padding-left: 60rpx;
+  color: #808080;
+  font-size: 24rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .picker-view .picker-view-content scroll-view .picker-view-payment {
   min-height: 200rpx;
@@ -117,4 +179,122 @@
 }
 .picker-view .picker-view-content scroll-view .picker-view-payment .picker-view-payment-member .payment-member-content .flexBox-item {
   font-size: 24rpx;
+}
+.picker-view .picker-view-content scroll-view .picker-view-orderTracking {
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 0 40rpx;
+}
+.picker-view .picker-view-content scroll-view .picker-view-orderTracking .picker-view-orderTracking-item .flexBox-item {
+  position: relative;
+  height: 104rpx;
+  line-height: 104rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+}
+.picker-view .picker-view-content scroll-view .picker-view-orderTracking .picker-view-orderTracking-item .flexBox-item .azm-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14rpx;
+  color: #c5c5c5;
+}
+.picker-view .picker-view-content scroll-view .picker-view-orderTracking .picker-view-orderTracking-item .flexBox-item .azm-icon-active {
+  color: #f74b7b;
+  font-size: 30rpx;
+}
+.picker-view .picker-view-content scroll-view .picker-view-orderTracking .picker-view-orderTracking-item .flexBox-item:nth-child(1) {
+  margin-right: 40rpx;
+  width: 4rpx;
+  background-color: #eaeaea;
+}
+.picker-view .picker-view-calendar .headdate {
+  height: 30px;
+  background-color: white;
+  flex: 1;
+  text-align: center;
+  line-height: 30px;
+}
+.picker-view .picker-view-calendar .headbox {
+  display: flex;
+  display: -webkit-flex;
+  border-bottom: 1px solid #e5e5e5;
+}
+.picker-view .picker-view-calendar .headbox2 {
+  display: flex;
+  position: fixed;
+  width: 750rpx;
+  display: -webkit-flex;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: white;
+  z-index: 2;
+}
+.picker-view .picker-view-calendar .mouthhead {
+  height: 88rpx;
+  background-color: #f4f4f4;
+  width: 750rpx;
+  line-height: 88rpx;
+  text-align: center;
+}
+.picker-view .picker-view-calendar .mouth {
+  /* background-color: white; */
+  /* padding-top: 10rpx;
+      padding-bottom: 10rpx;  */
+}
+.picker-view .picker-view-calendar .daybox {
+  background-color: white;
+  padding-top: 10rpx;
+  padding-bottom: 10rpx;
+}
+.picker-view .picker-view-calendar .day {
+  width: 107rpx;
+  height: 107rpx;
+  line-height: 107rpx;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  top: 0;
+  margin-top: -10rpx;
+  overflow: hidden;
+  color: #353535;
+  font-size: 34rpx;
+}
+.picker-view .picker-view-calendar .day2 {
+  color: #04babe;
+  width: 107rpx;
+  height: 107rpx;
+  line-height: 107rpx;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  bottom: 0;
+  margin-top: 0;
+}
+.picker-view .picker-view-calendar .actname {
+  color: #04babe;
+  position: absolute;
+  font-size: 20rpx;
+  top: -30rpx;
+  width: 107rpx;
+  text-align: center;
+}
+.picker-view .picker-view-calendar .actname2 {
+  color: #04babe;
+  position: absolute;
+  font-size: 20rpx;
+  bottom: -30rpx;
+  width: 107rpx;
+  text-align: center;
+}
+.picker-view .picker-view-calendar .bc {
+  background-color: #04babe;
+  color: white !important;
+}
+.picker-view .picker-view-calendar .bc2 {
+  color: white !important;
+}
+.picker-view .picker-view-calendar .none88 {
+  height: 88rpx;
+  width: 750rpx;
 }

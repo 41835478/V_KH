@@ -6,6 +6,7 @@ let modulePopup = {
     azm_modulePopup_show() {
         let that = this, data = arguments[0],
             obj = {
+                isMask: true,
                 isLoading: data.isLoading || true,
                 isDisabled: false,
                 isAnimated: data.isAnimated || false,
@@ -189,7 +190,10 @@ let modulePopup = {
             if (that.data[`${str}Data`].azm_ClockCode) {
                 that.data[`${str}Data`].azm_ClockCode.clear()
             }
-            that.setData({[`${str}Data.data`]: {}});
+            data[`${str}Data.data`] = {};
+            data[`${str}Data.isMask`] = false;
+            data[`${str}Data.isLoading`] = false;
+            data[`${str}Data.isDisabled`] = false;
         }
         data[str] = '';
         this.setData(data);

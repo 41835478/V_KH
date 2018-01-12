@@ -1,0 +1,51 @@
+<view class="destineTimeSelect">
+    <view class="zan-panel flexBox top">
+        <block wx:for="{{dateList}}" wx:key="dateTime">
+            <view class="flexBox-item fb-3 azm-1px-r {{(selectDate === item.dateTime && selectDateIndex == index)?'active':''}}"
+                  data-index="{{index}}"
+                  data-value="{{item}}"
+                  catchtap="bindTimeChange">
+                <view>{{item.text}}</view>
+                <view>{{item.time}}</view>
+            </view>
+        </block>
+        <picker mode="date" start="{{currentDate}}" data-index="3" value="{{selectDate}}"
+                class="flexBox-item fb-3 {{(3 == selectDateIndex)?'active':''}}" catchchange="bindTimeChange">
+            <view>更多</view>
+            <view>
+                <text class="iconfont icon-calendar azm-icon"></text>
+            </view>
+        </picker>
+    </view>
+    <view class="azm-fixed">
+        <scroll-view class="height-all" scroll-y="false">
+            <block wx:for="{{filterUtil.DestineTimeFilter(shopInfo.closingtime,selectDate)}}" wx:key="time">
+                <view class="zan-panel section">
+                    <view class="zan-cell">
+                        <text>{{item.text}}</text>
+                        <text decode>&nbsp;&nbsp;({{item.time}})</text>
+                    </view>
+                    <view class="flexBox flexBox-start timeList">
+                        <block wx:for="{{item.list}}" wx:key="time" wx:for-item="v" wx:for-index="i">
+                            <view class="flexBox-item fb-3">
+                                <block wx:if="{{selectDateTime === v.time}}">
+                                    <button type="primary" size="mini" disabled="{{v.disabled}}" data-value="{{v}}">
+                                        {{v.text}}
+                                    </button>
+                                </block>
+                                <block wx:else>
+                                    <button type="white" plain size="mini" disabled="{{v.disabled}}" data-value="{{v}}"
+                                            catchtap="bindSelectDate">{{v.text}}
+                                    </button>
+                                </block>
+                            </view>
+                        </block>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+    </view>
+    <button type="primary" class="azm-footer_fixed_bottom">确认</button>
+</view>
+
+<wxs src="../../../utils/filter/filter_orderType.wxs" module="filterUtil"/>
