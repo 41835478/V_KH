@@ -65,7 +65,7 @@ const methods = {
                                 tableCode: res.value.tableCode,
                                 resId
                             }, (rsp) => {
-                                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                     util.go('/pages/order/order-detail/order-detail', {
                                         type: 'blank',
                                         data: {
@@ -74,7 +74,7 @@ const methods = {
                                             consumerId: rsp.value.consumerId
                                         }
                                     });
-                                } else if (2001 == rsp.code) {
+                                } else if (2001 === rsp.code) {
                                     util.go('/pages/shop/order/order', {
                                         type: 'blank',
                                         data: {

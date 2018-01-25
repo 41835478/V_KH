@@ -134,7 +134,7 @@ App({
         let loginRequestPromise = new Promise(function (resolve, reject) {
             that.getOpenIdLogin().then(
                 (rsp) => {
-                    if (2000 == rsp.code) {
+                    if (2000 === rsp.code) {
                         resolve(rsp);
                     } else {
                         reject()

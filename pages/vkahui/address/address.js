@@ -57,7 +57,7 @@ const methods = {
         });
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -77,7 +77,7 @@ const methods = {
             objId = that.data.objId;
         ApiService.loadAddressList({userId: objId},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.setData({
                         addressData: rsp.value
                     });
@@ -112,7 +112,7 @@ const events = {
 
                             },
                             (rsp) => {
-                                if (rsp.code && 2000 == rsp.code) {
+                                if (rsp.code && 2000 === rsp.code) {
                                     util.showToast({
                                         title: '删除地址成功',
                                         success() {
@@ -143,7 +143,7 @@ const events = {
             let data = {userId: that.data.objId, id: addressId};
             ApiService.setDefaultAddress(data,
                 function (rsp) {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                         if (1 == that.data.isWaimai) {
                             util.go(-1);
                         }

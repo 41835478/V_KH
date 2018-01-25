@@ -116,7 +116,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     that.data.userInfo = app.globalData.userInfo;
@@ -140,7 +140,7 @@ const methods = {
             options = that.data.options;
         if (!options.resId) util.go(-1);
         that.data.resId = options.resId;
-        that.data.orderType = Number(options.orderType) || 0;
+        that.data.orderType = +options.orderType || 0;
         let orderArr = [
             {
                 foodList: {isEatin: 1},
@@ -169,6 +169,8 @@ const methods = {
                         that.utilPage_setNavigationBarTitle(`自助取餐-${shopInfo.resName}`)
                     } else if (3 === orderType) {
                         that.utilPage_setNavigationBarTitle(`餐后付款-${shopInfo.resName}`)
+                    } else if (4 === orderType) {
+                        that.utilPage_setNavigationBarTitle(`预定-${shopInfo.resName}`)
                     } else {
                         that.utilPage_setNavigationBarTitle(`堂食-${shopInfo.resName}`)
                     }
@@ -211,7 +213,7 @@ const methods = {
         } else {
             ApiService.getFoodList(data,
                 (rsp) => {
-                    if (2000 == rsp.code && rsp.value && rsp.value.length > 0) {
+                    if (2000 === rsp.code && rsp.value && rsp.value.length > 0) {
                         let foodList = rsp.value;
                         if (data.foodCatalog) {
                             that.setData({
@@ -241,7 +243,7 @@ const methods = {
             // data.resId = that.data.resId;
             ApiService.findFoodCatalogList(Object.assign({resId, filterZero: 1}, data),
                 (rsp) => {
-                    if (2000 == rsp.code && rsp.value && rsp.value.length > 0) {
+                    if (2000 === rsp.code && rsp.value && rsp.value.length > 0) {
                         let findFoodCatalogList = rsp.value;
                         that.bindDishesTab(null, rsp.value[index].catalogCode, index);
                         that.setData({
@@ -612,7 +614,7 @@ const methods = {
                         }
                     },
                     (rsp) => {
-                        if (2000 == rsp.code && rsp.value && rsp.value.length > 0) {
+                        if (2000 === rsp.code && rsp.value && rsp.value.length > 0) {
                             _foodListObj[food.foodCode].ruleList = rsp.value;
                             food.rule = rsp.value[0];
                             food.ruleCode = rsp.value[0].ruleCode;
@@ -665,7 +667,7 @@ const methods = {
                         }
                     },
                     (rsp) => {
-                        if (2000 == rsp.code && rsp.value && rsp.value.length > 0) {
+                        if (2000 === rsp.code && rsp.value && rsp.value.length > 0) {
                             _foodListObj[food.foodCode].practicesList = rsp.value;
                             flag = true;
                             code = 3;
@@ -907,7 +909,7 @@ const methods = {
                         }
                     },
                     (rsp) => {
-                        if (2000 == rsp.code && rsp.value && rsp.value.length > 0) {
+                        if (2000 === rsp.code && rsp.value && rsp.value.length > 0) {
                             _foodListObj[food.foodCode].foodPackagesList = rsp.value;
                             flag = true;
                             code = 3;
@@ -1178,16 +1180,21 @@ const methods = {
             })
         } else {
             let url = '/pages/shop/confirm-order/confirm-order';
-            let typeText = null;
+            let typeText = null,
+                data = {
+                    resId,
+                    orderType
+                };
             if (3 === orderType && that.data.isConsumerId === 1) {
                 typeText = 'blank';
+            } else if (4 === orderType) {
+                url = '/pages/shop/OrderMeal/OrderMeal';
+                data.isSaveData = 1;
+                app.globalData.orderMealData.orderFood = app.globalData.shopCarts[resId][that.data.orderString.str]
             }
             util.go(url, {
                 type: typeText,
-                data: {
-                    resId,
-                    orderType
-                }
+                data
             });
         }
     },
@@ -1231,7 +1238,7 @@ const methods = {
                     resId: that.data.resId,
                     objId: that.data.objId
                 }, (rsp) => {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                         // app.globalData.userOrderInfo = {
                         //     consumerId: rsp.value.consumerId,
                         //     tableCode: rsp.value.tableCode,

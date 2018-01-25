@@ -49,7 +49,7 @@ class HttpRequest {
             }
         }
         let _url = url.split('/')
-        console.log(`__________请求数据${_url[_url.length - 1]}______________`, params);
+        console.log(`_____请求数据${_url[_url.length - 1]}______`, params.data);
         if (params.data.config && params.data.config.isLoading) {
             isLoading = params.data.config.isLoading;
             delete params.data.config;
@@ -114,7 +114,7 @@ class HttpRequest {
         }
 
         function setPromise() {
-            let p = new Promise(setRequest)
+            let p = new Promise(setRequest);
             return p
         }
 
@@ -150,14 +150,14 @@ class HttpRequest {
                         }
                         console.log(`____获取数据${_url[_url.length - 1]}____`, res.data);
                         try {
-                            if (5001 == code) {
+                            if (5001 === code) {
                                 util.failToast('获取参数错误');
                                 res.data.status = true;
-                            } else if (4000 == code) {
+                            } else if (4000 === code) {
                                 util.failToast('网络连接失败');
                                 res.data.status = true;
                             } else if (flag && (/^300/i.test(code) || /^200/i.test(code))) {
-                                if (/^300/i.test(code) && !isReturnStatus) {
+                                if (3001 === code && !isReturnStatus) {
                                     util.failToast(res.data.message);
                                 }
                                 res.data.status = true;

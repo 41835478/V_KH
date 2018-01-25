@@ -60,7 +60,7 @@ const methods = {
             options = that.data.options;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -81,7 +81,7 @@ const methods = {
             ApiService.getSmsCode(
                 {"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"},
                 function (rsp) {
-                    if (2000 == rsp.code) {
+                    if (2000 === rsp.code) {
                         util.showToast('验证码已发送');
                         that.setData({focus: true});
                         new util.Countdown(that, {
@@ -126,7 +126,7 @@ const methods = {
                 "code": code
             };
             ApiService.bindMobile(data, function (rsp) {
-                if (2000 == rsp.code) {
+                if (2000 === rsp.code) {
                     if (that.data.jumpUrl && RegExpUtil.isPath(that.data.jumpUrl)) {
                         util.go(that.data.jumpUrl, {
                             type: 'blank'

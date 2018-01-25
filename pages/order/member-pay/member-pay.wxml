@@ -1,7 +1,7 @@
 <view class="azm-fixed">
     <form class="memberCode" report-submit="true" bindsubmit="confirmCode">
         <view class="p text-center azm-text">
-            <text>请验证已绑定会员手机号</text>
+            <text>请验证已绑定会员手机号{{mobile}}</text>
         </view>
         <view class="p azm-code flexBox">
             <view class="flexBox-item fb-8 border-color-1px azm-codeText">
@@ -20,7 +20,7 @@
             </view>
         </view>
         <view class="p text-center azm-btn">
-            <button type="primary" formType="submit">确定</button>
+            <button type="primary" formType="submit">确定支付{{filterMoney.RMB(amount)}}</button>
         </view>
     </form>
 </view>
@@ -28,3 +28,7 @@
 <!--自定义Toast-->
 <import src="../../../template/toast/toast.wxml"/>
 <template is="azm_toast" data="{{...azm_toast}}"></template>
+
+
+<!--过滤器-->
+<wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>

@@ -31,6 +31,7 @@ const appPage = {
     onLoad: function (options) {
         new app.ToastPannel();//初始自定义toast
         new app.ModulePopup();//初始自定义弹窗
+        new app.PickerView();//初始pickerView
         let that = this;
         try {
             if (options) {
@@ -94,7 +95,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     that.data.userInfo = app.globalData.userInfo;
@@ -113,19 +114,20 @@ const methods = {
     loadData() {
         let that = this,
             options = that.options,
-            value = Number(options.value);
-        if (value && typeof value === 'number') {
-            value = util.date_formate(value, 'YYYY-MM-DD hh:mm')
+            leadTime = options.leadTime,
+            value = +options.value;
+        if (utilCommon.isNumberOfNaN(value)) {
+            value = util.date_formate(value, 'YYYY-MM-DD HH:mm')
         }
-        console.log(value);
+        console.warn(value, options.value, '_____________');
         let dateList = util.next3Days(value);
         that.setData({
             resId: options.resId,
             orderType: options.orderType,
             selectDateTime: value,
             selectDate: value.split(' ')[0],
-            dateList,
-        })
+            dateList, leadTime
+        });
         // 获取店铺信息
         that.utilPage_getResDetail(options.resId)
             .then(
@@ -137,6 +139,28 @@ const methods = {
                         that.showToast('获取店铺信息失败,请重试');
                 }
             );
+        // that.azm_pickerView_show({
+        //     title: '预约日期选择',
+        //     type: 'calendar',
+        //     confirmTitle: '完成',
+        //     cancelTitle: '取消',
+        //     isAnimated: true,
+        //     data: {
+        //         minDate: '',
+        //         selectDate: new Date()
+        //     },
+        //     success(res) {
+        //
+        //     },
+        //     fail(rsp) {
+        //         console.log(rsp);
+        //     },
+        //     complete(rsp) {
+        //         if (rsp.cancel) {
+        //
+        //         }
+        //     }
+        // });
     },
     routerGo(e) {
         console.log(e);
@@ -147,7 +171,39 @@ const methods = {
 
         }
     },
-}
+    submit() {
+        let time = this.data.selectDateTime,
+            orderMealData = app.globalData.orderMealData;
+        console.log(time);
+        if (util.trim(time)) {
+            if (orderMealData.reserveTime === time) {
+                app.globalData.orderMealData.reserveTime = time;
+                util.go(-1)
+            } else {
+                app.globalData.orderMealData.reserveTime = time;
+                if (app.globalData.orderMealData.areaCode) {
+                    wx.showModal({
+                        title: '温馨提示',
+                        content: '预订时间修改，请重新选择预订桌位哦~',
+                        showCancel: false,
+                        confirmText: '知道了',
+                        success: res => {
+                            if (res.confirm) {
+                                util.go(-1)
+                            }
+                        }
+                    });
+                } else {
+                    util.go(-1)
+                }
+                app.globalData.orderMealData.tableCode = null;
+                app.globalData.orderMealData.areaCode = null;
+            }
+        } else {
+            this.showToast('请设置预定时间')
+        }
+    }
+};
 const events = {
     bindTimeChange(e) {
         console.log(e);

@@ -1,4 +1,7 @@
 /**app.wxss**/
+.zan-left {
+  text-align: left;
+}
 page {
   font-family: "Adobe 黑体 Std R,Helvetica Neue,Helvetica,Roboto,Segoe UI,Arial,sans-serif";
   box-sizing: border-box;
@@ -349,6 +352,18 @@ page .weui-cells__border_1px .weui-cell::before {
 page .azm-placeholder_color {
   color: #808080;
 }
+page .azm-c-primary {
+  color: #f74b7b;
+}
+page .azm-c-yellow {
+  color: #fff000;
+}
+page .azm-c-gray {
+  color: #808080;
+}
+page .azm-c-deeppink {
+  color: #ff1493;
+}
 page .azm-cell {
   padding: 20rpx 30rpx 20rpx 30rpx;
   position: relative;
@@ -394,13 +409,14 @@ page .azm-popup-picker-placeholder {
 }
 page .azm-footer_fixed_bottom_45px {
   width: 100%;
-  height: 90rpx;
+  height: 110rpx;
 }
 page .azm-footer_fixed_bottom {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 100;
 }
 page .azm-scroll-y {
   overflow-x: hidden;
@@ -481,6 +497,11 @@ page .button-hover[type="disabled"] {
   background-color: transparent;
   border: 2rpx solid #bfbfbf;
 }
+page button[disabled][type="primary"] {
+  color: #bfbfbf;
+  background-color: #808080;
+  border: 2rpx solid #bfbfbf;
+}
 page button[plain] {
   color: #353535;
   border: 1rpx solid #e2e2e2;
@@ -513,6 +534,18 @@ page .button-hover[type="white"] {
   border: 2rpx solid #e2e2e2;
   background-color: #fff;
   opacity: .6;
+}
+page .NoOrder {
+  width: 100%;
+}
+page .NoOrder .azm-icon {
+  font-size: 180rpx;
+  font-weight: 400;
+  color: #808080;
+}
+page .NoOrder text {
+  font-size: 24rpx;
+  color: #808080;
 }
 page view.new-class view,
 page view.new-class view::after,

@@ -77,7 +77,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -103,7 +103,7 @@ const methods = {
                     objId: that.data.objId
                 },
                 (rsp) => {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                         that.setData({memberCardList: rsp.value});
                     } else {
                         // that.showToast(rsp.message);

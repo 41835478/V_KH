@@ -6,13 +6,16 @@ const appPage = {
     data: {
         text: 'member-pay',
         isShow: false,
+        orderType: 0,
         isCodeText: true,
         options: {},
         amount: null,
         consumerId: null,
-        resId: null
+        resId: null,
+        mobile: null,
     },
     // amount=22&consumerId=5334ff8e1b734d82a9e77a3be6f1f8ab&resId=000000005c2536d5015c2e169199061f
+    // amount=50&consumerId=603b5a5f3c47460eb655fda26b04b2b4&mobile=18102805878&resId=000000005c2536d5015c2e169199061f&isGoOrderPage=2
     onLoad: function (options) {
         new app.ToastPannel();//初始自定义toast
         let that = this;
@@ -52,7 +55,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -72,20 +75,11 @@ const methods = {
             options = that.data.options,
             resId = options.resId,
             amount = options.amount,
-            isGoOrderPage = options.isGoOrderPage,
+            isGoOrderPage = +options.isGoOrderPage,
+            orderType = +options.orderType,
+            mobile = options.mobile,
             consumerId = options.consumerId;
-        that.setData({resId, consumerId, amount, isGoOrderPage})
-    },
-    goBinding: function () {
-        let that = this,
-            orderDetail = that.data.orderDetail;
-        util.go("/pages/vkahui/memberApplication/memberApplication", {
-            data: {
-                resId: that.data.resId,
-                resName: orderDetail.resName,
-                resLogo: orderDetail.resLogo
-            }
-        });
+        that.setData({resId, consumerId, amount, isGoOrderPage, mobile, orderType})
     },
     /**
      * 发送验证码
@@ -94,34 +88,35 @@ const methods = {
         var that = this,
             consumerId = that.data.consumerId,
             objId = that.data.objId,
-            flag = false;
-        ApiService.getSmsCodeByConn(
-            {
+            isGoOrderPage = that.data.isGoOrderPage,
+            orderType = that.data.orderType,
+            data = {
                 resId: that.data.resId,
-                consumerId,
                 objId,
                 msgTemp: "SMS_XIAOFEICODE_CONTENT"
             },
-            (rsp) => {
-                if (2000 == rsp.code) {
-                    util.showToast('验证码已发送');
-                    that.data.clockCodeCountdown = new util.Countdown(that, {
-                        time: 60 * 1000,
-                        type: 'ss',
-                        text: 'clockCode',
-                        onEnd() {
+            flag = false;
+        if (orderType === 4) {
+            data.reserveId = consumerId;
+        } else {
+            data.consumerId = consumerId;
+        }
+        ApiService.getSmsCodeByConn(data).then(SmsCodeCallback);
 
-                        }
-                    });
-                    flag = true;
-                }
-            },
-            (rsp) => {
-                if (!rsp.status) {
-                    util.failToast('验证码发送失败');
-                }
+        function SmsCodeCallback(rsp) {
+            if (2000 === rsp.code) {
+                util.showToast('验证码已发送');
+                that.data.clockCodeCountdown = new util.Countdown(that, {
+                    time: 60 * 1000,
+                    type: 'ss',
+                    text: 'clockCode',
+                    onEnd() {
+
+                    }
+                });
+                flag = true;
             }
-        );
+        }
     },
     inputCodeText(e) {
         // console.log('输入的验证码');
@@ -139,6 +134,8 @@ const methods = {
             objId = that.data.objId,
             amount = that.data.amount,
             consumerId = that.data.consumerId,
+            isGoOrderPage = that.data.isGoOrderPage,
+            orderType = that.data.orderType,
             resId = that.data.resId,
             isCodeText = false,
             code = e.detail.value.codeText,
@@ -165,45 +162,36 @@ const methods = {
                         that.data.isCodeText = false;
                         let data = {
                             objId,
-                            amount,
-                            consumerId,
                             resId,
-                            code: code,
                             formId
                         };
-                        /**
-                         * 会员卡支付
-                         */
-                        ApiService.memberCardPay(data,
-                            (rsp) => {
-                                if (2000 == rsp.code) {
-                                    util.showToast({
-                                        title: "会员卡支付成功",
-                                        success() {
-                                            // 发送模板消息
-                                            if (formId && 'the formId is a mock one' !== formId) {
-                                                ApiService.sendMiniWxTemplateMsg({
-                                                    objId,
-                                                    resId: that.data.resId,
-                                                    formId,
-                                                    consumerId: that.data.consumerId
-                                                });
-                                            }
-                                            if (that.data.isGoOrderPage) {
-                                                that.goOrderDetail({resId, consumerId})
-                                            } else {
-                                                util.go('-1');
-                                            }
-                                        }
-                                    });
+                        if (orderType === 4) {// 预订订单会员卡支付
+                            Object.assign(data, {
+                                amount,
+                                id: consumerId,
+                                code: code
+                            });
+                            ApiService.memberPayReserve(data).then(
+                                rsp => {
+                                    that.memberCardPayCallback(rsp, formId);
                                 }
-                            },
-                            (rsp) => {
+                            ).finally(() => {
                                 that.data.isCodeText = true;
-                                if (!rsp.status)
-                                    util.failToast('会员卡支付失败');
-                            }
-                        );
+                            })
+                        } else {// 会员卡支付
+                            Object.assign(data, {
+                                amount,
+                                consumerId,
+                                code: code
+                            });
+                            ApiService.memberCardPay(data).then(
+                                rsp => {
+                                    that.memberCardPayCallback(rsp, formId);
+                                }
+                            ).finally(() => {
+                                that.data.isCodeText = true;
+                            })
+                        }
                     }
                 },
                 (rsp) => {
@@ -217,8 +205,49 @@ const methods = {
             );
         }
     },
+    memberCardPayCallback(rsp, formId) {
+        let that = this,
+            isGoOrderPage = that.data.isGoOrderPage,
+            objId = that.data.objId,
+            orderType = that.data.orderType,
+            consumerId = that.data.consumerId,
+            resId = that.data.resId;
+        if (2000 === rsp.code) {
+            util.showToast({
+                title: "会员卡支付成功",
+                success() {
+                    // 发送模板消息
+                    if (formId && 'the formId is a mock one' !== formId) {
+                        ApiService.sendMiniWxTemplateMsg({
+                            objId,
+                            resId,
+                            formId,
+                            consumerId
+                        });
+                    }
+                    if (isGoOrderPage === 1) {
+                        if (orderType === 4) {
+                            that.bookingOrder({resId, consumerId})
+                        } else {
+                            that.goOrderDetail({resId, consumerId})
+                        }
+                    } else {
+                        util.go('-1');
+                    }
+                }
+            });
+        } else {
+            util.failToast('会员卡支付失败');
+        }
+    },
     goOrderDetail(data) {
         util.go('/pages/order/order-detail/order-detail', {
+            type: 'goOrder',
+            data
+        })
+    },
+    bookingOrder(data) {
+        util.go('/pages/order/bookingOrder/index', {
             type: 'goOrder',
             data
         })

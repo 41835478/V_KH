@@ -1,10 +1,30 @@
 <!--template/toast/toast.wxss-->
 <import src="../loading.wxml"/>
 <template name="picker_view">
-    <view class="picker-view {{isAnimated?'show':'hide'}}  {{(class)?'animated_0_5 slideInUp':'animated_0_3 slideOutDown'}}">
+    <form bindsubmit="azm_pickerView_success" bindreset="azm_pickerView_fail" report-submit
+          class="picker-view {{isAnimated?'show':'hide'}}  {{(class)?'animated_0_5 slideInUp':'animated_0_3 slideOutDown'}}">
         <block wx:if="{{title}}">
-            <view class="picker-view-title">
-                <text>{{title}}</text>
+            <view class="picker-view-title flexBox">
+                <view class="flexBox-item fb-2_5 zan-ellipsis">
+                    <block wx:if="{{cancelTitle}}">
+                        <button class="zan-ellipsis zan-left azm-c-{{cancelTitleColor}}"
+                                form-type="submit" data-type="cancel" data-active="{{type}}"
+                                data-component-id="{{componentId}}">{{cancelTitle}}
+                        </button>
+                    </block>
+                </view>
+                <view class="flexBox-item fb-7 zan-ellipsis">
+                    <text>{{title}}</text>
+                </view>
+                <view class="flexBox-item fb-2_5 zan-ellipsis">
+                    <block wx:if="{{confirmTitle}}">
+                        <button class="zan-ellipsis zan-right azm-c-{{confirmTitleColor}}"
+                                form-type="submit" data-type="confirm"
+                                data-active="{{type}}"
+                                data-component-id="{{componentId}}">{{confirmTitle}}
+                        </button>
+                    </block>
+                </view>
             </view>
         </block>
         <view class="picker-view-content">
@@ -15,13 +35,12 @@
             </scroll-view>
         </view>
         <block wx:if="{{footer&&footer.status}}">
-            <button class="picker-view-footer azm-btn" plain data-type="confirm" data-active="{{type}}"
-                    style="{{footer.cancelColor}}"
-                    catchtap="azm_pickerView_fail">
+            <button class="picker-view-footer azm-btn" plain form-type="reset" data-type="cancel" data-active="{{type}}"
+                    style="{{footer.cancelColor}}">
                 {{footer.cancelText}}
             </button>
         </block>
-    </view>
+    </form>
     <block wx:if="{{isMask}}">
         <template is="mask" data="{{isMask:true,type,event:'azm_pickerView_fail'}}"></template>
     </block>
@@ -219,26 +238,45 @@
                     </block>
                 </view>
                 <view class="flexBox-item fb-5 text-overflow">
-                    <block wx:if="{{item.status == 1}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">订单提交</text>
+                    <block wx:if="{{data.orderType == 4}}">
+                        <block wx:if="{{item.status == 0}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">待处理</text>
+                        </block>
+                        <block wx:elif="{{item.status == 1}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已接单</text>
+                        </block>
+                        <block wx:elif="{{item.status == 2}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已拒单</text>
+                        </block>
+                        <block wx:elif="{{item.status == 3}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已取消</text>
+                        </block>
+                        <block wx:elif="{{item.status == 4}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已完成</text>
+                        </block>
                     </block>
-                    <block wx:elif="{{item.status == 2}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">已支付</text>
-                    </block>
-                    <block wx:elif="{{item.status == 3}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">已接单</text>
-                    </block>
-                    <block wx:elif="{{item.status == 4}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">已拒单</text>
-                    </block>
-                    <block wx:elif="{{item.status == 5}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">已完成</text>
-                    </block>
-                    <block wx:elif="{{item.status == 6}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">超时取消</text>
-                    </block>
-                    <block wx:elif="{{item.status == 7}}">
-                        <text class="{{index === 0?'azm-icon-active':''}}">订单已取消</text>
+                    <block wx:else>
+                        <block wx:if="{{item.status == 1}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">待支付</text>
+                        </block>
+                        <block wx:elif="{{item.status == 2}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已支付</text>
+                        </block>
+                        <block wx:elif="{{item.status == 3}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已接单</text>
+                        </block>
+                        <block wx:elif="{{item.status == 4}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已拒单</text>
+                        </block>
+                        <block wx:elif="{{item.status == 5}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">已完成</text>
+                        </block>
+                        <block wx:elif="{{item.status == 6}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">超时取消</text>
+                        </block>
+                        <block wx:elif="{{item.status == 7}}">
+                            <text class="{{index === 0?'azm-icon-active':''}}">订单已取消</text>
+                        </block>
                     </block>
                 </view>
                 <view class="flexBox-item fb-6 text-right azm-placeholder_color text-overflow">
@@ -246,9 +284,21 @@
                 </view>
             </view>
         </block>
+        <view class="flexBox flexBox-start picker-view-orderTracking-item">
+            <view class="flexBox-item">
+                <text class="iconfont icon-point azm-icon"></text>
+            </view>
+            <view class="flexBox-item fb-5 text-overflow">
+                <text class="">提交订单</text>
+            </view>
+            <view class="flexBox-item fb-6 text-right azm-placeholder_color text-overflow">
+                <text>{{filterUtil.DateFilter(data.value[0].createTime)}}</text>
+            </view>
+        </view>
     </view>
 </template>
 
+<!--日历-->
 <template name="picker-view-calendar">
     <view class="picker-view-calendar">
         <view class="headbox2">

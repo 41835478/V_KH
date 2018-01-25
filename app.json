@@ -5,6 +5,7 @@
     "pages/order/index/index",
     "pages/order/member-pay/member-pay",
     "pages/order/order-detail/order-detail",
+    "pages/order/bookingOrder/index",
     "pages/shop/home/home",
     "pages/shop/order/order",
     "pages/shop/confirm-order/confirm-order",
@@ -14,6 +15,7 @@
     "pages/vkahui/phone-add/phone-add",
     "pages/vkahui/memberApplication/memberApplication",
     "pages/vkahui/meInfo/meInfo",
+    "pages/vkahui/meAdmin/index",
     "pages/shop/OrderMeal/OrderMeal",
     "pages/shop/destineTimeSelect/index",
     "pages/shop/reservationDesk/index"

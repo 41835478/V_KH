@@ -2,7 +2,8 @@ const app = getApp(),
     util = require('../../../utils/util'),
     config = require('../../../utils/config'),
     utilCommon = require('../../../utils/utilCommon'),
-    ApiService = require('../../../utils/ApiService');
+    ApiService = require('../../../utils/ApiService'),
+    {Tab} = require('../../../lib/zanui/index');
 const appPage = {
     data: {
         isShow: false,
@@ -16,9 +17,28 @@ const appPage = {
         shouye: true,
         dingdan: true,
         wo: false,
-
+        tab: {
+            list: [
+                {
+                    id: '1',
+                    title: '堂食/外卖'
+                },
+                {
+                    id: '2',
+                    title: '预订'
+                }
+            ],
+            selectedId: 1,
+            height: 45
+        },
         pageNum: 1,
         pageSize: 10,
+        booking: {
+            pageNum: 1,
+            pageSize: 10,
+            hasMoreData: false,
+            list: []
+        },
         shopInfoList: {},//店铺信息列表
         statusStr: app.globalData.statusStr,
         statusBtn: {
@@ -64,7 +84,7 @@ const appPage = {
     onShow: function () {
         var that = this;
         if (that.data.isShow) {
-            that.onPullDownRefresh();
+            this.setOnePageData();
         }
     },
     onReady: function () {
@@ -86,22 +106,25 @@ const appPage = {
         this.data.pageNum = 1;
         this.loadData(function () {
             wx.stopPullDownRefresh();
-        });
+        }, true);
     },
     /**
      * 页面上拉触底事件的处理函数
      */
     onReachBottom: function () {
-        var that = this;
+        var that = this,
+            booking = that.data.booking,
+            bookingList = booking.list,
+            bookingSize = booking.pageSize,
+            selectedId = +that.data.tab.selectedId,
+            orderList = that.data.orderList,
+            pageSize = that.data.pageSize;
         if (that.data.hasMoreData) {
-            if (that.data.orderList[that.data.orderList.length - 1].length >= that.data.pageSize) {
+            if (selectedId === 1 && orderList[orderList.length - 1].length >= pageSize)
                 that.data.pageNum++;
-            }
-            that.loadData((bol) => {
-                if (!bol) {
-                    that.data.pageNum--;
-                }
-            });
+            else if (selectedId === 2 && bookingList[bookingList.length - 1].length >= bookingSize)
+                that.data.booking.pageNum++;
+            that.loadData();
         }
     }
 };
@@ -110,7 +133,7 @@ const methods = {
         var that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -122,38 +145,126 @@ const methods = {
             },
         );
     },
-    loadData(cb) {
+    loadData(cb, bol) {
         let that = this,
             objId = that.data.objId,
-            flag = false;
-        ApiService.getOrderList(
+            selectedId = that.data.tab.selectedId,
+            arr = [],
+            p = null;
+        !bol && util.showLoading('加载中...');
+        that.setData({
+            orderLoading: true
+        });
+        if (selectedId == 1) {
+            p = that.getOrderList();
+        } else if (selectedId == 2) {
+            p = that.getReserveList();
+        } else {
+            let p1 = that.getOrderList();
+            let p2 = that.getReserveList();
+            p = Promise.all([p1, p2])
+        }
+        p.finally(
+            rsp => {
+                !bol && wx.hideLoading();
+                cb && cb();
+            }
+        )
+    },
+    getOrderList() {
+        let that = this,
+            objId = that.data.objId,
+            data = {};
+        const p = ApiService.getOrderList(
             {
                 objId,
-                "pageNum": that.data.pageNum,
-                "pageSize": that.data.pageSize
-            },
+                pageNum: that.data.pageNum,
+                pageSize: that.data.pageSize
+            }
+        ).then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let orderList = rsp.value;
                     if (that.data.pageNum == 1) {
-                        that.setData({[`orderList[0]`]: orderList});
+                        that.setData({
+                            [`orderList`]: [orderList]
+                        });
                     } else {
                         that.setData({
                             [`orderList[${that.data.pageNum - 1}]`]: orderList
                         });
                     }
-                    flag = true;
+                } else {
+                    that.data.pageNum--;
                 }
             },
-            () => {
-                if (that.data.orderList.length < that.data.pageSize) {
-                    that.setData({hasMoreData: true})
-                } else {
-                    that.setData({hasMoreData: false})
-                }
-                cb && cb(flag)
+            rsp => {
+                that.data.pageNum--;
             }
         );
+        p.finally(
+            () => {
+                let orderList = that.data.orderList,
+                    pageNum = that.data.pageNum,
+                    pageSize = that.data.pageSize;
+                data.orderLoading = false;
+                data.NoOrder = false;
+                if (orderList.length === 0 || (orderList.length === 1 && orderList[0].length === 0)) {
+                    data.NoOrder = true
+                } else if (orderList.length > 0 && orderList[pageNum - 1].length > 0 && orderList[pageNum - 1].length <= pageSize) {
+                    data.hasMoreData = true;
+                } else {
+                    data.hasMoreData = false
+                }
+                that.setData(data)
+            }
+        );
+        return p;
+    },
+    getReserveList() {
+        let that = this,
+            objId = that.data.objId,
+            booking = that.data.booking,
+            data = {};
+        const p = ApiService.getReserveList({
+            objId,
+            "pageNum": booking.pageNum,
+            "pageSize": booking.pageSize
+        }).then(
+            rsp => {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    let list = rsp.value;
+                    if (booking.pageNum == 1) {
+                        that.setData({
+                            [`booking.list`]: [list]
+                        });
+                    } else {
+                        that.setData({
+                            [`booking.list[${booking.pageNum - 1}]`]: list
+                        });
+                    }
+                }
+            }
+        );
+        p.finally(
+            () => {
+                let booking = that.data.booking,
+                    bookingList = booking.list,
+                    pageNum = booking.pageNum,
+                    pageSize = booking.pageSize;
+                data.orderLoading = false;
+                data.NoOrder = false;
+                if (bookingList.length === 0 || (bookingList.length === 1 && bookingList[0].length === 0)) {
+                    data.NoOrder = true
+                } else if (bookingList.length > 0 && bookingList[pageNum - 1].length > 0 && bookingList[pageNum - 1].length <= pageSize) {
+                    data.hasMoreData = true;
+                } else {
+                    data.hasMoreData = false
+                }
+                that.setData(data)
+            }
+        );
+        return p
     },
     jumpBtn(e) {
         let that = this,
@@ -196,7 +307,7 @@ const methods = {
         ApiService.getResDetail(
             {resId: value.resId, config: {isLoading: true}},
             (rsp) => {
-                if (2000 == rsp.code && rsp.value && rsp.value.resId === value.resId) {
+                if (2000 === rsp.code && rsp.value && rsp.value.resId === value.resId) {
                     let resDetailDto = rsp.value;
                     if (orderType == 1) {
                         isOrderType = 1;
@@ -240,8 +351,40 @@ const methods = {
                 tableName: value.tableName
             }
         })
+    },
+    /**
+     * 跳转预订订单详情
+     * @param e
+     */
+    goBookingOrder(e) {
+        console.log(e);
+        let value = e.currentTarget.dataset.value;
+        util.go('/pages/order/bookingOrder/index', {
+            data: {
+                resId: value.resId,
+                consumerId: value.id
+            }
+        })
+    },
+    setOnePageData(bol) {
+        this.data.pageNum = 1;
+        this.data.booking.pageNum = 1;
+        this.loadData(null, bol);
     }
 };
-const events = {};
-Object.assign(appPage, methods, events);
+const events = {
+    handleZanTabChange(e) {
+        var componentId = e.componentId;
+        var selectedId = e.selectedId;
+        // wx.pageScrollTo({
+        //     scrollTop: 0,
+        //     duration: 300
+        // });
+        this.setData({
+            [`${componentId}.selectedId`]: selectedId
+        });
+        this.setOnePageData(true);
+    },
+};
+Object.assign(appPage, methods, events, Tab);
 Page(Object.assign(appPage, app.utilPage));

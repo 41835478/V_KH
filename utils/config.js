@@ -11,7 +11,6 @@ var config = {
     // 下面的地址配合云端 Server 工作
     host,
 
-
     version: '',
 
     // 图片服务器地址

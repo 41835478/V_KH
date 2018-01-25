@@ -1,6 +1,16 @@
 @import "../../index";
 
 .orderMeal {
+  button[type="disabled"] {
+    color: @disabled-color;
+    background-color: @placeholder-color;
+    border: @border-btn-1px-disabled;
+  }
+  .button-hover[type="disabled"] {
+    color: @disabled-color;
+    background-color: @placeholder-color;
+    border: @border-btn-1px-disabled;
+  }
   .weui-cells {
     &::after {
       border: none;

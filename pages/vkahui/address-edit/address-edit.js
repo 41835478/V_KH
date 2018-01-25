@@ -101,7 +101,7 @@ const methods = {
         }
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -202,7 +202,7 @@ const methods = {
             address.name = that.data.nikeName;
             ApiService.updateConsigneeAddress(address,
                 (rsp) => {
-                    if (2000 == rsp.code) {
+                    if (2000 === rsp.code) {
                         util.showToast({
                             title: "更新地址成功",
                             success: function () {
@@ -227,7 +227,7 @@ const methods = {
             address.name = that.data.nikeName;
             ApiService.addAddress(address,
                 (rsp) => {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                         util.showToast({
                             title: "添加地址成功",
                             success: function () {

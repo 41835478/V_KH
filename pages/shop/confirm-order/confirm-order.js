@@ -152,7 +152,7 @@ const methods = {
         });
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -202,7 +202,7 @@ const methods = {
                 }
             },
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     memberCardDtoData.memberCardDto = rsp.value.member;
                     if (utilCommon.isEmptyValue(memberCardDtoData.memberCardDto)) {
                         memberCardDtoData.isMemberCardDto = true
@@ -485,7 +485,7 @@ const methods = {
         ApiService.findTableDtoList(
             {resId},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let tableDtoList = rsp.value;
                     that.setData({
                         tableDtoList
@@ -556,7 +556,7 @@ const methods = {
                         isLoading: true
                     }
                 }, (rsp) => {
-                    if (data.consumerId && rsp.code === '2001' && utilCommon.isEmptyValue(rsp.value)) {
+                    if (data.consumerId && rsp.code === 2001 && utilCommon.isEmptyValue(rsp.value)) {
                         wx.showModal({
                             content: '您的订单数据异常，请重新扫码点餐',
                             showCancel: false,
@@ -565,9 +565,9 @@ const methods = {
                                 util.go(-2);
                             }
                         });
-                    } else if (rsp.code === '2000' || rsp.code === '2001') {
-                        rsp.code === '2001' && (data.consumerId = '');
-                        rsp.code === '2000' && (data.consumerId = rsp.value.consumerId || '');
+                    } else if (rsp.code === 2000 || rsp.code === 2001) {
+                        rsp.code === 2001 && (data.consumerId = '');
+                        rsp.code === 2000 && (data.consumerId = rsp.value.consumerId || '');
                         that.commitOrder(data, null, formId);
                     } else {
                         util.failToast({
@@ -684,10 +684,10 @@ const methods = {
         that.data.isSubmitOrder = false;
         data.config = {
             isLoading: true
-        }
+        };
         ApiService.commitOrder(data,
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     flag = true;
                     let consumerId = rsp.value.consumerId,
                         data = {consumerId, resId};
@@ -729,11 +729,13 @@ const methods = {
      * @param params
      */
     memberPay(params) {
-        let that = this;
+        let that = this,
+            memberCardDto = that.data.memberCardDto;
         util.go('/pages/order/member-pay/member-pay', {
             data: {
                 amount: params.actualPrice,
                 consumerId: params.consumerId,
+                mobile: memberCardDto.mobile,
                 resId: that.data.resId,
                 isGoOrderPage: 1
             }
@@ -758,7 +760,7 @@ const methods = {
                 orderNo, orderMoney, subject, body, objId, resId, config: {isLoading: true}
             },
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let value = rsp.value, wxPay = value.woi;
                     flag = true;
                     wx.requestPayment({
@@ -839,7 +841,7 @@ const methods = {
         ApiService.loadDefaultAddress(
             {userId: that.data.objId},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     //有默认地址
                     that.setData({
                         loadDefault: rsp.value,

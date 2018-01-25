@@ -150,7 +150,7 @@ let modulePopup = {
         ApiService.getSmsCode(
             {"mobile": mobile, msgTemp: "SMS_DEFAULT_CONTENT"},
             function (rsp) {
-                if (2000 == rsp.code) {
+                if (2000 === rsp.code) {
                     util.showToast('验证码已发送');
                     new util.Countdown(that, {
                         time: 60 * 1000,

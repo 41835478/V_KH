@@ -198,7 +198,7 @@ module.exports = {
                 ApiService.checkMember(
                     {resId, objId},
                     (rsp) => {
-                        if (2000 == rsp.code && rsp.value && 1 === rsp.value.isBindMobile && rsp.value.member) {
+                        if (2000 === rsp.code && rsp.value && 1 === rsp.value.isBindMobile && rsp.value.member) {
                             memberCardDto = rsp.value.member;
                             that._app.globalData.memberCardDtos[resId] = memberCardDto;
                             that.data.memberCardDto && Object.assign(that.data.memberCardDto, memberCardDto);
@@ -258,7 +258,7 @@ module.exports = {
                 ApiService.getResDetail(
                     {resId},
                     (rsp) => {
-                        if (2000 == rsp.code && rsp.value && rsp.value.resId === resId) {
+                        if (2000 === rsp.code && rsp.value && rsp.value.resId === resId) {
                             resDetailDto = rsp.value;
                             that._app.globalData.resDetailDtos[resId] = resDetailDto;
                             shopInfo && Object.assign(shopInfo, resDetailDto);
@@ -435,7 +435,7 @@ module.exports = {
                 {id: rid, objId},
                 (rsp) => {
                     try {
-                        if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                        if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                             data.resId = rsp.value.resId;
                             data.type = rsp.value.type;
                             if (!data.resId) {

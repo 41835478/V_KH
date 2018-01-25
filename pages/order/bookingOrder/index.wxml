@@ -1,0 +1,305 @@
+<view class="{{text}}">
+    <block wx:if="{{consumerData}}">
+        <form bindsubmit="submitOrder" bindreset="formReset" report-submit>
+            <!--订单状态-->
+            <view class="top" catchtap="bindOpenBookingTrack">
+                <block wx:if="{{status === 101}}">
+                    <view class="header zan-center zan-font-14">
+                        <text class="iconfont-2 icon-time azm-c-primary"></text>
+                        <text decode class="">&nbsp;剩余支付时间：</text>
+                        <block wx:if="{{azm_timeOutPayCountdown && azm_timeOutPayCountdown.time>0}}">
+                            <text class="azm-c-primary">{{azm_timeOutPayCountdown.countdownTime}}</text>
+                        </block>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 0}}">
+                    <view class="header zan-center zan-font-14">
+                        <text class="iconfont icon-shalou azm-c-primary"></text>
+                        <text decode class="">&nbsp;等待餐厅接单&nbsp;</text>
+                    </view>
+                    <view class="header zan-center zan-font-14">
+                        <block wx:if="{{azm_notProcessedCountdown && azm_notProcessedCountdown.time>0}}">
+                            <text class="">还剩{{azm_notProcessedCountdown.countdownTime}}餐厅确认</text>
+                        </block>
+                        <text class="zan-c-gray-dark">(超时自动取消)</text>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 1}}">
+                    <view class="header zan-center zan-font-14">
+                        <text decode class="">餐厅已接单</text>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 2}}">
+                    <view class="header zan-center zan-font-14">
+                        <text decode class="">餐厅已拒单</text>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 3}}">
+                    <view class="header zan-center zan-font-14">
+                        <text decode class="">订单已取消</text>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 4}}">
+                    <view class="header zan-center zan-font-14">
+                        <text decode class="">订单已完成</text>
+                    </view>
+                </block>
+            </view>
+
+            <!--预订时间-->
+            <view class="weui-cells weui-cells_after-title">
+                <view class="weui-cell weui-cell_access">
+                    <view class="weui-cell__bd">
+                        <text>时间：</text>
+                    </view>
+                    <view class="weui-cell_primary azm-memberName">
+                        <block wx:if="{{consumerData.reserveDto && consumerData.reserveDto.reserveTime}}">
+                            <text>{{filterUtil.ChineseTime(consumerData.reserveDto.reserveTime).text}}</text>
+                        </block>
+                    </view>
+                    <view class="weui-cell__ft"></view>
+                </view>
+                <view class="weui-cell">
+                    <view class="weui-cell__bd">
+                        <text>人数：</text>
+                    </view>
+                    <view class="weui-cell_primary">
+                        <bolck wx:if="{{consumerData.reserveDto && consumerData.reserveDto.numOfConsumer}}">
+                            <text>{{consumerData.reserveDto.numOfConsumer}}人</text>
+                        </bolck>
+                    </view>
+                    <view class="weui-cell__ft"></view>
+                </view>
+                <view class="weui-cell weui-cell_access">
+                    <view class="weui-cell__bd">
+                        <text>桌位：</text>
+                    </view>
+                    <view class="weui-cell_primary">
+                        <block wx:if="{{consumerData.reserveDto && consumerData.reserveDto.areaCode}}">
+                            <text>{{consumerData.reserveDto.areaTable}}</text>
+                        </block>
+                    </view>
+                    <view class="weui-cell__ft"></view>
+                </view>
+            </view>
+            <view class="weui-cells__title"></view>
+            <view class="weui-cells weui-cells_after-title">
+                <view class="weui-cell weui-cell_access">
+                    <view class="weui-cell__bd flexBox flexBox-start">
+                        <view class="flexBox-item">
+                            <text>姓名：</text>
+                        </view>
+                        <view class="flexBox-item">
+                            <block wx:if="{{consumerData.reserveDto && consumerData.reserveDto.name}}">
+                                <input name="name" cursor-spacing="50" placeholder="请输入姓名" data-component-id="name"
+                                       value="{{consumerData.reserveDto.name + filterUtil.setSex(consumerData.reserveDto.sex)}}"
+                                       disabled/>
+                            </block>
+                        </view>
+                    </view>
+                    <view class="weui-cell_primary "></view>
+                    <view class="weui-cell__ft"></view>
+                </view>
+                <view class="weui-cell">
+                    <view class="weui-cell__bd flexBox flexBox-start">
+                        <view class="flexBox-item">
+                            <text>手机：</text>
+                        </view>
+                        <view class="flexBox-item">
+                            <block wx:if="{{consumerData.reserveDto}}">
+                                <input name="name" type="number" cursor-spacing="50" data-component-id="mobile"
+                                       placeholder="请输入手机号码"
+                                       value="{{filterUtil.phoneReplace(consumerData.reserveDto.mobile)}}"
+                                       maxlength="11" disabled/>
+                            </block>
+                        </view>
+                    </view>
+                    <view class="weui-cell_primary azm-memberName"></view>
+                    <view class="weui-cell__ft"></view>
+                </view>
+            </view>
+
+            <block wx:if="{{consumerData}}">
+                <!--预点餐-->
+                <view class="weui-cells__title"></view>
+                <view class="weui-cells weui-cells_after-title">
+                    <block wx:if="{{status === 101}}">
+                        <view class="weui-cell">
+                            <view class="weui-cell__bd"></view>
+                            <view class="weui-cell_primary azm-popup-picker-primary-color azm-memberName">
+                                <text>（点餐需支付预定金</text>
+                                <text>{{filterMoney.RMB(consumerData.reserveBusinessRules.depositAmount)}}）</text>
+                            </view>
+                            <view class="weui-cell__ft"></view>
+                        </view>
+                    </block>
+                    <block wx:if="{{orderMealData.preOrder && orderMealData.orderFood}}">
+                        <view class="weui-cell" catchtap="bindTapHide">
+                            <view class="weui-cell__bd">
+                                <text>预点菜品信息</text>
+                            </view>
+                            <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+                            <view class="weui-cell__ft">
+                                <block wx:if="{{orderFoodShow}}">
+                                    <text class="iconfont-2 icon-xiangshang2 azm-icon"></text>
+                                </block>
+                                <block wx:else>
+                                    <text class="iconfont-2 icon-xiangxia2 azm-icon"></text>
+                                </block>
+                            </view>
+                        </view>
+                        <view class="weui-cell" wx:if="{{orderFoodShow}}">
+                            <view class="weui-cell__bd" style="width: 100%">
+                                <block wx:for="{{orderMealData.orderFood}}" wx:key="id" wx:if="{{item.parentId == -1}}">
+                                    <view class="flexBox flexBox-start">
+                                        <view class="flexBox-item fb-6_5 zan-ellipsis">
+                                            <text>{{item.name}}</text>
+                                        </view>
+                                        <view class="flexBox-item fb-2 zan-center">X{{item.foodCount}}</view>
+                                        <view class="flexBox-item fb-3_5 zan-right">
+                                            <text>{{filterMoney.RMB(item.price)}}</text>
+                                        </view>
+                                    </view>
+                                </block>
+                            </view>
+                            <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+                            <view class="weui-cell__ft"></view>
+                        </view>
+                        <view class="weui-cell">
+                            <view class="weui-cell__bd">
+                            </view>
+                            <view class="weui-cell_primary">
+                                <block wx:if="{{consumerData.reserveDto}}">
+                                    <text>金额：{{filterMoney.RMB(consumerData.reserveDto.foodAmount)}}</text>
+                                </block>
+                            </view>
+                            <view class="weui-cell__ft"></view>
+                        </view>
+                    </block>
+                </view>
+
+                <!--备注-->
+                <view class="weui-cells__title"></view>
+                <view class="weui-cells weui-cells_after-title">
+                    <view class="weui-cell">
+                        <view class="weui-cell__bd flexBox flexBox-start">
+                            <view class="flexBox-item fb-1_5">
+                                <text>备注：</text>
+                            </view>
+                            <view class="flexBox-item fb-10_5">
+                                <text>{{consumerData.reserveDto.note}}</text>
+                            </view>
+                        </view>
+                        <view class="weui-cell_primary azm-popup-picker-primary-color"></view>
+                        <view class="weui-cell__ft"></view>
+                    </view>
+                </view>
+
+
+                <!--支付方式-->
+                <block wx:if="{{status === 101}}">
+                    <radio-group class="azm-payment-method weui-cells weui-cells__border_1px"
+                                 data-component-id="paymentMethod"
+                                 name="paymentMethod"
+                                 catchchange="bindRadioGroup">
+                        <!--会员支付-->
+                        <label class="weui-cell azm-cell azm-member" for="member">
+                            <view class="weui-cell__bd">
+                                <view class="flexBox flexBox-start">
+                                    <view class="flexBox-item azm-images-box text-center">
+                                        <text class="iconfont icon-vip azm-icon"></text>
+                                    </view>
+                                    <view class="flexBox-item fb-9 azm-content">
+                                        <text>会员支付</text>
+                                    </view>
+                                </view>
+                                <view class="flexBox flexBox-start azm-member-content">
+                                    <view class="flexBox-item azm-images-box text-center">
+
+                                    </view>
+                                    <view class="flexBox-item fb-9 azm-content">
+                                        <block wx:if="{{memberCardDto}}">
+                                            <text>余额：{{filterMoney.RMB(memberCardDto.availableBalance)}}</text>
+                                            <block wx:if="{{filterMoney.Money(memberCardDto.availableBalance) <= 0 || memberCardDto.availableBalance < business_rule_info.depositAmount}}">
+                                                <text decode>&nbsp;&nbsp;(余额不足)</text>
+                                            </block>
+                                        </block>
+                                        <block wx:else>
+                                            <text>未开通会员</text>
+                                        </block>
+                                    </view>
+                                </view>
+                            </view>
+                            <view class="weui-cell_primary" value="{{paymentMethod}}">
+                                <radio color="#f74b7b" value="member" id="member"
+                                       checked="{{'member'=== paymentMethod}}"
+                                       disabled="{{!isMemberCardDto || memberCardDto.availableBalance < business_rule_info.depositAmount}}"/>
+                            </view>
+                            <view class="weui-cell__ft">
+
+                            </view>
+                        </label>
+                        <!--微信支付-->
+                        <label class="weui-cell azm-cell azm-cell-l-0px azm-weChat" for="weChat">
+                            <view class="weui-cell__bd flexBox flexBox-start">
+                                <view class="flexBox-item azm-images-box text-center">
+                                    <text class="iconfont icon-weixinzhifu azm-icon"></text>
+                                </view>
+                                <view class="flexBox-item fb-9 azm-content">
+                                    <text>微信支付</text>
+                                </view>
+                            </view>
+                            <view class="weui-cell_primary" value="{{paymentMethod}}">
+                                <radio color="#f74b7b" value="weChat" id="weChat"
+                                       checked="{{'weChat'=== paymentMethod}}"/>
+                            </view>
+                            <view class="weui-cell__ft">
+
+                            </view>
+                        </label>
+                    </radio-group>
+                </block>
+                <view class="azm-footer_fixed_bottom_45px"></view>
+                <block wx:if="{{status === 101}}">
+                    <view class="azm-footer_fixed_bottom">
+                        <view class="flexBox">
+                            <view class="flexBox-item fb-6">
+                                <button type="primary" class="azm-btn-cancel" data-type="cancel"
+                                        form-type="submit">取消预约
+                                </button>
+                            </view>
+                            <view class="flexBox-item fb-6">
+                                <button type="{{!paymentMethod?'disabled':'primary'}}" class="azm-btn-confirm"
+                                        data-type="confirm"
+                                        form-type="submit">支付定金
+                                </button>
+                            </view>
+                        </view>
+                    </view>
+                </block>
+                <block wx:elif="{{status === 0}}">
+                    <button type="primary" class="azm-footer_fixed_bottom" data-type="cancel" form-type="submit">
+                        取消预约
+                    </button>
+                </block>
+            </block>
+        </form>
+    </block>
+    <block wx:else>
+
+    </block>
+</view>
+
+<import src="../../../template/picker-view/picker-view.wxml"/>
+<!--支付picker-view-->
+<template is="picker_view" data="{{...pickerViewPaymentData,class:pickerViewPayment,animated:true}}"></template>
+<template is="picker_view" data="{{...orderTrackingData,class:orderTracking,animated:true}}"></template>
+
+
+<!--过滤器-->
+<wxs src="../../../utils/filter/filter_money.wxs" module="filterMoney"/>
+<wxs src="../../../utils/filter/filter_orderType.wxs" module="filterUtil"/>
+
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>

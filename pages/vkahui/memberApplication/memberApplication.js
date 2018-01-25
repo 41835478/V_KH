@@ -129,7 +129,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     that.data.userInfo = app.globalData.userInfo;
@@ -165,7 +165,7 @@ const methods = {
         ApiService.checkMember(
             {objId, resId: options.resId},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     data.isMemberCardDto = utilCommon.isEmptyValue(rsp.value.member);
                     data.isBindMobile = rsp.value.isBindMobile;
                 }
@@ -181,7 +181,7 @@ const methods = {
         ApiService.getCommonUserInfo(
             {objId},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let commonUser = rsp.value.commonUser,
                         region = [rsp.value.province, rsp.value.city],
                         mobile = commonUser.mobile ? commonUser.mobile.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
@@ -242,7 +242,7 @@ const methods = {
             ApiService.applyMember(
                 Object.assign(value, {objId, resId}),
                 (rsp) => {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
 
                     }
                 },
@@ -305,7 +305,7 @@ const events = {
                         };
                         ApiService.bindMobile(data,
                             (rsp) => {
-                                if (2000 == rsp.code) {
+                                if (2000 === rsp.code) {
                                     that.showToast('绑定手机成功')
                                 }
                             },
@@ -377,7 +377,7 @@ const events = {
         let that = this;
         ApiService.getAllProvince({},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let addAddress = [{
                         id: 0,
                         name: '全部'
@@ -439,7 +439,7 @@ const events = {
                 } else {
                     ApiService.getRegionByPid({pid},
                         (rsp) => {
-                            if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                            if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                 addAddress._range[pid] = rsp.value;
                                 that.setData(
                                     {

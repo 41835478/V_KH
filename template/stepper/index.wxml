@@ -1,30 +1,29 @@
-<template name="zan-stepper">
-    <view class="zan-stepper {{ size === 'small' ? 'zan-stepper--small' : '' }}">
-        <view
-                class="zan-stepper__minus {{ stepper <= min ? 'zan-stepper--disabled' : '' }}"
-                data-component-id="{{ componentId }}"
-                data-stepper="{{ stepper }}"
-                data-disabled="{{ stepper <= min }}"
-                bindtap="_handleZanStepperMinus"
-        >-
+<!--加菜按钮-->
+<template name="azm-stepper">
+    <!--transition-all-->
+    <view class="flexBox flexBox-between azm-stepper {{ size === 'small' ? 'azm-stepper--small' : '' }}">
+        <view class="flexBox-item azm-stepper__minus {{ stepper <= min ? 'azm-stepper--disabled' : '' }}"
+              catchtap="azm_stepper_minus" data-stepper="{{ stepper }}"
+              data-disabled="{{ stepper <= min }}"
+              data-component-id="{{ componentId }}">
+            <text class="azm-icon iconfont-2 icon-jianhao"></text>
         </view>
-        <input
-                class="zan-stepper__text {{ min >= max ? 'zan-stepper--disabled' : '' }}"
-                type="number"
-                data-component-id="{{ componentId }}"
-                data-min="{{ min }}"
-                data-max="{{ max }}"
-                value="{{ stepper }}"
-                disabled="{{ min >= max }}"
-                bindblur="_handleZanStepperBlur"
-        ></input>
-        <view
-                class="zan-stepper__plus {{ stepper >= max ? 'zan-stepper--disabled' : '' }}"
-                data-component-id="{{ componentId }}"
-                data-stepper="{{ stepper }}"
-                data-disabled="{{ stepper >= max }}"
-                bindtap="_handleZanStepperPlus"
-        >+
+        <view class="center flexBox-item">
+            <input name="stepperNumber" type="number"
+                   class="azm-stepper__text {{ min >= max ? 'azm-stepper--disabled' : '' }}"
+                   data-component-id="{{ componentId }}"
+                   data-min="{{ min }}"
+                   data-max="{{ max }}"
+                   value="{{ stepper }}"
+                   disabled="{{ min >= max || disabled}}"
+                   catchinput="azm_stepper_blur"
+                   cursor-spacing="50"/>
+        </view>
+        <view class="right flexBox-item azm-stepper__plus {{ stepper >= max ? 'azm-stepper--disabled' : '' }}"
+              catchtap="azm_stepper_plus" data-stepper="{{ stepper }}"
+              data-disabled="{{ stepper >= max }}"
+              data-component-id="{{ componentId }}">
+            <text class="azm-icon iconfont-2 icon-jiahao2"></text>
         </view>
     </view>
 </template>

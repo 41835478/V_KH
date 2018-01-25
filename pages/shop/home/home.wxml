@@ -71,7 +71,12 @@
                               data-url="{{item.url}}" data-text="{{item.name}}"
                               data-value="{{item}}" data-disabled="{{item.status}}"
                               data-type="{{item.orderType}}" catchtap="bindAzmScanCode" hover-stay-time="100">
-                            <image lazy-load src="{{item.img}}"></image>
+                            <block wx:if="{{item.status == 1}}">
+                                <image lazy-load src="{{item.img}}"></image>
+                            </block>
+                            <block wx:else>
+                                <image lazy-load src="{{item.disabledImg}}"></image>
+                            </block>
                             <view class="text">
                                 <text>{{item.name}}</text>
                             </view>

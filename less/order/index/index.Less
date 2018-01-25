@@ -2,6 +2,12 @@
 
 page {
   .orderIndex {
+    margin-top: 55*2rpx;
+    .top {
+      top: 0;
+      margin-top: 0;
+      z-index: 100;
+    }
     view, view::after, view::before, navigator, scroll-view {
       box-sizing: border-box;
     }
@@ -64,10 +70,10 @@ page {
             color: #bbc1d4;
             .px2rpx(font-size, 12);
             .px2rpx(padding-top, 5);
-            .px2rpx(padding-bottom, 8);
           }
           .azm-money {
             //font-weight: 400;
+            .px2rpx(padding-top, 8);
             .px2rpx(font-size, 14);
           }
         }

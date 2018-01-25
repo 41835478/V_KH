@@ -93,7 +93,7 @@ const methods = {
         that.data.consumerId = options.consumerId;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     ApiService.token = rsp.value.token;
@@ -102,7 +102,7 @@ const methods = {
                         ApiService.getResDetail(
                             {resId: that.data.resId},
                             (rsp) => {
-                                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                     that.data.shopInfo = rsp.value;
                                 }
                             },
@@ -130,7 +130,7 @@ const methods = {
         ApiService.getOrderDetail(
             {objId, resId, consumerId, config: {isLoading: !bol}},
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let consumerData = rsp.value, orderList = [];
                     // consumerData.status = that.data.status || consumerData.status;
                     consumerData.mealNumber = consumerData.consumerNo.substring(consumerData.consumerNo.length - 5);
@@ -154,7 +154,7 @@ const methods = {
                             resId, objId
                         },
                         (rsp) => {
-                            if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                            if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                 memberCardDtoData.memberCardDto = rsp.value.member;
                                 app.globalData.memberCardDtos[resId] = that.data.memberCardDto;
                             }
@@ -402,7 +402,7 @@ const methods = {
                     ApiService.checkMember(
                         {resId, objId, config: {isLoading: true}},
                         (rsp) => {
-                            if (2000 == rsp.code && rsp.value && 1 === rsp.value.isBindMobile && utilCommon.isEmptyValue(rsp.value.member)) {
+                            if (2000 === rsp.code && rsp.value && 1 === rsp.value.isBindMobile && utilCommon.isEmptyValue(rsp.value.member)) {
                                 that.data.memberCardDto = rsp.value.member;
                             }
                         },
@@ -505,13 +505,15 @@ const methods = {
      * @param params
      */
     memberPay(params) {
-        let that = this;
-        that.data.isSubmitOrder = true
+        let that = this,
+            memberCardDto = that.data.memberCardDto;
+        that.data.isSubmitOrder = true;
         util.go('/pages/order/member-pay/member-pay', {
             data: {
                 amount: params.actualPrice,
                 consumerId: params.consumerId,
                 resId: that.data.resId,
+                mobile: memberCardDto.mobile
             }
         })
     },
@@ -534,7 +536,7 @@ const methods = {
                 orderNo, orderMoney, subject, body, objId, resId, config: {isLoading: true}
             },
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     let value = rsp.value, wxPay = value.woi;
                     flag = true;
                     wx.requestPayment({
@@ -675,9 +677,13 @@ const methods = {
             consumerData = that.data.consumerData,
             OrderTracking = [], flag = false;
         ApiService.getOrderProcessList(
-            {resId, consumerId: consumerData.consumerId},
+            {
+                resId, consumerId: consumerData.consumerId, config: {
+                    isLoading: true
+                }
+            },
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     flag = true;
                     OrderTracking = rsp.value;
                     that.azm_pickerView_show({

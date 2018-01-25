@@ -1,340 +1,13 @@
 const config = require('./config'),
-    utilCommon = require('./utilCommon');
+    utilCommon = require('./utilCommon'),
+    api = require('./configPath');
 import {HttpRequest} from './httpRequest';
 
 const $http = new HttpRequest();
 module.exports = {
     url: config.host,
     token: null,
-    api: {
-        /**
-         * 获取openid  API
-         */
-        getOpenId: {
-            path: '/microcode/getOpenId',
-            query: {}
-        },
-        /**
-         * 获取平台用户信息
-         */
-        getCommonUserInfo: {
-            path: '/commonUser/getCommonUserInfo',
-            query: {}
-        },
-        /**
-         * 更新平台用户信息
-         */
-        updateCommonUserInfo: {
-            path: '/commonUser/updateCommonUserInfo',
-            query: {}
-        },
-        /**
-         * 申请会员卡  API
-         */
-        applyMember: {
-            path: '/microcode/applyMember',
-            query: {
-                name: '',//String *
-                birthday: '',//2017-10-24 00:00:00 *
-                sex: 0,//0：无 1：男 2：女 *
-                provinceId: '',//省
-                cityId: '',//市
-                objId: '',//*
-                token: '',//*
-                resId: '',//*
-            }
-        },
-        /**
-         * 判断时候为首次使用获取openid  API
-         */
-        newCheckIsFirstUse: {
-            path: '/microcode/newCheckIsFirstUse',
-            query: {}
-        },
-        /**
-         * 获取会员拉列表  API
-         */
-        getMemberCardList: {
-            path: '/microcode/getMemberCardList',
-            query: {}
-        },
-        /**
-         * 二维码获取列表
-         */
-        getQRcodeTable: {
-            path: '/qrtable/getQRcodeTable',
-            query: {}
-        },
-        /**
-         * 新增用户会员列表
-         */
-        checkIsFirstUse: {
-            path: '/microcode/checkIsFirstUse',
-            query: {}
-        },
-        /**
-         * 获取是否绑定手机号
-         */
-        checkBindMobile: {
-            path: '/microcode/checkBindMobile',
-            query: {}
-        },
-        checkMemberBindMobile: {
-            path: '/microcode/checkMemberBindMobile',
-            query: {}
-        },
-        checkMember: {
-            path: '/microcode/checkMember',
-            query: {}
-        },
-        /**
-         * 获取菜品列表
-         */
-        getFoodList: {
-            path: '/food/getFoodList',
-            query: {}
-        },
-        /**
-         * 获取菜品tab分类
-         */
-        findFoodCatalogList: {
-            path: '/foodCatalog/findFoodCatalogList  ',
-            query: {}
-        },
-        /**
-         * 获取规格列表
-         */
-        getFoodRuleList: {
-            path: '/foodRule/getFoodRuleList',
-            query: {}
-        },
-        /**
-         * 获取套餐子菜列表
-         */
-        findFoodPackage: {
-            path: '/foodPackage/findFoodPackage',
-            query: {}
-        },
-        /**
-         * 获取口味列表
-         */
-        getFoodPracticesList: {
-            path: '/foodPractices/getFoodPracticesList',
-            query: {}
-        },
-        /**
-         * 获取点餐店铺列表
-         */
-        getResDetail: {
-            path: '/microcode/getResDetail',
-            query: {}
-        },
-        /**
-         * 绑定手机
-         */
-        bindWechatUser: {
-            path: '/microcode/bindWechatUser',
-            query: {}
-        },
-        /**
-         * 绑定手机
-         */
-        bindMobile: {
-            path: '/microcode/bindMobile',
-            query: {}
-        },
-        /**
-         * 获取店铺首页信息
-         */
-        getMainInfo: {
-            path: '/microcode/getMainInfo',
-            query: {}
-        },
-        /**
-         * 获取店铺banner
-         */
-        getCommonBannerList: {
-            path: '/banner/getCommonBannerList ',
-            query: {}
-        },
-        /**
-         * 获取桌位列表
-         */
-        findTableDtoList: {
-            path: '/table/findTableDtoList',
-            query: {}
-        },
-        /**
-         * 提交订单
-         */
-        commitOrder: {
-            path: '/microcode/commitOrder',
-            query: {}
-        },
-        /**
-         * 获取订单详情
-         */
-        getOrderDetail: {
-            path: '/microcode/getOrderDetail',
-            query: {}
-        },
-        /**
-         * 检查是否存在未结账的消费者
-         */
-        checkHasWaitPayConsumer: {
-            path: '/microcode/checkHasWaitPayConsumer',
-            query: {}
-        },
-        /**
-         * 验证会员卡支付验证码
-         */
-        checkSmsCodeByOpenId: {
-            path: '/sms/checkSmsCodeByOpenId',
-            query: {}
-        },
-        /**
-         * 会员卡支付
-         */
-        memberCardPay: {
-            path: '/microcode/memberCardPay',
-            query: {}
-        },
-        /**
-         * 获取验证码
-         */
-        getSmsCode: {
-            path: '/sms/getSmsCode',
-            query: {}
-        },
-        /**
-         * 支付获取验证码
-         */
-        getSmsCodeByConn: {
-            path: '/sms/getSmsCodeByConn',
-            query: {}
-        },
-        /**
-         * 获取订单列表
-         */
-        getOrderList: {
-            path: '/microcode/getOrderList',
-            query: {}
-        },
-        /**
-         * 微信支付
-         */
-        finishPay: {
-            path: '/microcode/finishPay',
-            query: {}
-        },
-        /**
-         * 微信支付接口
-         */
-        wxPayForH5: {
-            path: '/wxpay/wxPayForH5',
-            query: {}
-        },
-        /**
-         * 修改收货地址
-         */
-        updateConsigneeAddress: {
-            path: '/consigneeAddress/updateConsigneeAddress',
-            query: {}
-        },
-        /**
-         * 新增地址
-         */
-        addAddress: {
-            path: '/consigneeAddress/addAddress',
-            query: {}
-        },
-        /**
-         * 设置默认地址
-         */
-        setDefaultAddress: {
-            path: '/consigneeAddress/setDefaultAddress',
-            query: {}
-        },
-        /**
-         * 设置默认地址
-         */
-        deleteConsigneeAddress: {
-            path: '/consigneeAddress/deleteConsigneeAddress',
-            query: {}
-        },
-        /**
-         * 设置默认收货地址
-         */
-        loadDefaultAddress: {
-            path: '/consigneeAddress/loadDefaultAddress',
-            query: {}
-        },
-        /**
-         * 获取收货地址列表
-         */
-        loadAddressList: {
-            path: '/consigneeAddress/loadAddressList',
-            query: {}
-        },
-        /**
-         * 买单叫号
-         */
-        callAttendant: {
-            path: '/microcode/callAttendant',
-            query: {}
-        },
-        /**
-         * 消息模板通知
-         */
-        sendMiniWxTemplateMsg: {
-            path: '/wechatTemplateMsg/sendTemplateMsgForMini',
-            query: {},
-            templateIds: {
-                OrderPaySuccess: 'TF3BoYwKtKDEuwhNt5tkcRmRs9DcdM5-8mIu72xYvUc'
-            }
-        },
-        /**
-         * 三级联动 - 省
-         */
-        getAllProvince: {
-            path: '/region/getAllProvince',
-            query: {}
-        },
-        /**
-         * 三级联动 - 市/区
-         */
-        getRegionByPid: {
-            path: '/region/getRegionByPid',
-            query: {
-                pid: ''
-            }
-        },
-        /**
-         * 订单跟踪
-         */
-        getOrderProcessList: {
-            path: '/order/getOrderProcessList',
-            query: {
-                pid: ''
-            }
-        },
-        /**
-         * 预定营业规则信息
-         */
-        getReserveBusinessRules: {
-            path: '/reserveBusinessRules/getReserveBusinessRules',
-            query: {
-                resId: ''
-            }
-        },
-        /**
-         * 提交预定订单
-         */
-        insertReserve: {
-            path: '/reserve/insertReserve',
-            query: {}
-        },
-    },
+    api: api,
     getToken() {
         const app = getApp();
         if (this.token && this.token.length > 0) {
@@ -919,6 +592,13 @@ module.exports = {
      * @param isReturnStatus
      * @param reject
      * @returns {*}
+     *  private Integer isDeposit;//预定押金（0，不需要  1，需要）
+     *  private Double depositAmount;//押金金额
+     *  private Integer leadTime;//提前时间
+     *  private Integer isPreOrder;//预点菜（0，不可以  1，可以）
+     *  private Integer isBusiness;//非包房是否营业（0，休业  1 营业）
+     *  private Integer isPrivateRoom;//包房是否营业（0，休业  1 营业）
+     *  private Integer status;//状态 0关闭 1开启
      */
     getReserveBusinessRules(data = {}, cb, isReturnStatus, reject) {
         const url = this.url + this.api.getReserveBusinessRules.path;
@@ -935,13 +615,16 @@ module.exports = {
      * @param data.source(*)来源 0安卓端 1小程序
      * @param data.reserveTime(*)预定时间 Long类型
      * @param data.objId(*)如果source为 1 则这个参数必传
+     * private Integer numOfConsumer;// 人数
      * @param data.tableCode 桌台code
      * @param data.mobile(*)手机号
      * @param data.name(*)姓名
-     * @param data.sex 姓名
+     * @param data.sex 性别
      * @param data.orderFoodJson 预点菜orderFood json串
      * @param data.areaCode 分区code
      * @param data.note 备注
+     *  private Integer preOrder;// 预点菜 0 不点菜 1 点菜
+     *  private Integer payDeposit;// 支付定金 0 不支付 1支付
      * @param cb
      * @param isReturnStatus
      * @param reject
@@ -949,6 +632,133 @@ module.exports = {
      */
     insertReserve(data = {}, cb, isReturnStatus, reject) {
         const url = this.url + this.api.insertReserve.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 根据手机号获取验证码
+     * @param data
+     * @param data.mobile(*)手机号
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getSmsCodeByMobile(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getSmsCodeByMobile.path;
+        data.msgTemp = "SMS_XIAOFEICODE_CONTENT";
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预定订单支付
+     * @param data
+     * @param id(*)预订单id
+     * @param resId(*)餐厅id
+     * @param objId(*)小程序唯一标识id
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    memberPayReserve(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.memberPayReserve.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预订订单详情
+     * @param data
+     * @param id(*)预订单id
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getReserveDetail(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getReserveDetail.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 更新订单状态
+     * @param data
+     * @param reserveid(*)预定id
+     * @param status(*) 更改的状态。// 0未处理，1接受，2拒绝 ，3用户取消,4已完成(代表已开台)
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    updateReserve(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.updateReserve.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预订订单微信支付
+     * @param data
+     * @param reserveid(*)预定id
+     * @param status(*) 更改的状态。// 0未处理，1接受，2拒绝 ，3用户取消,4已完成(代表已开台)
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    wxPayForReserve(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.wxPayForReserve.path;
+        data.token = this.getToken();
+        const http = $http.get(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预订订单列表
+     * @param data
+     * @param objId
+     * @param pageNum
+     * @param pageSize
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getReserveList(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getReserveList.path;
+        data.token = this.getToken();
+        const http = $http.post(url, data, (res) => {
+            cb && cb(res);
+        }, isReturnStatus, reject);
+        return http;
+    },
+    /**
+     * 预订订单跟踪列表
+     * @param data
+     * @param reserveId(*)预定id
+     * @param ResId(*) 餐厅id
+     * @param cb
+     * @param isReturnStatus
+     * @param reject
+     * @returns {*}
+     */
+    getReserveProcessList(data = {}, cb, isReturnStatus, reject) {
+        const url = this.url + this.api.getReserveProcessList.path;
         data.token = this.getToken();
         const http = $http.post(url, data, (res) => {
             cb && cb(res);

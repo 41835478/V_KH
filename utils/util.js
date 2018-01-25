@@ -12,21 +12,43 @@ module.exports.date_range = date_range;
 module.exports.dateFormate = dateFormate;
 module.exports.regExpUtil = regExpUtil;
 
+function getDate(date) {
+    let _date = new Date();
+    if (regExpUtil.isDateTime(date)) {
+        _date = new Date(date.replace(/-/g, '/'))
+        if (isNaN(_date)) {
+            date = trim(date).replace(/\s/g, 'T');
+            _date = new Date(date);
+        }
+    } else if (utilCommon.isNumberOfNaN(date)) {
+        _date = new Date(+date)
+    } else if (date instanceof Date) {
+        _date = date
+    }
+    return _date
+}
+
+module.exports.getDate = getDate;
+
 function next3Days(input) {
-    var startDay = new Date()
+    var startDay = new Date();
     try {
-        if (input && (typeof input === 'string' || typeof input === 'number')) {
+        if (input) {
             if (regExpUtil.isDateTime(input)) {
                 input = input.split(' ')[0]
+            } else if (utilCommon.isNumberOfNaN(input)) {
+                input = date_formate(input, 'YYYY-MM-DD')
+            } else {
+                input = date_formate(getDate(input), 'YYYY-MM-DD')
             }
-            startDay = new Date(input)
+            startDay = getDate(input)
         }
     } catch (e) {
 
     }
 
-    var startDay1 = new Date(formatTime(startDay, {D: 1, spacer: '-'})),
-        startDay2 = new Date(formatTime(startDay, {D: 2, spacer: '-'})),
+    var startDay1 = getDate(formatTime(startDay, {D: 1, spacer: '-'})),
+        startDay2 = getDate(formatTime(startDay, {D: 2, spacer: '-'})),
         arr = [
             {
                 text: getWeeks(startDay),
@@ -41,7 +63,7 @@ function next3Days(input) {
             {
                 text: getWeeks(startDay2),
                 time: date_formate(startDay2, 'MM-DD'),
-                dateTime: date_formate(startDay2, 'YYYY:MM:DD'),
+                dateTime: date_formate(startDay2, 'YYYY-MM-DD'),
             },
         ];
     return arr
@@ -53,8 +75,8 @@ function getWeeks(date) {
     if (date instanceof Date) {
         var toDay = date_formate(new Date(), 'YYYY-MM-DD');
         var weeks = "周" + WEEKS[date.getDay()];
-        console.log(date_range(toDay, date).length);
-        switch (date_range(toDay, date).length) {
+        // console.log(date_range(toDay, date).length);
+        switch (date_range(getDate(toDay), date).length) {
             case 1:
                 weeks = '今天';
                 break;
@@ -99,7 +121,7 @@ let one_year = 31536000000,
 // console.log(one_year, one_month, one_day, one_hour, one_minute, one_second);
 
 function formatTime(time, config, fmt) {
-    var time = time || new Date(),
+    var time = getDate(time),
         spacer = config && config.spacer,
         timer = 0;
     if (config && config.Y) {
@@ -121,34 +143,15 @@ function formatTime(time, config, fmt) {
     if (config && config.s) {
         timer += Number(config.s) * one_second;
     }
-    if (!utilCommon.isDate(time)) {
-        if (utilCommon.isString(time) || utilCommon.isNumberOfNaN(time)) {
-            try {
-                if (utilCommon.isNumberOfNaN(time)) {
-                    time = new Date(time)
-                }
-                let _time = time.trim().replace(/-/g, '/');
-                time = new Date(_time);
-                if (isNaN(time)) {
-                    _time = _time.replace(/\s/g, 'T');
-                    time = new Date(_time);
-                }
-            } catch (e) {
-                return;
-                console.log('时间格式错误', e);
-            }
-        }
-    }
-    var date = new Date(+time + timer);
+    var date = getDate(+time + timer);
 
-    var year = date.getFullYear()
-    var month = date.getMonth() + 1
-    var day = date.getDate()
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
 
-
-    var hour = date.getHours()
-    var minute = date.getMinutes()
-    var second = date.getSeconds()
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
     if (spacer) {
         return [year, month, day].map(formatNumber).join(spacer) + ' ' + [hour, minute, second].map(formatNumber).join(':')
     } else {
@@ -185,7 +188,7 @@ function formatTimeEnd(time, config) {
 function formateDate(strTime, format, needMap) {
     strTime = Number(strTime);
     format = format || 'Y-M-D H:I:S';
-    var date = new Date(strTime);
+    var date = getDate(strTime);
     var dateMap = {
         y: (date.getFullYear() + '').slice(2), Y: date.getFullYear(), M: date.getMonth() + 1, D: date.getDate(),
         h: date.getHours() % 12,
@@ -253,14 +256,26 @@ function formatTimeDifference(start, end, config) {
     }
 }
 
+module.exports.formatTimeDifference = formatTimeDifference;
+
 function timer(intDiff, bol) {
     var date = new Date();
     var day = 0,
         hour = 0,
         minute = 0,
         second = 0;//时间默认值
-    if (typeof intDiff !== Date) {
-        date = new Date(intDiff);
+    if (intDiff instanceof Date) {
+        if (intDiff > 0) {
+            //计算相关的天，小时，还有分钟，以及秒
+            day = Math.floor(intDiff / (60 * 60 * 24));
+            hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
+            minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
+            second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+        }
+        if (minute <= 9) minute = '0' + minute;
+        if (second <= 9) second = '0' + second;
+    } else {
+        date = getDate(intDiff);
         var dateMap = {
             y: (date.getFullYear() + '').slice(2),
             Y: date.getFullYear(),
@@ -280,16 +295,7 @@ function timer(intDiff, bol) {
         hour = dateMap.H;
         minute = dateMap.I;
         second = dateMap.S;
-    } else {
-        if (intDiff > 0) {
-            //计算相关的天，小时，还有分钟，以及秒
-            day = Math.floor(intDiff / (60 * 60 * 24));
-            hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
-            minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
-            second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-        }
-        if (minute <= 9) minute = '0' + minute;
-        if (second <= 9) second = '0' + second;
+
     }
 
     if (bol) {
@@ -299,8 +305,7 @@ function timer(intDiff, bol) {
     }
 }
 
-
-module.exports.formatTimeDifference = formatTimeDifference;
+module.exports.timer = timer;
 
 function formatTime1(date) {
     var year = date.getFullYear()

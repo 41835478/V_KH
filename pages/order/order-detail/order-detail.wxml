@@ -337,9 +337,7 @@
                             <text>{{consumerData.resName}}</text>
                         </view>
                     </view>
-                    <view class="weui-cell_primary">
-
-                    </view>
+                    <view class="weui-cell_primary"></view>
                     <view class="weui-cell__ft weui-cell__ft_in-access">
                         <!--<text class="iconfont-2 icon-xiangxia2 azm-icon"></text>-->
                     </view>
@@ -709,6 +707,22 @@
                 <view class="weui-cell azm-cell azm-cell-border_0px  azm-orderInfo-item">
                     <view class="weui-cell__bd flexBox flexBox-start">
                         <view class="flexBox-item azm-cell__start">
+                            <text>订单编号：</text>
+                        </view>
+                        <view class="flexBox-item fb-9 azm-cell__c">
+                            <text>{{consumerData.consumerNo}}</text>
+                        </view>
+                    </view>
+                    <view class="weui-cell_primary">
+
+                    </view>
+                    <view class="weui-cell__ft">
+
+                    </view>
+                </view>
+                <view class="weui-cell azm-cell azm-cell-border_0px  azm-orderInfo-item">
+                    <view class="weui-cell__bd flexBox flexBox-start">
+                        <view class="flexBox-item azm-cell__start">
                             <text>联系人：</text>
                         </view>
                         <view class="flexBox-item fb-9 azm-cell__c">
@@ -904,22 +918,6 @@
                 </label>
             </radio-group>
         </block>
-
-        <!--底部按钮-->
-        <!--<block wx:if="{{3 == orderType}}">-->
-        <!--<view class="azm-footer flexBox">-->
-        <!--<block wx:for="{{foodBtnList}}" wx:key="*this">-->
-        <!--<view class="flexBox-item fb-{{12/foodBtnList.length}}">-->
-        <!--<button type="{{item.color}}" data-type="{{item.type}}" catchtap="goPay">-->
-        <!--{{item.name}}-->
-        <!--</button>-->
-        <!--</view>-->
-        <!--</block>-->
-        <!--</view>-->
-        <!--</block>-->
-        <!--<block wx:else>-->
-        <!---->
-        <!--</block>-->
         <block wx:if="{{3 == status && 3!= orderType}}">
             <view class="azm-footer-50px"></view>
             <view class="flexBox flexBox-start azm-footer-b azm-1px-t">

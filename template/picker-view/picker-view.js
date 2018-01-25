@@ -1,4 +1,5 @@
 import {dateData} from '../../utils/date/calendar'
+import {isEmptyObject} from '../../utils/utilCommon'
 
 let EVENTS = {};
 let pickerView = {
@@ -14,6 +15,10 @@ let pickerView = {
                 data: data.data,
                 tableContent: `picker-view-${data.type}`,
             };
+        obj.confirmTitle = data.confirmTitle;
+        obj.cancelTitle = data.cancelTitle;
+        obj.cancelTitleColor = data.cancelTitleColor || '';
+        obj.confirmTitleColor = data.confirmTitleColor || 'primary';
         if (data.confirmText || data.cancelText) {
             obj.footer = {
                 confirmText: data.confirmText || '是',
@@ -56,9 +61,10 @@ let pickerView = {
     },
     azm_pickerView_success(e) {
         let that = this,
-            type = e.currentTarget.dataset.type,
-            active = e.currentTarget.dataset.active,
-            select = e.currentTarget.dataset.select,
+            dataset = isEmptyObject(e.currentTarget.dataset) || e.detail.target.dataset,
+            type = dataset.type,
+            active = dataset.active,
+            select = dataset.select,
             value = e.detail.value, confirm = false, cancel = false;
         try {
             if (!type) type = e.detail.target.dataset.type;

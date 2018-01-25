@@ -37,6 +37,12 @@
   box-sizing: border-box;
   padding-bottom: 20rpx;
 }
+.destineTimeSelect .section .flexBox-item {
+  box-sizing: border-box;
+  padding: 10rpx 0;
+  line-height: 82rpx;
+  height: 82rpx;
+}
 .destineTimeSelect .section button[type="primary"] {
   color: #f74b7b;
   background-color: #fbe7ed;

@@ -9,6 +9,7 @@ const SHOP_PAGES = {
     shopList: [
         {
             img: '/images/shop/eat.png',
+            disabledImg: '/images/shop/eat_disabled.png',
             name: '堂食',
             url: '/pages/shop/order/order',
             orderType: 0,
@@ -16,9 +17,18 @@ const SHOP_PAGES = {
         },
         {
             img: '/images/shop/takeaway.png',
+            disabledImg: '/images/shop/takeaway_disabled.png',
             name: '外卖',
             url: '/pages/shop/order/order',
             orderType: 1,
+            disabled: false
+        },
+        {
+            img: '/images/shop/booking.png',
+            disabledImg: '/images/shop/booking_disabled.png',
+            name: '预订',
+            url: '/pages/shop/OrderMeal/OrderMeal',
+            orderType: 4,
             disabled: false
         }
     ],
@@ -117,7 +127,7 @@ const methods = {
         let that = this;
         app.getLoginRequestPromise().then(
             (rsp) => {
-                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                     that.data.objId = rsp.value.objId;
                     that.data.token = rsp.value.token;
                     that.data.userInfo = app.globalData.userInfo;
@@ -155,7 +165,7 @@ const methods = {
                                 resId: resId,
                             },
                             (rsp) => {
-                                if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                                if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                                     util.go('/pages/order/order-detail/order-detail', {
                                         type: 'blank',
                                         data: {
@@ -164,7 +174,7 @@ const methods = {
                                             consumerId: rsp.value.consumerId
                                         }
                                     });
-                                } else if (2001 == rsp.code) {
+                                } else if (2001 === rsp.code) {
                                     goOrderPage();
                                 } else {
                                     util.failToast(rsp.message);
@@ -245,7 +255,7 @@ const methods = {
             ApiService.getMainInfo(
                 {objId, resId},
                 (rsp) => {
-                    if (2000 == rsp.code && utilCommon.isEmptyValue(rsp.value)) {
+                    if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
                         let shopList = SHOP_PAGES.shopList,
                             discount = rsp.value.discount,
                             resDetailDto = rsp.value.resDetailDto,//店铺信息
@@ -254,6 +264,7 @@ const methods = {
                         that.utilPage_setNavigationBarTitle(resDetailDto.resName);//设置导航栏信息
                         util.extend(shopList[0], resDetailDto.restaurantBusinessRules);//堂食
                         util.extend(shopList[1], resDetailDto.takeoutBusinessRules);//外卖
+                        util.extend(shopList[2], resDetailDto.reserveBusinessRules);//预订
                         let topInfoList = that.data.topInfoList;
                         if (resDetailDto.notice) {
                             topInfoList = [];
@@ -331,6 +342,7 @@ const events = {
             });
         } else {
             if (1 === type) orderType = 1;
+            else if (4 === type) orderType = 4;
             else orderType = isOrderType;
             util.go(url, {
                 data: {

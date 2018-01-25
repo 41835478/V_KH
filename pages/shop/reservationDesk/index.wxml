@@ -9,7 +9,8 @@
             <swiper-item style="background-color: #fff">
                 <view class="flexBox flexBox-start tableList tableList-blurry">
                     <block wx:for="{{tableDtoList}}" wx:key="subareaId" wx:for-item="v" wx:for-index="i">
-                        <view class="flexBox-item fb-6" wx:if="{{i < 11 || item.moreSelect}}">
+                        <view class="flexBox-item fb-6"
+                              wx:if="{{v.tableList && v.tableList.length>0}}">
                             <block wx:if="{{tableSelect.subareaId === v.subareaId}}">
                                 <button class="zan-ellipsis" type="primary" size="mini"
                                         disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
@@ -17,6 +18,7 @@
                                         data-subarea-name="{{v.subareaName}}"
                                         data-value="{{v}}" catchtap="bindTableSelect">
                                     <text>{{v.subareaName}}</text>
+                                    <text>（余{{v.tableList.length}}桌）</text>
                                 </button>
                             </block>
                             <block wx:else>
@@ -27,6 +29,7 @@
                                         data-value="{{v}}"
                                         catchtap="bindTableSelect">
                                     <text>{{v.subareaName}}</text>
+                                    <text>（余{{v.tableList.length}}桌）</text>
                                 </button>
                             </block>
                         </view>
@@ -46,7 +49,8 @@
                                         <block wx:if="{{tableSelect.tableCode === v.tableCode}}">
                                             <button class="zan-ellipsis" type="primary" size="mini"
                                                     disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
-                                                    data-table-name="{{v.name}}"
+                                                    data-table-name="{{v.name}}" data-subarea-id="{{item.subareaId}}"
+                                                    data-subarea-name="{{item.subareaName}}"
                                                     data-value="{{v}}" catchtap="bindTableSelect">
                                                 <text>{{v.name}}/</text>
                                                 <text class="zan-font-10">{{v.howPeople}}人</text>
@@ -55,7 +59,8 @@
                                         <block wx:else>
                                             <button class="zan-ellipsis" type="white" plain size="mini"
                                                     disabled="{{v.disabled}}" data-table-code="{{v.tableCode}}"
-                                                    data-table-name="{{v.name}}"
+                                                    data-table-name="{{v.name}}" data-subarea-id="{{item.subareaId}}"
+                                                    data-subarea-name="{{item.subareaName}}"
                                                     data-value="{{v}}"
                                                     catchtap="bindTableSelect">
                                                 <text>{{v.name}}</text>
@@ -78,7 +83,11 @@
             </swiper-item>
         </swiper>
     </view>
-    <button type="primary" class="azm-footer_fixed_bottom">确认</button>
+    <button type="primary" class="azm-footer_fixed_bottom" catchtap="submit">确认</button>
 </view>
 
 <import src="../../../lib/zanui/tab/index.wxml"/>
+
+<!--自定义Toast-->
+<import src="../../../template/toast/toast.wxml"/>
+<template is="azm_toast" data="{{...azm_toast}}"></template>
