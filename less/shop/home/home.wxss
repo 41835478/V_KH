@@ -8,9 +8,6 @@
   width: 750rpx;
   height: 292rpx;
 }
-.shopFront .section .topInfo {
-  border-bottom: 2rpx solid #e2e2e2;
-}
 .shopFront .section .topInfo > view {
   height: 80rpx;
   overflow: hidden;
@@ -40,11 +37,11 @@
   line-height: 80rpx;
 }
 .shopFront .section .shopInfo {
-  margin: 0rpx;
+  margin-top: 18rpx;
 }
 .shopFront .section .shopInfo-top {
   width: 100%;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
   padding: 42rpx 0rpx 10rpx 0rpx;
 }
 .shopFront .section .shopInfo-top .left {
@@ -134,7 +131,7 @@
   padding-left: 64rpx;
   font-size: 30rpx;
   color: #2d2c34;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 .shopFront .section .clubCard .h2::after {
   position: absolute;
@@ -184,7 +181,7 @@
   padding-left: 64rpx;
   font-size: 30rpx;
   color: #2d2c34;
-  border-bottom: 2rpx solid #e2e2e2;
+  border-bottom: 1rpx solid #e2e2e2;
 }
 .shopFront .section .merchants .h2::after {
   position: absolute;
@@ -198,23 +195,34 @@
   background-size: 34rpx 34rpx;
 }
 .shopFront .section .merchants .merchants-info {
-  padding: 40rpx 44rpx 100rpx 44rpx;
+  padding: 20rpx 44rpx 20rpx 44rpx;
 }
 .shopFront .section .merchants .merchants-info > view {
-  padding-bottom: 26rpx;
+  padding-bottom: 10rpx;
 }
 .shopFront .section .merchants .merchants-info > view .h3 {
   font-weight: 500;
   font-size: 26rpx;
 }
 .shopFront .section .merchants .merchants-info > view .ul {
+  padding: 0;
+  padding-left: 50rpx;
   padding-bottom: 0rpx;
 }
-.shopFront .section .merchants .merchants-info > view .ul .li {
+.shopFront .section .merchants .merchants-info > view .ul .flexBox-item {
+  margin-top: 10rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  border: 1px solid #8e8e8e;
+  border-radius: 50px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  margin-right: 20rpx;
   color: #8e8e8e;
 }
 .shopFront .section .merchants .merchants-info > view .p {
-  padding-top: 26rpx;
+  padding-top: 10rpx;
   text-indent: 50rpx;
   color: #8e8e8e;
 }

@@ -29,7 +29,7 @@ const SHOP_PAGES = {
             name: '预订',
             url: '/pages/shop/OrderMeal/OrderMeal',
             orderType: 4,
-            disabled: false
+            disabled: true
         }
     ],
     topImages: [],
@@ -256,15 +256,22 @@ const methods = {
                 {objId, resId},
                 (rsp) => {
                     if (2000 === rsp.code && utilCommon.isEmptyValue(rsp.value)) {
-                        let shopList = SHOP_PAGES.shopList,
+                        let shopList = [],
+                            _shopList = SHOP_PAGES.shopList,
                             discount = rsp.value.discount,
                             resDetailDto = rsp.value.resDetailDto,//店铺信息
                             memberCardDto = rsp.value.memberCardDto || null,//会员卡信息
                             specialServiceList = rsp.value.specialServiceList;//店铺服务列表;
                         that.utilPage_setNavigationBarTitle(resDetailDto.resName);//设置导航栏信息
-                        util.extend(shopList[0], resDetailDto.restaurantBusinessRules);//堂食
-                        util.extend(shopList[1], resDetailDto.takeoutBusinessRules);//外卖
-                        util.extend(shopList[2], resDetailDto.reserveBusinessRules);//预订
+                        if (!_shopList[0].disabled) {
+                            shopList.push(util.extend(_shopList[0], resDetailDto.restaurantBusinessRules));//堂食
+                        }
+                        if (!_shopList[1].disabled) {
+                            shopList.push(util.extend(_shopList[1], resDetailDto.takeoutBusinessRules));//外卖
+                        }
+                        if (!_shopList[2].disabled) {
+                            shopList.push(util.extend(_shopList[2], resDetailDto.reserveBusinessRules));//预订
+                        }
                         let topInfoList = that.data.topInfoList;
                         if (resDetailDto.notice) {
                             topInfoList = [];

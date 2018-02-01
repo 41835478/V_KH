@@ -25,7 +25,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
+			"current": 19,
 			"list": [
 				{
 					"id": 0,
@@ -160,10 +160,10 @@
 					"scene": "1001"
 				},
 				{
-					"id": -1,
+					"id": 19,
 					"name": "22222",
-					"pathName": "pages/vkahui/meAdmin/index",
-					"query": "",
+					"pathName": "pages/shop/home/home",
+					"query": "resId=000000005c2536d5015c2e169199061f",
 					"scene": "1001"
 				}
 			]

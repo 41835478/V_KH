@@ -168,9 +168,9 @@
                         <view class="h3">
                             <text>提供服务：</text>
                         </view>
-                        <view class="ul">
+                        <view class="ul flexBox flexBox-start">
                             <block wx:for="{{specialServiceList}}" wx:key="*this">
-                                <view class="li">
+                                <view class="flexBox-item">
                                     <text>{{item.name}}</text>
                                 </view>
                             </block>
