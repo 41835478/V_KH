@@ -1,24 +1,24 @@
 {
   "pages": [
     "pages/init/init",
-    "pages/vkahui/me/me",
     "pages/order/index/index",
     "pages/order/member-pay/member-pay",
     "pages/order/order-detail/order-detail",
     "pages/order/bookingOrder/index",
     "pages/shop/home/home",
     "pages/shop/order/order",
+    "pages/shop/OrderMeal/OrderMeal",
+    "pages/shop/destineTimeSelect/index",
+    "pages/shop/reservationDesk/index",
     "pages/shop/confirm-order/confirm-order",
     "pages/shop/home_scanCode/home_scanCode",
+    "pages/vkahui/me/me",
     "pages/vkahui/address-edit/address-edit",
     "pages/vkahui/address/address",
     "pages/vkahui/phone-add/phone-add",
     "pages/vkahui/memberApplication/memberApplication",
     "pages/vkahui/meInfo/meInfo",
-    "pages/vkahui/meAdmin/index",
-    "pages/shop/OrderMeal/OrderMeal",
-    "pages/shop/destineTimeSelect/index",
-    "pages/shop/reservationDesk/index"
+    "pages/vkahui/meAdmin/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
